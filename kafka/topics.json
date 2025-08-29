@@ -1,0 +1,37 @@
+{
+  "topics": [
+    {
+      "name": "wallet-events",
+      "partitions": 6,
+      "replicationFactor": 1,
+      "configs": {
+        "cleanup.policy": "compact",
+        "retention.ms": 604800000,
+        "segment.bytes": 1073741824,
+        "min.insync.replicas": 1
+      }
+    },
+    {
+      "name": "wallet-commands",
+      "partitions": 6,
+      "replicationFactor": 1,
+      "configs": {
+        "cleanup.policy": "delete",
+        "retention.ms": 86400000,
+        "segment.bytes": 1073741824,
+        "min.insync.replicas": 1
+      }
+    },
+    {
+      "name": "wallet-snapshots",
+      "partitions": 6,
+      "replicationFactor": 1,
+      "configs": {
+        "cleanup.policy": "compact",
+        "retention.ms": 604800000,
+        "segment.bytes": 1073741824,
+        "min.insync.replicas": 1
+      }
+    }
+  ]
+}

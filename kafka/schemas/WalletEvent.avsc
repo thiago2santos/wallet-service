@@ -1,0 +1,79 @@
+{
+  "type": "record",
+  "name": "WalletEvent",
+  "namespace": "com.wallet.event",
+  "fields": [
+    {
+      "name": "eventId",
+      "type": "string"
+    },
+    {
+      "name": "eventType",
+      "type": {
+        "type": "enum",
+        "name": "WalletEventType",
+        "symbols": [
+          "WALLET_CREATED",
+          "FUNDS_DEPOSITED",
+          "FUNDS_WITHDRAWN",
+          "FUNDS_TRANSFERRED",
+          "WALLET_LOCKED",
+          "WALLET_UNLOCKED"
+        ]
+      }
+    },
+    {
+      "name": "walletId",
+      "type": "string"
+    },
+    {
+      "name": "userId",
+      "type": ["null", "string"],
+      "default": null
+    },
+    {
+      "name": "amount",
+      "type": ["null", {
+        "type": "bytes",
+        "logicalType": "decimal",
+        "precision": 20,
+        "scale": 2
+      }],
+      "default": null
+    },
+    {
+      "name": "currency",
+      "type": ["null", "string"],
+      "default": null
+    },
+    {
+      "name": "destinationWalletId",
+      "type": ["null", "string"],
+      "default": null
+    },
+    {
+      "name": "transactionId",
+      "type": ["null", "string"],
+      "default": null
+    },
+    {
+      "name": "metadata",
+      "type": ["null", {
+        "type": "map",
+        "values": "string"
+      }],
+      "default": null
+    },
+    {
+      "name": "timestamp",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      }
+    },
+    {
+      "name": "version",
+      "type": "long"
+    }
+  ]
+}
