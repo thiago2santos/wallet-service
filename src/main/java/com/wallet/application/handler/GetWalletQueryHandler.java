@@ -5,6 +5,7 @@ import com.wallet.core.query.QueryHandler;
 import com.wallet.domain.model.Wallet;
 import com.wallet.infrastructure.cache.WalletStateCache;
 import com.wallet.infrastructure.persistence.WalletReadRepository;
+import io.quarkus.reactive.datasource.ReactiveDataSource;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -13,6 +14,7 @@ import jakarta.inject.Inject;
 public class GetWalletQueryHandler implements QueryHandler<GetWalletQuery, Wallet> {
 
     @Inject
+    @ReactiveDataSource("write")
     WalletReadRepository walletRepository;
 
     @Inject

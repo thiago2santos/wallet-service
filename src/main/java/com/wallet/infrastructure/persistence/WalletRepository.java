@@ -3,11 +3,13 @@ package com.wallet.infrastructure.persistence;
 import com.wallet.domain.model.Wallet;
 import com.wallet.domain.model.WalletStatus;
 import io.quarkus.hibernate.reactive.panache.PanacheRepositoryBase;
+import io.quarkus.reactive.datasource.ReactiveDataSource;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.List;
 
 @ApplicationScoped
+@ReactiveDataSource("write")
 public class WalletRepository implements PanacheRepositoryBase<Wallet, String> {
     
     public Uni<Wallet> findByIdAndStatus(String id, WalletStatus status) {

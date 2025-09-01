@@ -9,6 +9,7 @@ import com.wallet.domain.model.Wallet;
 import com.wallet.infrastructure.persistence.TransactionRepository;
 import com.wallet.infrastructure.persistence.WalletReadRepository;
 import com.wallet.infrastructure.persistence.WalletRepository;
+import io.quarkus.reactive.datasource.ReactiveDataSource;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -20,12 +21,15 @@ import java.util.UUID;
 public class DepositFundsCommandHandler implements CommandHandler<DepositFundsCommand, String> {
 
     @Inject
+    @ReactiveDataSource("write")
     WalletReadRepository walletReadRepository;
 
     @Inject
+    @ReactiveDataSource("write")
     WalletRepository walletWriteRepository;
 
     @Inject
+    @ReactiveDataSource("write")
     TransactionRepository transactionRepository;
 
     @Override

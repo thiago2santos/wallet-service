@@ -6,6 +6,7 @@ import com.wallet.domain.model.Wallet;
 import com.wallet.domain.model.WalletStatus;
 import com.wallet.domain.event.WalletCreatedEvent;
 import com.wallet.infrastructure.persistence.WalletRepository;
+import io.quarkus.reactive.datasource.ReactiveDataSource;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.reactive.messaging.MutinyEmitter;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -18,6 +19,7 @@ import java.util.UUID;
 @ApplicationScoped
 public class CreateWalletCommandHandler implements CommandHandler<CreateWalletCommand, String> {
     @Inject
+    @ReactiveDataSource("write")
     WalletRepository writeRepository;
 
     // Temporarily disabled for create wallet focus
