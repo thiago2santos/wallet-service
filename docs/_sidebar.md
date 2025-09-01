@@ -2,7 +2,7 @@
 
 - **Getting Started**
   - [Overview](README.md)
-  - [Quick Start](quick-start.md)
+  - [🚨 Implementation Status](implementation-status.md)
   - [Development Setup](development.md)
 
 - **Architecture**

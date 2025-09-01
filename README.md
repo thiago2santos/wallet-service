@@ -21,13 +21,14 @@ docker-compose up -d
 
 ## ✨ Key Features
 
-- **💰 Multi-Currency Support** - Handle multiple currencies with real-time conversion
-- **⚡ High Performance** - Sub-100ms response times with reactive programming
-- **🔒 Enterprise Security** - JWT authentication, encryption at rest and in transit
-- **📊 Real-time Analytics** - Live transaction monitoring and reporting
-- **🔄 Event Sourcing** - Complete audit trail with historical balance queries
-- **🌐 Cloud Native** - Designed for Kubernetes and AWS deployment
-- **🧪 100% Test Coverage** - Comprehensive testing with mutation testing
+- **💰 Basic Wallet Operations** - Create, deposit, withdraw, transfer funds
+- **⚡ Reactive Programming** - Built with Quarkus and Mutiny for non-blocking operations
+- **🏗️ CQRS Structure** - Command/Query separation (implementation in progress)
+- **📊 Transaction History** - Historical balance queries via transaction replay
+- **🐳 Containerized** - Docker Compose setup for local development
+- **🧪 Mutation Testing** - 100% mutation score with PIT testing
+
+> **🚨 [See Implementation Status](docs/implementation-status.md) for honest assessment of what's actually working**
 
 ## 🏗️ Architecture
 
@@ -147,11 +148,13 @@ kubectl apply -f k8s/
 
 ## 🧪 Quality Assurance
 
-- **Unit Tests**: 95%+ coverage with JUnit 5
-- **Integration Tests**: All critical paths with Testcontainers
-- **Mutation Testing**: 100% score with PIT
-- **Load Testing**: Handles 10K concurrent users
-- **Security Testing**: OWASP compliance
+- **Unit Tests**: Basic coverage with JUnit 5
+- **Mutation Testing**: 100% score with PIT (for tested classes)
+- **Integration Tests**: Limited (in development)
+- **Load Testing**: Not yet implemented
+- **Security Testing**: Not yet implemented
+
+> **Note**: See [Implementation Status](docs/implementation-status.md) for current testing reality
 
 ### Run Tests
 ```bash
