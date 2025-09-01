@@ -12,19 +12,22 @@
 
 ### **Branch Naming Convention**
 
+**Philosophy**: Be honest about what you're actually building, not what you aspire to build.
+
 ```bash
-# Feature branches
-feat/wallet-authentication
-feat/kafka-event-publishing
-feat/prometheus-metrics
+# Feature branches - be realistic about scope
+feat/basic-jwt-authentication          # Not "enterprise-security"
+feat/simple-kafka-events              # Not "advanced-event-sourcing"
+feat/basic-prometheus-metrics         # Not "comprehensive-observability"
 
 # Bug fixes
 fix/database-replication-issue
 fix/cache-invalidation-bug
 
-# Documentation
-docs/api-documentation-update
-docs/deployment-guide
+# Documentation - emphasize honesty
+docs/simple-implementation-status     # Not "comprehensive-architecture"
+docs/basic-api-documentation         # Not "enterprise-api-guide"
+docs/honest-performance-assessment   # Not "high-performance-analysis"
 
 # Refactoring
 refactor/command-bus-implementation
@@ -34,6 +37,11 @@ refactor/repository-layer
 chore/dependency-updates
 chore/docker-compose-cleanup
 ```
+
+**Examples of Honest vs. Inflated Naming**:
+- ✅ `feat/basic-wallet-operations` vs. ❌ `feat/enterprise-financial-platform`
+- ✅ `docs/simple-implementation-guide` vs. ❌ `docs/production-ready-architecture`
+- ✅ `fix/mysql-connection-timeout` vs. ❌ `fix/database-performance-optimization`
 
 ## 🔄 **Development Workflow**
 
@@ -99,15 +107,16 @@ git push origin --delete feat/your-feature-name
 
 ### **Active Branches**
 
-#### `docs/comprehensive-documentation-and-honesty-assessment`
-**Purpose**: Major documentation overhaul and implementation status assessment
+#### `docs/simple-implementation-documentation`
+**Purpose**: Document the simple implementation reality vs. enterprise claims
 
 **Changes**:
 - ✅ Setup Docsify documentation site
-- ✅ Create comprehensive architectural decisions document
+- ✅ Create honest architectural decisions document
 - ✅ Fix architecture diagrams (Kafka vs SQS/SNS)
-- ✅ Add honest implementation status assessment
-- ✅ Update READMEs to reflect reality
+- ✅ Add brutal implementation status assessment
+- ✅ Update READMEs to reflect simple implementation reality
+- ✅ Establish proper git workflow for future development
 
 **Ready for**: Code review and merge to main
 
