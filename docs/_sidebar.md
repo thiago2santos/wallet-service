@@ -21,6 +21,7 @@
   - [Local Setup](development.md)
   - [Git Workflow](git-workflow.md)
   - [Testing Strategy](testing.md)
+  - [Load Testing Plan](load-testing-plan.md)
   - [Code Quality](code-quality.md)
   - [Contributing](contributing.md)
 
