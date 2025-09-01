@@ -4,6 +4,7 @@ import com.wallet.application.command.CreateWalletCommand;
 import com.wallet.application.command.DepositFundsCommand;
 import com.wallet.application.query.GetWalletQuery;
 import com.wallet.application.handler.CreateWalletCommandHandler;
+import com.wallet.application.handler.DepositFundsCommandHandler;
 import com.wallet.application.handler.GetWalletQueryHandler;
 import com.wallet.core.command.CommandBus;
 import com.wallet.core.query.QueryBus;
@@ -34,6 +35,9 @@ public class WalletResource {
 
     @Inject
     GetWalletQueryHandler getWalletQueryHandler;
+
+    @Inject
+    DepositFundsCommandHandler depositFundsHandler;
 
     @POST
     @WithTransaction
@@ -66,6 +70,7 @@ public class WalletResource {
 
     @POST
     @Path("/{walletId}/deposit")
+    @WithTransaction
     public Uni<Response> depositFunds(
             @PathParam("walletId") String walletId,
             DepositFundsRequest request) {
@@ -75,7 +80,8 @@ public class WalletResource {
             request.getReferenceId()
         );
 
-        return commandBus.dispatch(command)
+        // Temporary direct call to test the handler
+        return depositFundsHandler.handle(command)
             .map(transactionId -> Response.ok()
                 .location(URI.create("/api/v1/transactions/" + transactionId))
                 .build()
