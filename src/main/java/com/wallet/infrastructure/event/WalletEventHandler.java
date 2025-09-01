@@ -1,15 +1,17 @@
 package com.wallet.infrastructure.event;
 
+import java.math.BigDecimal;
+
+import org.eclipse.microprofile.reactive.messaging.Incoming;
+
 import com.wallet.domain.event.WalletEvent;
-import com.wallet.domain.event.WalletEventType;
 import com.wallet.domain.model.Wallet;
 import com.wallet.infrastructure.cache.WalletStateCache;
 import com.wallet.infrastructure.persistence.WalletReadRepository;
+
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import org.eclipse.microprofile.reactive.messaging.Incoming;
-import java.math.BigDecimal;
 
 @ApplicationScoped
 public class WalletEventHandler {
@@ -20,7 +22,7 @@ public class WalletEventHandler {
     @Inject
     WalletStateCache walletCache;
 
-    // @Incoming("wallet-events") // Disabled for now - focusing on command side
+    @Incoming("wallet-events-consumer") // Enable event processing for full event sourcing
     public Uni<Void> handleEvent(WalletEvent event) {
         switch (event.getEventType()) {
             case WALLET_CREATED:

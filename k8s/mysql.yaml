@@ -1,0 +1,310 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-primary
+  namespace: wallet-service
+  labels:
+    app: mysql-primary
+spec:
+  ports:
+  - port: 3306
+    name: mysql
+  clusterIP: None
+  selector:
+    app: mysql-primary
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-replica
+  namespace: wallet-service
+  labels:
+    app: mysql-replica
+spec:
+  ports:
+  - port: 3306
+    name: mysql
+  clusterIP: None
+  selector:
+    app: mysql-replica
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql-primary
+  namespace: wallet-service
+spec:
+  serviceName: mysql-primary
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql-primary
+  template:
+    metadata:
+      labels:
+        app: mysql-primary
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:8.0
+        args:
+        - --default-authentication-plugin=mysql_native_password
+        - --log-bin=mysql-bin
+        - --server-id=1
+        - --binlog-format=ROW
+        - --gtid-mode=ON
+        - --enforce-gtid-consistency=ON
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: wallet-secrets
+              key: MYSQL_ROOT_PASSWORD
+        - name: MYSQL_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: wallet-config
+              key: MYSQL_DATABASE
+        - name: MYSQL_USER
+          valueFrom:
+            configMapKeyRef:
+              name: wallet-config
+              key: MYSQL_USER
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: wallet-secrets
+              key: MYSQL_PASSWORD
+        - name: MYSQL_SERVER_ID
+          value: "1"
+        - name: MYSQL_REPLICATION_MODE
+          value: "master"
+        - name: MYSQL_REPLICATION_USER
+          valueFrom:
+            secretKeyRef:
+              name: wallet-secrets
+              key: MYSQL_REPLICATION_USER
+        - name: MYSQL_REPLICATION_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: wallet-secrets
+              key: MYSQL_REPLICATION_PASSWORD
+        ports:
+        - containerPort: 3306
+          name: mysql
+        volumeMounts:
+        - name: mysql-primary-data
+          mountPath: /var/lib/mysql
+        - name: mysql-primary-init
+          mountPath: /docker-entrypoint-initdb.d
+        livenessProbe:
+          exec:
+            command:
+            - mysqladmin
+            - ping
+            - -h
+            - localhost
+            - -u
+            - wallet
+            - -pwallet
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 5
+        readinessProbe:
+          exec:
+            command:
+            - mysqladmin
+            - ping
+            - -h
+            - localhost
+            - -u
+            - wallet
+            - -pwallet
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 5
+      volumes:
+      - name: mysql-primary-init
+        configMap:
+          name: mysql-primary-init
+  volumeClaimTemplates:
+  - metadata:
+      name: mysql-primary-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 10Gi
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql-replica
+  namespace: wallet-service
+spec:
+  serviceName: mysql-replica
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql-replica
+  template:
+    metadata:
+      labels:
+        app: mysql-replica
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:8.0
+        args:
+        - --default-authentication-plugin=mysql_native_password
+        - --server-id=2
+        - --read-only=1
+        - --gtid-mode=ON
+        - --enforce-gtid-consistency=ON
+        - --log-bin=mysql-bin
+        - --log-replica-updates=ON
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: wallet-secrets
+              key: MYSQL_ROOT_PASSWORD
+        - name: MYSQL_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: wallet-config
+              key: MYSQL_DATABASE
+        - name: MYSQL_SERVER_ID
+          value: "2"
+        - name: MYSQL_REPLICATION_MODE
+          value: "slave"
+        - name: MYSQL_REPLICATION_USER
+          valueFrom:
+            secretKeyRef:
+              name: wallet-secrets
+              key: MYSQL_REPLICATION_USER
+        - name: MYSQL_REPLICATION_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: wallet-secrets
+              key: MYSQL_REPLICATION_PASSWORD
+        - name: MYSQL_MASTER_HOST
+          value: "mysql-primary"
+        - name: MYSQL_MASTER_PORT
+          value: "3306"
+        - name: MYSQL_MASTER_USER
+          valueFrom:
+            secretKeyRef:
+              name: wallet-secrets
+              key: MYSQL_REPLICATION_USER
+        - name: MYSQL_MASTER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: wallet-secrets
+              key: MYSQL_REPLICATION_PASSWORD
+        ports:
+        - containerPort: 3306
+          name: mysql
+        volumeMounts:
+        - name: mysql-replica-data
+          mountPath: /var/lib/mysql
+        - name: mysql-replica-init
+          mountPath: /docker-entrypoint-initdb.d
+        livenessProbe:
+          exec:
+            command:
+            - mysqladmin
+            - ping
+            - -h
+            - localhost
+            - -u
+            - wallet
+            - -pwallet
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 5
+        readinessProbe:
+          exec:
+            command:
+            - mysqladmin
+            - ping
+            - -h
+            - localhost
+            - -u
+            - wallet
+            - -pwallet
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 5
+      volumes:
+      - name: mysql-replica-init
+        configMap:
+          name: mysql-replica-init
+  volumeClaimTemplates:
+  - metadata:
+      name: mysql-replica-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 10Gi
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-primary-init
+  namespace: wallet-service
+data:
+  01-init.sql: |
+    -- Create replication user
+    CREATE USER 'repl'@'%' IDENTIFIED BY 'repl';
+    GRANT REPLICATION SLAVE ON *.* TO 'repl'@'%';
+    
+    -- Grant read/write permissions to wallet user
+    GRANT ALL PRIVILEGES ON wallet.* TO 'wallet'@'%';
+    
+    -- Flush privileges
+    FLUSH PRIVILEGES;
+    
+    -- Configure replication settings (log_bin is set via command line)
+    SET GLOBAL server_id = 1;
+    SET GLOBAL binlog_format = 'ROW';
+    SET GLOBAL binlog_row_image = 'FULL';
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-replica-init
+  namespace: wallet-service
+data:
+  01-init.sql: |
+    -- Create local wallet user first (not replicated)
+    SET SQL_LOG_BIN = 0;
+    CREATE USER IF NOT EXISTS 'wallet'@'%' IDENTIFIED BY 'wallet';
+    GRANT SELECT ON wallet.* TO 'wallet'@'%';
+    FLUSH PRIVILEGES;
+    SET SQL_LOG_BIN = 1;
+    
+    -- Configure replica (using new MySQL 8.0 syntax)
+    CHANGE REPLICATION SOURCE TO
+      SOURCE_HOST='mysql-primary',
+      SOURCE_USER='repl',
+      SOURCE_PASSWORD='repl',
+      SOURCE_PORT=3306,
+      SOURCE_AUTO_POSITION=1;
+    
+    -- Configure replica settings (server_id and log_bin set via command line)
+    SET GLOBAL binlog_format = 'ROW';
+    SET GLOBAL binlog_row_image = 'FULL';
+    
+    -- Start replica (using new MySQL 8.0 syntax)
+    START REPLICA;

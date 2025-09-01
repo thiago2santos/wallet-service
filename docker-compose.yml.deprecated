@@ -3,17 +3,16 @@
 # This file is kept for reference only. The wallet service infrastructure
 # has been migrated to Kubernetes manifests in the k8s/ directory.
 #
-# 🚀 To use the new Kubernetes setup:
+# To use the new Kubernetes setup:
 #   1. cd k8s/
 #   2. ./deploy.sh
 #
-# 🧹 To clean up any remaining Docker resources:
+# To clean up any remaining Docker resources:
 #   ./cleanup-docker.sh
 #
-# 📖 For migration details, see: KUBERNETES_MIGRATION.md
+# Original docker-compose.yml content moved to docker-compose.yml.deprecated
 
-# Uncomment the line below if you need to use Docker Compose temporarily
-# version: '3.8'
+version: '3.8'
 
 networks:
   wallet-network:
@@ -226,3 +225,4 @@ services:
       - wallet-network
     depends_on:
       - prometheus
+

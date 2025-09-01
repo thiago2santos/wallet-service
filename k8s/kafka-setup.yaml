@@ -1,0 +1,80 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kafka-setup
+  namespace: wallet-service
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: kafka-setup
+        image: confluentinc/cp-kafka:7.4.0
+        command:
+        - /bin/bash
+        - -c
+        - |
+          # Install jq for JSON parsing
+          apt-get update && apt-get install -y jq netcat-openbsd
+          
+          # Wait for Kafka to be ready
+          echo "Waiting for Kafka to be ready..."
+          until echo exit | nc kafka 9092; do
+              echo "Waiting for Kafka to be ready..."
+              sleep 2
+          done
+          
+          # Read topics configuration
+          TOPICS_CONFIG=$(cat /kafka/topics.json)
+          
+          # Function to create a topic
+          create_topic() {
+              local topic_name=$1
+              local partitions=$2
+              local replication_factor=$3
+              local cleanup_policy=$4
+              local retention_ms=$5
+              local segment_bytes=$6
+              local min_insync_replicas=$7
+          
+              echo "Creating topic: $topic_name"
+              kafka-topics \
+                  --create \
+                  --if-not-exists \
+                  --bootstrap-server kafka:9092 \
+                  --topic "$topic_name" \
+                  --partitions "$partitions" \
+                  --replication-factor "$replication_factor" \
+                  --config cleanup.policy="$cleanup_policy" \
+                  --config retention.ms="$retention_ms" \
+                  --config segment.bytes="$segment_bytes" \
+                  --config min.insync.replicas="$min_insync_replicas"
+          }
+          
+          # Create topics from configuration
+          echo "$TOPICS_CONFIG" | jq -c '.topics[]' | while read -r topic; do
+              name=$(echo "$topic" | jq -r '.name')
+              partitions=$(echo "$topic" | jq -r '.partitions')
+              replication_factor=$(echo "$topic" | jq -r '.replicationFactor')
+              cleanup_policy=$(echo "$topic" | jq -r '.configs."cleanup.policy"')
+              retention_ms=$(echo "$topic" | jq -r '.configs."retention.ms"')
+              segment_bytes=$(echo "$topic" | jq -r '.configs."segment.bytes"')
+              min_insync_replicas=$(echo "$topic" | jq -r '.configs."min.insync.replicas"')
+              
+              create_topic "$name" "$partitions" "$replication_factor" "$cleanup_policy" "$retention_ms" "$segment_bytes" "$min_insync_replicas"
+          done
+          
+          echo "Topics created successfully!"
+          
+          # List created topics for verification
+          echo "Listing all topics:"
+          kafka-topics --list --bootstrap-server kafka:9092
+        volumeMounts:
+        - name: kafka-topics-config
+          mountPath: /kafka
+      volumes:
+      - name: kafka-topics-config
+        configMap:
+          name: kafka-topics-config
+          defaultMode: 0755
+  backoffLimit: 3

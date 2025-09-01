@@ -1,0 +1,154 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wallet-config
+  namespace: wallet-service
+data:
+  # MySQL Configuration
+  MYSQL_DATABASE: "wallet"
+  MYSQL_USER: "wallet"
+  
+  # Kafka Configuration
+  KAFKA_BROKER_ID: "1"
+  KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+  KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:29092,PLAINTEXT_HOST://kafka:9092"
+  KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT"
+  KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
+  KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
+  KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+  KAFKA_DELETE_TOPIC_ENABLE: "true"
+  KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: "1"
+  KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: "1"
+  
+  # Zookeeper Configuration
+  ZOOKEEPER_CLIENT_PORT: "2181"
+  ZOOKEEPER_TICK_TIME: "2000"
+  
+  # Schema Registry Configuration
+  SCHEMA_REGISTRY_HOST_NAME: "schema-registry"
+  SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "kafka:29092"
+  SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8081"
+  
+  # Kafka UI Configuration
+  KAFKA_CLUSTERS_0_NAME: "wallet"
+  KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka:29092"
+  KAFKA_CLUSTERS_0_ZOOKEEPER: "zookeeper:2181"
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: wallet-service
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+
+    scrape_configs:
+      - job_name: 'wallet-service'
+        metrics_path: '/metrics'
+        static_configs:
+          - targets: ['wallet-service:8080']
+
+      - job_name: 'prometheus'
+        static_configs:
+          - targets: ['localhost:9090']
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kafka-topics-config
+  namespace: wallet-service
+data:
+  topics.json: |
+    {
+      "topics": [
+        {
+          "name": "wallet-events",
+          "partitions": 6,
+          "replicationFactor": 1,
+          "configs": {
+            "cleanup.policy": "compact",
+            "retention.ms": 604800000,
+            "segment.bytes": 1073741824,
+            "min.insync.replicas": 1
+          }
+        },
+        {
+          "name": "wallet-commands",
+          "partitions": 6,
+          "replicationFactor": 1,
+          "configs": {
+            "cleanup.policy": "delete",
+            "retention.ms": 86400000,
+            "segment.bytes": 1073741824,
+            "min.insync.replicas": 1
+          }
+        },
+        {
+          "name": "wallet-snapshots",
+          "partitions": 6,
+          "replicationFactor": 1,
+          "configs": {
+            "cleanup.policy": "compact",
+            "retention.ms": 604800000,
+            "segment.bytes": 1073741824,
+            "min.insync.replicas": 1
+          }
+        }
+      ]
+    }
+  create-topics.sh: |
+    #!/bin/bash
+    
+    # Wait for Kafka to be ready
+    echo "Waiting for Kafka to be ready..."
+    until echo exit | nc kafka 9092; do
+        echo "Waiting for Kafka to be ready..."
+        sleep 2
+    done
+    
+    # Read topics configuration
+    TOPICS_CONFIG=$(cat /kafka/topics.json)
+    
+    # Function to create a topic
+    create_topic() {
+        local topic_name=$1
+        local partitions=$2
+        local replication_factor=$3
+        local cleanup_policy=$4
+        local retention_ms=$5
+        local segment_bytes=$6
+        local min_insync_replicas=$7
+    
+        echo "Creating topic: $topic_name"
+        kafka-topics \
+            --create \
+            --if-not-exists \
+            --bootstrap-server kafka:9092 \
+            --topic "$topic_name" \
+            --partitions "$partitions" \
+            --replication-factor "$replication_factor" \
+            --config cleanup.policy="$cleanup_policy" \
+            --config retention.ms="$retention_ms" \
+            --config segment.bytes="$segment_bytes" \
+            --config min.insync.replicas="$min_insync_replicas"
+    }
+    
+    # Create topics from configuration
+    echo "$TOPICS_CONFIG" | jq -c '.topics[]' | while read -r topic; do
+        name=$(echo "$topic" | jq -r '.name')
+        partitions=$(echo "$topic" | jq -r '.partitions')
+        replication_factor=$(echo "$topic" | jq -r '.replicationFactor')
+        cleanup_policy=$(echo "$topic" | jq -r '.configs."cleanup.policy"')
+        retention_ms=$(echo "$topic" | jq -r '.configs."retention.ms"')
+        segment_bytes=$(echo "$topic" | jq -r '.configs."segment.bytes"')
+        min_insync_replicas=$(echo "$topic" | jq -r '.configs."min.insync.replicas"')
+        
+        create_topic "$name" "$partitions" "$replication_factor" "$cleanup_policy" "$retention_ms" "$segment_bytes" "$min_insync_replicas"
+    done
+    
+    echo "Topics created successfully!"

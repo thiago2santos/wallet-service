@@ -1,0 +1,373 @@
+# Zookeeper Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: zookeeper
+  namespace: wallet-service
+  labels:
+    app: zookeeper
+spec:
+  ports:
+  - port: 2181
+    name: client
+  clusterIP: None
+  selector:
+    app: zookeeper
+
+---
+# Zookeeper StatefulSet
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zookeeper
+  namespace: wallet-service
+spec:
+  serviceName: zookeeper
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zookeeper
+  template:
+    metadata:
+      labels:
+        app: zookeeper
+    spec:
+      containers:
+      - name: zookeeper
+        image: confluentinc/cp-zookeeper:7.4.0
+        env:
+        - name: ZOOKEEPER_CLIENT_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: wallet-config
+              key: ZOOKEEPER_CLIENT_PORT
+        - name: ZOOKEEPER_TICK_TIME
+          valueFrom:
+            configMapKeyRef:
+              name: wallet-config
+              key: ZOOKEEPER_TICK_TIME
+        ports:
+        - containerPort: 2181
+          name: client
+        volumeMounts:
+        - name: zookeeper-data
+          mountPath: /var/lib/zookeeper/data
+        livenessProbe:
+          exec:
+            command:
+            - nc
+            - -z
+            - localhost
+            - "2181"
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 5
+        readinessProbe:
+          exec:
+            command:
+            - nc
+            - -z
+            - localhost
+            - "2181"
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 5
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "200m"
+  volumeClaimTemplates:
+  - metadata:
+      name: zookeeper-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 5Gi
+
+---
+# Kafka Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka
+  namespace: wallet-service
+  labels:
+    app: kafka
+spec:
+  ports:
+  - port: 9092
+    name: external
+  - port: 29092
+    name: internal
+  clusterIP: None
+  selector:
+    app: kafka
+
+---
+# Kafka StatefulSet
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: kafka
+  namespace: wallet-service
+spec:
+  serviceName: kafka
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka
+  template:
+    metadata:
+      labels:
+        app: kafka
+    spec:
+      containers:
+      - name: kafka
+        image: confluentinc/cp-kafka:7.4.0
+        env:
+        - name: KAFKA_BROKER_ID
+          valueFrom:
+            configMapKeyRef:
+              name: wallet-config
+              key: KAFKA_BROKER_ID
+        - name: KAFKA_ZOOKEEPER_CONNECT
+          valueFrom:
+            configMapKeyRef:
+              name: wallet-config
+              key: KAFKA_ZOOKEEPER_CONNECT
+        - name: KAFKA_ADVERTISED_LISTENERS
+          valueFrom:
+            configMapKeyRef:
+              name: wallet-config
+              key: KAFKA_ADVERTISED_LISTENERS
+        - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
+          valueFrom:
+            configMapKeyRef:
+              name: wallet-config
+              key: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
+        - name: KAFKA_INTER_BROKER_LISTENER_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: wallet-config
+              key: KAFKA_INTER_BROKER_LISTENER_NAME
+        - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
+          valueFrom:
+            configMapKeyRef:
+              name: wallet-config
+              key: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
+        - name: KAFKA_AUTO_CREATE_TOPICS_ENABLE
+          valueFrom:
+            configMapKeyRef:
+              name: wallet-config
+              key: KAFKA_AUTO_CREATE_TOPICS_ENABLE
+        - name: KAFKA_DELETE_TOPIC_ENABLE
+          valueFrom:
+            configMapKeyRef:
+              name: wallet-config
+              key: KAFKA_DELETE_TOPIC_ENABLE
+        - name: KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR
+          valueFrom:
+            configMapKeyRef:
+              name: wallet-config
+              key: KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR
+        - name: KAFKA_TRANSACTION_STATE_LOG_MIN_ISR
+          valueFrom:
+            configMapKeyRef:
+              name: wallet-config
+              key: KAFKA_TRANSACTION_STATE_LOG_MIN_ISR
+        ports:
+        - containerPort: 9092
+          name: external
+        - containerPort: 29092
+          name: internal
+        volumeMounts:
+        - name: kafka-data
+          mountPath: /var/lib/kafka/data
+        livenessProbe:
+          exec:
+            command:
+            - nc
+            - -z
+            - localhost
+            - "9092"
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 5
+        readinessProbe:
+          exec:
+            command:
+            - nc
+            - -z
+            - localhost
+            - "9092"
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 5
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "200m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+  volumeClaimTemplates:
+  - metadata:
+      name: kafka-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 10Gi
+
+---
+# Schema Registry Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: schema-registry
+  namespace: wallet-service
+  labels:
+    app: schema-registry
+spec:
+  ports:
+  - port: 8081
+    name: http
+  selector:
+    app: schema-registry
+
+---
+# Schema Registry Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: schema-registry
+  namespace: wallet-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: schema-registry
+  template:
+    metadata:
+      labels:
+        app: schema-registry
+    spec:
+      containers:
+      - name: schema-registry
+        image: confluentinc/cp-schema-registry:7.4.0
+        env:
+        - name: SCHEMA_REGISTRY_HOST_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: wallet-config
+              key: SCHEMA_REGISTRY_HOST_NAME
+        - name: SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS
+          valueFrom:
+            configMapKeyRef:
+              name: wallet-config
+              key: SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS
+        - name: SCHEMA_REGISTRY_LISTENERS
+          valueFrom:
+            configMapKeyRef:
+              name: wallet-config
+              key: SCHEMA_REGISTRY_LISTENERS
+        ports:
+        - containerPort: 8081
+          name: http
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8081
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 5
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8081
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 5
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "200m"
+
+---
+# Kafka UI Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-ui
+  namespace: wallet-service
+  labels:
+    app: kafka-ui
+spec:
+  type: NodePort
+  ports:
+  - port: 8080
+    targetPort: 8080
+    nodePort: 30080
+    name: http
+  selector:
+    app: kafka-ui
+
+---
+# Kafka UI Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-ui
+  namespace: wallet-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-ui
+  template:
+    metadata:
+      labels:
+        app: kafka-ui
+    spec:
+      containers:
+      - name: kafka-ui
+        image: provectuslabs/kafka-ui:latest
+        env:
+        - name: KAFKA_CLUSTERS_0_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: wallet-config
+              key: KAFKA_CLUSTERS_0_NAME
+        - name: KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS
+          valueFrom:
+            configMapKeyRef:
+              name: wallet-config
+              key: KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS
+        - name: KAFKA_CLUSTERS_0_ZOOKEEPER
+          valueFrom:
+            configMapKeyRef:
+              name: wallet-config
+              key: KAFKA_CLUSTERS_0_ZOOKEEPER
+        ports:
+        - containerPort: 8080
+          name: http
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "200m"

@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: wallet-service
+  labels:
+    name: wallet-service
+    app: wallet-service
