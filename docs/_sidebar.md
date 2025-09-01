@@ -19,6 +19,7 @@
 
 - **Development**
   - [Local Setup](development.md)
+  - [Git Workflow](git-workflow.md)
   - [Testing Strategy](testing.md)
   - [Code Quality](code-quality.md)
   - [Contributing](contributing.md)
