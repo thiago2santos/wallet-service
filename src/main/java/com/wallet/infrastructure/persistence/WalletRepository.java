@@ -2,13 +2,13 @@ package com.wallet.infrastructure.persistence;
 
 import com.wallet.domain.model.Wallet;
 import com.wallet.domain.model.WalletStatus;
-import io.quarkus.hibernate.reactive.panache.PanacheRepository;
+import io.quarkus.hibernate.reactive.panache.PanacheRepositoryBase;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.List;
 
 @ApplicationScoped
-public class WalletRepository implements PanacheRepository<Wallet> {
+public class WalletRepository implements PanacheRepositoryBase<Wallet, String> {
     
     public Uni<Wallet> findByIdAndStatus(String id, WalletStatus status) {
         return find("id = ?1 and status = ?2", id, status).firstResult();
