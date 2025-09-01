@@ -20,44 +20,44 @@ The Wallet Service is designed as a **cloud-native, event-driven microservice** 
 ```mermaid
 graph TB
     subgraph "Client Layer"
-        API[API Gateway]
-        WAF[AWS WAF]
+        API[Load Balancer]
+        GATEWAY[API Gateway]
     end
 
     subgraph "Application Layer"
-        SVC[Wallet Service]
-        CACHE[ElastiCache Redis]
+        SVC[Wallet Service<br/>Quarkus + Java 17]
+        CACHE[Redis Cache]
     end
 
     subgraph "Data Layer"
-        DB[(Amazon Aurora MySQL)]
-        DDB[(DynamoDB)]
+        DB_PRIMARY[(MySQL Primary<br/>Write Operations)]
+        DB_REPLICA[(MySQL Replica<br/>Read Operations)]
     end
 
     subgraph "Event Processing"
-        SQS[SQS FIFO Queue]
-        SNS[SNS Topic]
-        DLQ[Dead Letter Queue]
+        KAFKA[Apache Kafka<br/>Event Streaming]
+        ZOOKEEPER[Zookeeper<br/>Coordination]
+        SCHEMA[Schema Registry<br/>Avro Schemas]
     end
 
     subgraph "Monitoring & Observability"
-        CW[CloudWatch]
-        XRay[X-Ray]
-        CT[CloudTrail]
+        PROMETHEUS[Prometheus<br/>Metrics]
+        GRAFANA[Grafana<br/>Dashboards]
+        KAFKA_UI[Kafka UI<br/>Management]
     end
 
-    WAF --> API
-    API --> SVC
+    API --> GATEWAY
+    GATEWAY --> SVC
     SVC --> CACHE
-    SVC --> DB
-    SVC --> DDB
-    SVC --> SQS
-    SQS --> DLQ
-    SQS --> SNS
+    SVC --> DB_PRIMARY
+    SVC --> DB_REPLICA
+    SVC --> KAFKA
+    KAFKA --> ZOOKEEPER
+    KAFKA --> SCHEMA
     
-    CW --> SVC
-    XRay --> SVC
-    CT --> SVC
+    PROMETHEUS --> SVC
+    GRAFANA --> PROMETHEUS
+    KAFKA_UI --> KAFKA
 ```
 
 ## Transaction Flow
@@ -67,75 +67,85 @@ sequenceDiagram
     participant C as Client
     participant API as API Gateway
     participant WS as Wallet Service
-    participant Cache as Redis
-    participant DB as Aurora
-    participant Q as SQS FIFO
-    participant SNS as SNS Topic
+    participant Cache as Redis Cache
+    participant DB_W as MySQL Primary
+    participant DB_R as MySQL Replica
+    participant KAFKA as Apache Kafka
 
     C->>API: Request Transaction
     API->>WS: Forward Request
-    WS->>Cache: Check Balance
-    WS->>DB: Begin Transaction
-    WS->>DB: Update Balance
-    WS->>Q: Send Transaction Event
-    WS->>DB: Commit Transaction
-    WS-->>C: Response
-    Q->>SNS: Publish Event
+    WS->>Cache: Check Cached Balance
+    WS->>DB_W: Begin Transaction
+    WS->>DB_W: Update Wallet Balance
+    WS->>DB_W: Create Transaction Record
+    WS->>KAFKA: Publish Transaction Event
+    WS->>DB_W: Commit Transaction
+    WS->>Cache: Invalidate Cache
+    WS-->>C: Success Response
+    
+    Note over KAFKA: Event available for<br/>audit, analytics, notifications
 ```
 
 ## Core Components
 
 ### API Layer
-- **AWS API Gateway**
-  - RESTful API endpoints
-  - Request/response transformation
-  - API versioning
-  - Throttling controls
+- **Load Balancer**
+  - Traffic distribution
+  - Health checks
+  - SSL termination
+  - High availability
 
-- **AWS WAF**
-  - DDoS protection
-  - SQL injection prevention
+- **API Gateway**
+  - RESTful API endpoints
+  - Request/response validation
   - Rate limiting
-  - IP blocking
+  - Authentication integration
 
 ### Application Layer
 - **Quarkus Application**
-  - Reactive programming model
+  - Reactive programming with Mutiny
   - Native compilation support
-  - Fast startup time
-  - Low memory footprint
+  - Sub-second startup time
+  - Low memory footprint (~100MB)
+  - CQRS architecture implementation
 
-- **ElastiCache Redis**
-  - Balance caching
-  - Rate limiting
-  - Distributed locking
+- **Redis Cache**
+  - Balance caching (sub-ms latency)
   - Session management
+  - Rate limiting counters
+  - Distributed locking
 
 ### Data Layer
-- **Amazon Aurora MySQL**
-  - Primary transaction database
+- **MySQL Primary**
+  - Write operations
   - ACID compliance
+  - Transaction consistency
   - Automated backups
-  - Read replicas
 
-- **Amazon DynamoDB**
-  - Historical data storage
-  - Audit logging
-  - High-speed queries
-  - Auto-scaling
+- **MySQL Replica**
+  - Read operations
+  - Query performance
+  - Load distribution
+  - High availability
 
 ### Event Processing
-- **Amazon SQS FIFO**
-  - Ordered message delivery
-  - Exactly-once processing
-  - Dead letter queues
-  - Message retention
+- **Apache Kafka**
+  - Event streaming
+  - Durable message storage
+  - Partition-level ordering
+  - High throughput (millions msg/sec)
 
-- **Amazon SNS**
-  - Event notifications
-  - Multiple subscribers
-  - Message filtering
-  - Delivery retries
+- **Zookeeper**
+  - Kafka cluster coordination
+  - Configuration management
+  - Leader election
+  - Service discovery
+
+- **Schema Registry**
+  - Avro schema management
+  - Schema evolution
+  - Compatibility checking
+  - Serialization optimization
 
 ## Scalability & Performance
 
