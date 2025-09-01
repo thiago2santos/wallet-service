@@ -1,6 +1,8 @@
 package com.wallet.api;
 
 import java.net.URI;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import com.wallet.api.request.CreateWalletRequest;
 import com.wallet.api.request.DepositFundsRequest;
@@ -16,6 +18,8 @@ import com.wallet.application.handler.GetWalletQueryHandler;
 import com.wallet.application.handler.WithdrawFundsCommandHandler;
 import com.wallet.application.handler.TransferFundsCommandHandler;
 import com.wallet.application.query.GetWalletQuery;
+import com.wallet.application.query.GetHistoricalBalanceQuery;
+import com.wallet.application.handler.GetHistoricalBalanceQueryHandler;
 import com.wallet.core.command.CommandBus;
 import com.wallet.core.query.QueryBus;
 
@@ -29,6 +33,7 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
@@ -58,6 +63,9 @@ public class WalletResource {
 
     @Inject
     TransferFundsCommandHandler transferFundsHandler;
+
+    @Inject
+    GetHistoricalBalanceQueryHandler historicalBalanceQueryHandler;
 
     @POST
     @WithTransaction
@@ -147,5 +155,42 @@ public class WalletResource {
                 .location(URI.create("/api/v1/transactions/" + transactionId))
                 .build()
             );
+    }
+
+    @GET
+    @Path("/{walletId}/balance/historical")
+    @WithTransaction
+    public Uni<Response> getHistoricalBalance(
+            @PathParam("walletId") String walletId,
+            @QueryParam("timestamp") String timestampStr) {
+        
+        if (timestampStr == null || timestampStr.trim().isEmpty()) {
+            return Uni.createFrom().item(
+                Response.status(Response.Status.BAD_REQUEST)
+                    .entity("{\"error\": \"timestamp parameter is required\"}")
+                    .build()
+            );
+        }
+
+        try {
+            // Parse the ISO-8601 timestamp
+            LocalDateTime timestamp = LocalDateTime.parse(timestampStr, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+            
+            GetHistoricalBalanceQuery query = new GetHistoricalBalanceQuery(walletId, timestamp);
+
+            // Temporary direct call to test the handler
+            return historicalBalanceQueryHandler.handle(query)
+                .map(response -> Response.ok(response).build())
+                .onFailure(IllegalArgumentException.class)
+                .recoverWithItem(e -> Response.status(Response.Status.NOT_FOUND)
+                    .entity("{\"error\": \"" + e.getMessage() + "\"}")
+                    .build());
+        } catch (Exception e) {
+            return Uni.createFrom().item(
+                Response.status(Response.Status.BAD_REQUEST)
+                    .entity("{\"error\": \"Invalid timestamp format. Use ISO-8601 format (e.g., 2024-01-01T10:30:00)\"}")
+                    .build()
+            );
+        }
     }
 }
