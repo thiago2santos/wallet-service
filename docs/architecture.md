@@ -1,8 +1,19 @@
-# Architecture Design
+# System Architecture
 
-## Overview
+> Comprehensive guide to the Wallet Service architecture and design patterns
 
-The Wallet Service is designed following AWS Well-Architected Framework principles, ensuring high availability, scalability, and security for financial transactions.
+## 🎯 Overview
+
+The Wallet Service is designed as a **cloud-native, event-driven microservice** following modern architectural patterns. Built with **CQRS**, **Event Sourcing**, and **Reactive Programming**, it delivers high performance and scalability for financial applications.
+
+### 🏗️ Architectural Principles
+
+- **🔄 CQRS** - Separate read and write models for optimal performance
+- **📝 Event Sourcing** - Complete audit trail with event-driven state changes  
+- **⚡ Reactive Programming** - Non-blocking, high-concurrency operations
+- **🌐 Cloud Native** - Designed for containerized, distributed environments
+- **🔒 Security First** - Enterprise-grade security at every layer
+- **📊 Observability** - Comprehensive monitoring and tracing
 
 ## System Architecture
 
