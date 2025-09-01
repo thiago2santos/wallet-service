@@ -5,13 +5,16 @@ import java.net.URI;
 import com.wallet.api.request.CreateWalletRequest;
 import com.wallet.api.request.DepositFundsRequest;
 import com.wallet.api.request.WithdrawFundsRequest;
+import com.wallet.api.request.TransferFundsRequest;
 import com.wallet.application.command.CreateWalletCommand;
 import com.wallet.application.command.DepositFundsCommand;
 import com.wallet.application.command.WithdrawFundsCommand;
+import com.wallet.application.command.TransferFundsCommand;
 import com.wallet.application.handler.CreateWalletCommandHandler;
 import com.wallet.application.handler.DepositFundsCommandHandler;
 import com.wallet.application.handler.GetWalletQueryHandler;
 import com.wallet.application.handler.WithdrawFundsCommandHandler;
+import com.wallet.application.handler.TransferFundsCommandHandler;
 import com.wallet.application.query.GetWalletQuery;
 import com.wallet.core.command.CommandBus;
 import com.wallet.core.query.QueryBus;
@@ -52,6 +55,9 @@ public class WalletResource {
 
     @Inject
     WithdrawFundsCommandHandler withdrawFundsHandler;
+
+    @Inject
+    TransferFundsCommandHandler transferFundsHandler;
 
     @POST
     @WithTransaction
@@ -116,6 +122,27 @@ public class WalletResource {
 
         // Temporary direct call to test the handler
         return withdrawFundsHandler.handle(command)
+            .map(transactionId -> Response.ok()
+                .location(URI.create("/api/v1/transactions/" + transactionId))
+                .build()
+            );
+    }
+
+    @POST
+    @Path("/{sourceWalletId}/transfer")
+    @WithTransaction
+    public Uni<Response> transferFunds(
+            @PathParam("sourceWalletId") String sourceWalletId,
+            TransferFundsRequest request) {
+        TransferFundsCommand command = new TransferFundsCommand(
+            sourceWalletId,
+            request.getDestinationWalletId(),
+            request.getAmount(),
+            request.getReferenceId()
+        );
+
+        // Temporary direct call to test the handler
+        return transferFundsHandler.handle(command)
             .map(transactionId -> Response.ok()
                 .location(URI.create("/api/v1/transactions/" + transactionId))
                 .build()
