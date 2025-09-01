@@ -4,6 +4,7 @@ import com.wallet.application.command.CreateWalletCommand;
 import com.wallet.application.command.DepositFundsCommand;
 import com.wallet.application.query.GetWalletQuery;
 import com.wallet.application.handler.CreateWalletCommandHandler;
+import com.wallet.application.handler.GetWalletQueryHandler;
 import com.wallet.core.command.CommandBus;
 import com.wallet.core.query.QueryBus;
 import com.wallet.api.request.CreateWalletRequest;
@@ -31,6 +32,9 @@ public class WalletResource {
     @Inject
     CreateWalletCommandHandler createWalletHandler;
 
+    @Inject
+    GetWalletQueryHandler getWalletQueryHandler;
+
     @POST
     @WithTransaction
     public Uni<Response> createWallet(CreateWalletRequest request) {
@@ -49,10 +53,12 @@ public class WalletResource {
 
     @GET
     @Path("/{walletId}")
+    @WithTransaction
     public Uni<Response> getWallet(@PathParam("walletId") String walletId) {
         GetWalletQuery query = new GetWalletQuery(walletId);
 
-        return queryBus.dispatch(query)
+        // Temporary direct call to test the handler
+        return getWalletQueryHandler.handle(query)
             .map(wallet -> Response.ok(wallet).build())
             .onFailure(NotFoundException.class)
             .recoverWithItem(e -> Response.status(Status.NOT_FOUND).build());
