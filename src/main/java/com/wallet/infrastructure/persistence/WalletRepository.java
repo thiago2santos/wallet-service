@@ -1,12 +1,14 @@
 package com.wallet.infrastructure.persistence;
 
+import java.util.List;
+
 import com.wallet.domain.model.Wallet;
 import com.wallet.domain.model.WalletStatus;
+
 import io.quarkus.hibernate.reactive.panache.PanacheRepositoryBase;
 import io.quarkus.reactive.datasource.ReactiveDataSource;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
-import java.util.List;
 
 @ApplicationScoped
 @ReactiveDataSource("write")

@@ -1,21 +1,21 @@
 package com.wallet.application.handler;
 
+import java.util.UUID;
+
 import com.wallet.application.command.DepositFundsCommand;
 import com.wallet.core.command.CommandHandler;
 import com.wallet.domain.model.Transaction;
 import com.wallet.domain.model.TransactionStatus;
 import com.wallet.domain.model.TransactionType;
-import com.wallet.domain.model.Wallet;
 import com.wallet.infrastructure.persistence.TransactionRepository;
 import com.wallet.infrastructure.persistence.WalletReadRepository;
 import com.wallet.infrastructure.persistence.WalletRepository;
+import com.wallet.infrastructure.cache.WalletStateCache;
 import io.quarkus.reactive.datasource.ReactiveDataSource;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 @ApplicationScoped
 public class DepositFundsCommandHandler implements CommandHandler<DepositFundsCommand, String> {
@@ -31,6 +31,9 @@ public class DepositFundsCommandHandler implements CommandHandler<DepositFundsCo
     @Inject
     @ReactiveDataSource("write")
     TransactionRepository transactionRepository;
+
+    @Inject
+    WalletStateCache walletCache;
 
     @Override
     @Transactional
@@ -60,14 +63,18 @@ public class DepositFundsCommandHandler implements CommandHandler<DepositFundsCo
                 );
                 transaction.setDescription("Deposit to wallet");
 
-                // Persist both wallet and transaction
+                // Persist both wallet and transaction, then invalidate cache
                 return walletWriteRepository.persist(wallet)
                     .chain(() -> {
                         System.out.println("DepositFundsCommandHandler: Wallet persisted, now persisting transaction");
                         return transactionRepository.persist(transaction);
                     })
+                    .chain(() -> {
+                        System.out.println("DepositFundsCommandHandler: Transaction persisted, now invalidating cache");
+                        return walletCache.invalidateWallet(command.getWalletId());
+                    })
                     .map(v -> {
-                        System.out.println("DepositFundsCommandHandler: Transaction persisted, returning ID: " + transactionId);
+                        System.out.println("DepositFundsCommandHandler: Cache invalidated, returning ID: " + transactionId);
                         return transactionId;
                     });
             });

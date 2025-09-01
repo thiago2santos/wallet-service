@@ -1,20 +1,20 @@
 package com.wallet.application.handler;
 
+import java.math.BigDecimal;
+import java.util.UUID;
+
 import com.wallet.application.command.CreateWalletCommand;
 import com.wallet.core.command.CommandHandler;
+import com.wallet.domain.event.WalletCreatedEvent;
 import com.wallet.domain.model.Wallet;
 import com.wallet.domain.model.WalletStatus;
-import com.wallet.domain.event.WalletCreatedEvent;
 import com.wallet.infrastructure.persistence.WalletRepository;
+
 import io.quarkus.reactive.datasource.ReactiveDataSource;
 import io.smallrye.mutiny.Uni;
-import io.smallrye.reactive.messaging.MutinyEmitter;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import org.eclipse.microprofile.reactive.messaging.Channel;
-import java.math.BigDecimal;
-import java.util.UUID;
 
 @ApplicationScoped
 public class CreateWalletCommandHandler implements CommandHandler<CreateWalletCommand, String> {

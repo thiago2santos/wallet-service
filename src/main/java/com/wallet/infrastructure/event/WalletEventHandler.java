@@ -1,16 +1,16 @@
 package com.wallet.infrastructure.event;
 
+import java.math.BigDecimal;
+
 import com.wallet.domain.event.WalletEvent;
-import com.wallet.domain.event.WalletEventType;
 import com.wallet.domain.model.Wallet;
 import com.wallet.infrastructure.cache.WalletStateCache;
 import com.wallet.infrastructure.persistence.WalletReadRepository;
+
 import io.quarkus.reactive.datasource.ReactiveDataSource;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import org.eclipse.microprofile.reactive.messaging.Incoming;
-import java.math.BigDecimal;
 
 @ApplicationScoped
 public class WalletEventHandler {
