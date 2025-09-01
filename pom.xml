@@ -28,6 +28,9 @@
     <pmd.version>7.0.0-rc4</pmd.version>
     <maven-pmd-plugin.version>3.21.2</maven-pmd-plugin.version>
     <maven-enforcer-plugin.version>3.4.1</maven-enforcer-plugin.version>
+    <!-- Mutation Testing -->
+    <pitest-maven.version>1.15.3</pitest-maven.version>
+    <pitest-junit5-plugin.version>1.2.1</pitest-junit5-plugin.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -271,6 +274,63 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+
+      <!-- PIT Mutation Testing Plugin -->
+      <plugin>
+        <groupId>org.pitest</groupId>
+        <artifactId>pitest-maven</artifactId>
+        <version>${pitest-maven.version}</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.pitest</groupId>
+            <artifactId>pitest-junit5-plugin</artifactId>
+            <version>${pitest-junit5-plugin.version}</version>
+          </dependency>
+        </dependencies>
+        <configuration>
+          <!-- Target classes for mutation testing - focus on tested classes -->
+          <targetClasses>
+            <param>com.wallet.application.command.CreateWalletCommand</param>
+            <param>com.wallet.application.handler.CreateWalletCommandHandler</param>
+          </targetClasses>
+          <!-- Test classes to run - focus on unit tests that work -->
+          <targetTests>
+            <param>com.wallet.application.command.CreateWalletCommandTest</param>
+            <param>com.wallet.application.handler.CreateWalletCommandHandlerTest</param>
+          </targetTests>
+          <!-- Mutation operators to use -->
+          <mutators>
+            <mutator>DEFAULTS</mutator>
+          </mutators>
+          <!-- Output formats -->
+          <outputFormats>
+            <outputFormat>HTML</outputFormat>
+            <outputFormat>XML</outputFormat>
+          </outputFormats>
+          <!-- Coverage threshold -->
+          <mutationThreshold>75</mutationThreshold>
+          <coverageThreshold>80</coverageThreshold>
+          <!-- Timeout settings -->
+          <timeoutConstant>4000</timeoutConstant>
+          <timeoutFactor>1.25</timeoutFactor>
+          <!-- Exclude classes that shouldn't be mutated -->
+          <excludedClasses>
+            <param>com.wallet.GreetingResource</param>
+            <param>com.wallet.dto.*</param>
+            <param>com.wallet.api.request.*</param>
+            <param>com.wallet.core.*</param>
+          </excludedClasses>
+          <!-- JVM arguments -->
+          <jvmArgs>
+            <value>-Xmx1024m</value>
+            <value>-Dquarkus.test.profile=test</value>
+          </jvmArgs>
+          <!-- Enable incremental analysis -->
+          <withHistory>true</withHistory>
+          <!-- Verbose output -->
+          <verbose>true</verbose>
+        </configuration>
       </plugin>
     </plugins>
   </build>
