@@ -19,9 +19,28 @@ docker-compose up -d
 
 🎉 **That's it!** Your development environment is ready at http://localhost:8080
 
+### 🔐 Authentication Quick Start
+
+```bash
+# Login to get JWT token
+curl -X POST http://localhost:8080/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username": "user", "password": "user123"}'
+
+# Use the token to create a wallet
+curl -X POST http://localhost:8080/api/v1/wallets \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"userId": "user123", "currency": "USD"}'
+```
+
+📖 **[Full Authentication Guide](docs/authentication-demo.md)** | 🧪 **Test Script**: `./scripts/test-auth.sh`
+
 ## ✨ Key Features
 
 - **💰 Basic Wallet Operations** - Create, deposit, withdraw, transfer funds
+- **🔐 JWT Authentication** - RS256 JWT tokens with role-based access control (RBAC)
+- **👥 Multi-Role Support** - User and admin roles with granular permissions
 - **⚡ Reactive Programming** - Built with Quarkus and Mutiny for non-blocking operations
 - **🏗️ CQRS Structure** - Command/Query separation (implementation in progress)
 - **📊 Transaction History** - Historical balance queries via transaction replay

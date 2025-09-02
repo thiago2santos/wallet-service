@@ -25,6 +25,7 @@ import com.wallet.core.query.QueryBus;
 
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -69,6 +70,7 @@ public class WalletResource {
 
     @POST
     @WithTransaction
+    @RolesAllowed({"user", "admin"})
     public Uni<Response> createWallet(CreateWalletRequest request) {
         CreateWalletCommand command = new CreateWalletCommand(
             request.getUserId(),
@@ -86,6 +88,7 @@ public class WalletResource {
     @GET
     @Path("/{walletId}")
     @WithTransaction
+    @RolesAllowed({"user", "admin"})
     public Uni<Response> getWallet(@PathParam("walletId") String walletId) {
         GetWalletQuery query = new GetWalletQuery(walletId);
 
@@ -99,6 +102,7 @@ public class WalletResource {
     @POST
     @Path("/{walletId}/deposit")
     @WithTransaction
+    @RolesAllowed({"user", "admin"})
     public Uni<Response> depositFunds(
             @PathParam("walletId") String walletId,
             DepositFundsRequest request) {
@@ -119,6 +123,7 @@ public class WalletResource {
     @POST
     @Path("/{walletId}/withdraw")
     @WithTransaction
+    @RolesAllowed({"user", "admin"})
     public Uni<Response> withdrawFunds(
             @PathParam("walletId") String walletId,
             WithdrawFundsRequest request) {
@@ -139,6 +144,7 @@ public class WalletResource {
     @POST
     @Path("/{sourceWalletId}/transfer")
     @WithTransaction
+    @RolesAllowed({"user", "admin"})
     public Uni<Response> transferFunds(
             @PathParam("sourceWalletId") String sourceWalletId,
             TransferFundsRequest request) {
@@ -160,6 +166,7 @@ public class WalletResource {
     @GET
     @Path("/{walletId}/balance/historical")
     @WithTransaction
+    @RolesAllowed({"user", "admin"})
     public Uni<Response> getHistoricalBalance(
             @PathParam("walletId") String walletId,
             @QueryParam("timestamp") String timestampStr) {
