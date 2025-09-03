@@ -45,18 +45,50 @@ public class CommandBusImpl implements CommandBus {
     }
 
     private Class<?> getCommandType(Class<?> handlerClass) {
-        Type[] genericInterfaces = handlerClass.getGenericInterfaces();
+        // Handle Quarkus CDI proxies by getting the superclass
+        Class<?> actualClass = handlerClass;
+        if (handlerClass.getSimpleName().contains("_ClientProxy")) {
+            actualClass = handlerClass.getSuperclass();
+        }
+        
+        System.out.println("CommandBusImpl: Analyzing class: " + actualClass.getName());
+        
+        // Check direct interfaces first
+        Type[] genericInterfaces = actualClass.getGenericInterfaces();
         for (Type genericInterface : genericInterfaces) {
             if (genericInterface instanceof ParameterizedType) {
                 ParameterizedType parameterizedType = (ParameterizedType) genericInterface;
                 if (parameterizedType.getRawType().equals(CommandHandler.class)) {
                     Type[] typeArguments = parameterizedType.getActualTypeArguments();
                     if (typeArguments.length > 0 && typeArguments[0] instanceof Class) {
-                        return (Class<?>) typeArguments[0];
+                        Class<?> commandType = (Class<?>) typeArguments[0];
+                        System.out.println("CommandBusImpl: Found command type: " + commandType.getSimpleName());
+                        return commandType;
                     }
                 }
             }
         }
+        
+        // Check superclass interfaces if not found
+        Class<?> superClass = actualClass.getSuperclass();
+        if (superClass != null && superClass != Object.class) {
+            Type[] superInterfaces = superClass.getGenericInterfaces();
+            for (Type genericInterface : superInterfaces) {
+                if (genericInterface instanceof ParameterizedType) {
+                    ParameterizedType parameterizedType = (ParameterizedType) genericInterface;
+                    if (parameterizedType.getRawType().equals(CommandHandler.class)) {
+                        Type[] typeArguments = parameterizedType.getActualTypeArguments();
+                        if (typeArguments.length > 0 && typeArguments[0] instanceof Class) {
+                            Class<?> commandType = (Class<?>) typeArguments[0];
+                            System.out.println("CommandBusImpl: Found command type in superclass: " + commandType.getSimpleName());
+                            return commandType;
+                        }
+                    }
+                }
+            }
+        }
+        
+        System.out.println("CommandBusImpl: No command type found for: " + handlerClass.getName());
         return null;
     }
 }

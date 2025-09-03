@@ -45,18 +45,50 @@ public class QueryBusImpl implements QueryBus {
     }
 
     private Class<?> getQueryType(Class<?> handlerClass) {
-        Type[] genericInterfaces = handlerClass.getGenericInterfaces();
+        // Handle Quarkus CDI proxies by getting the superclass
+        Class<?> actualClass = handlerClass;
+        if (handlerClass.getSimpleName().contains("_ClientProxy")) {
+            actualClass = handlerClass.getSuperclass();
+        }
+        
+        System.out.println("QueryBusImpl: Analyzing class: " + actualClass.getName());
+        
+        // Check direct interfaces first
+        Type[] genericInterfaces = actualClass.getGenericInterfaces();
         for (Type genericInterface : genericInterfaces) {
             if (genericInterface instanceof ParameterizedType) {
                 ParameterizedType parameterizedType = (ParameterizedType) genericInterface;
                 if (parameterizedType.getRawType().equals(QueryHandler.class)) {
                     Type[] typeArguments = parameterizedType.getActualTypeArguments();
                     if (typeArguments.length > 0 && typeArguments[0] instanceof Class) {
-                        return (Class<?>) typeArguments[0];
+                        Class<?> queryType = (Class<?>) typeArguments[0];
+                        System.out.println("QueryBusImpl: Found query type: " + queryType.getSimpleName());
+                        return queryType;
                     }
                 }
             }
         }
+        
+        // Check superclass interfaces if not found
+        Class<?> superClass = actualClass.getSuperclass();
+        if (superClass != null && superClass != Object.class) {
+            Type[] superInterfaces = superClass.getGenericInterfaces();
+            for (Type genericInterface : superInterfaces) {
+                if (genericInterface instanceof ParameterizedType) {
+                    ParameterizedType parameterizedType = (ParameterizedType) genericInterface;
+                    if (parameterizedType.getRawType().equals(QueryHandler.class)) {
+                        Type[] typeArguments = parameterizedType.getActualTypeArguments();
+                        if (typeArguments.length > 0 && typeArguments[0] instanceof Class) {
+                            Class<?> queryType = (Class<?>) typeArguments[0];
+                            System.out.println("QueryBusImpl: Found query type in superclass: " + queryType.getSimpleName());
+                            return queryType;
+                        }
+                    }
+                }
+            }
+        }
+        
+        System.out.println("QueryBusImpl: No query type found for: " + handlerClass.getName());
         return null;
     }
 }
