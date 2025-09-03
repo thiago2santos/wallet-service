@@ -1,0 +1,77 @@
+name: 🛡️ Branch Protection Setup
+
+# This workflow helps set up branch protection rules
+# Run manually to configure your repository
+
+on:
+  workflow_dispatch:
+    inputs:
+      setup_type:
+        description: 'Branch protection setup type'
+        required: true
+        default: 'github-flow'
+        type: choice
+        options:
+        - github-flow
+        - git-flow
+        - custom
+
+jobs:
+  setup-branch-protection:
+    name: 🛡️ Setup Branch Protection
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📋 Display Setup Instructions
+      run: |
+        echo "## 🛡️ Branch Protection Setup Instructions" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        if [[ "${{ github.event.inputs.setup_type }}" == "github-flow" ]]; then
+          echo "### 🌊 GitHub Flow Setup" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Branches:**" >> $GITHUB_STEP_SUMMARY
+          echo "- \`main\` - Production-ready code" >> $GITHUB_STEP_SUMMARY
+          echo "- \`feature/*\` - Feature development" >> $GITHUB_STEP_SUMMARY
+          echo "- \`hotfix/*\` - Critical fixes" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Protection Rules for \`main\`:**" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Require pull request reviews (1 reviewer)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Require status checks: \`unit-tests\`, \`static-analysis\`, \`integration-tests\`" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Require up-to-date branches" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Require signed commits" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Include administrators" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Allow force pushes: false" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Allow deletions: false" >> $GITHUB_STEP_SUMMARY
+          
+        elif [[ "${{ github.event.inputs.setup_type }}" == "git-flow" ]]; then
+          echo "### 🌳 Git Flow Setup" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Branches:**" >> $GITHUB_STEP_SUMMARY
+          echo "- \`main\` - Production releases" >> $GITHUB_STEP_SUMMARY
+          echo "- \`develop\` - Integration branch" >> $GITHUB_STEP_SUMMARY
+          echo "- \`feature/*\` - Feature development" >> $GITHUB_STEP_SUMMARY
+          echo "- \`release/*\` - Release preparation" >> $GITHUB_STEP_SUMMARY
+          echo "- \`hotfix/*\` - Critical fixes" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Protection Rules:**" >> $GITHUB_STEP_SUMMARY
+          echo "- \`main\`: Require PR from \`develop\` or \`hotfix/*\`" >> $GITHUB_STEP_SUMMARY
+          echo "- \`develop\`: Require PR from \`feature/*\` or \`release/*\`" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 🔧 Manual Setup Required" >> $GITHUB_STEP_SUMMARY
+        echo "Go to: **Settings → Branches → Add rule**" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 📋 Recommended Workflow Commands" >> $GITHUB_STEP_SUMMARY
+        echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
+        echo "# Create feature branch" >> $GITHUB_STEP_SUMMARY
+        echo "git checkout -b feature/user-authentication" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "# Work and commit" >> $GITHUB_STEP_SUMMARY
+        echo "git add ." >> $GITHUB_STEP_SUMMARY
+        echo "git commit -m \"feat: add user authentication\"" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "# Push and create PR" >> $GITHUB_STEP_SUMMARY
+        echo "git push -u origin feature/user-authentication" >> $GITHUB_STEP_SUMMARY
+        echo "\`\`\`" >> $GITHUB_STEP_SUMMARY

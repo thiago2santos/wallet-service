@@ -1,0 +1,192 @@
+name: 🚀 Deployment Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  release:
+    types: [ published ]
+
+env:
+  JAVA_VERSION: '21'
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  # 🏗️ Build and Test
+  build:
+    name: 🏗️ Build & Test
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      environment: ${{ steps.environment.outputs.environment }}
+    
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: ☕ Setup Java
+      uses: actions/setup-java@v4
+      with:
+        java-version: ${{ env.JAVA_VERSION }}
+        distribution: 'temurin'
+        cache: maven
+    
+    - name: 🔧 Make Maven Wrapper Executable
+      run: chmod +x ./mvnw
+    
+    - name: 🧪 Run Tests
+      run: ./mvnw clean test -B
+    
+    - name: 🏗️ Build Application
+      run: ./mvnw clean package -DskipTests -B
+    
+    - name: 🏷️ Determine Version & Environment
+      id: version
+      run: |
+        if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+          echo "version=latest" >> $GITHUB_OUTPUT
+          echo "environment=production" >> $GITHUB_OUTPUT
+        elif [[ "${{ github.ref }}" == "refs/heads/develop" ]]; then
+          echo "version=develop" >> $GITHUB_OUTPUT
+          echo "environment=staging" >> $GITHUB_OUTPUT
+        elif [[ "${{ github.ref }}" == refs/tags/* ]]; then
+          echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          echo "environment=production" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: 📦 Upload Build Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: wallet-service-${{ steps.version.outputs.version }}
+        path: |
+          target/quarkus-app/
+          target/*.jar
+        retention-days: 30
+
+  # 🐳 Build Docker Image
+  docker-build:
+    name: 🐳 Build Docker Image
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'push' || github.event_name == 'release'
+    
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+    
+    - name: 📦 Download Build Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: wallet-service-${{ needs.build.outputs.version }}
+        path: target/
+    
+    - name: 🐳 Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: 🔐 Login to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: 📋 Extract Metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=raw,value=latest,enable={{is_default_branch}}
+    
+    - name: 🏗️ Build and Push Docker Image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: src/main/docker/Dockerfile.jvm
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+  # 🚀 Deploy to Staging
+  deploy-staging:
+    name: 🚀 Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: [build, docker-build]
+    if: github.ref == 'refs/heads/develop'
+    environment:
+      name: staging
+      url: https://wallet-service-staging.yourdomain.com
+    
+    steps:
+    - name: 🚀 Deploy to Staging
+      run: |
+        echo "🚀 Deploying wallet-service:develop to staging environment"
+        echo "📦 Image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:develop"
+        echo "🌐 URL: https://wallet-service-staging.yourdomain.com"
+        
+        # Add your staging deployment commands here
+        # Examples:
+        # kubectl set image deployment/wallet-service wallet-service=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:develop
+        # helm upgrade wallet-service ./helm-chart --set image.tag=develop
+        # docker-compose -f docker-compose.staging.yml up -d
+
+  # 🏭 Deploy to Production
+  deploy-production:
+    name: 🏭 Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [build, docker-build]
+    if: github.ref == 'refs/heads/main'
+    environment:
+      name: production
+      url: https://wallet-service.yourdomain.com
+    
+    steps:
+    - name: 🏭 Deploy to Production
+      run: |
+        echo "🏭 Deploying wallet-service:latest to production environment"
+        echo "📦 Image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
+        echo "🌐 URL: https://wallet-service.yourdomain.com"
+        
+        # Add your production deployment commands here
+        # Examples:
+        # kubectl set image deployment/wallet-service wallet-service=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+        # helm upgrade wallet-service ./helm-chart --set image.tag=latest
+        # docker-compose -f docker-compose.prod.yml up -d
+
+  # 📊 Deployment Summary
+  deployment-summary:
+    name: 📊 Deployment Summary
+    runs-on: ubuntu-latest
+    needs: [build, docker-build, deploy-staging, deploy-production]
+    if: always()
+    
+    steps:
+    - name: 📊 Generate Deployment Summary
+      run: |
+        echo "## 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Branch:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Version:** ${{ needs.build.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Environment:** ${{ needs.build.outputs.environment }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        if [[ "${{ needs.deploy-staging.result }}" == "success" ]]; then
+          echo "✅ **Staging Deployment:** Successful" >> $GITHUB_STEP_SUMMARY
+          echo "🌐 **Staging URL:** https://wallet-service-staging.yourdomain.com" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        if [[ "${{ needs.deploy-production.result }}" == "success" ]]; then
+          echo "✅ **Production Deployment:** Successful" >> $GITHUB_STEP_SUMMARY
+          echo "🌐 **Production URL:** https://wallet-service.yourdomain.com" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "📦 **Docker Image:** \`${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY

@@ -2,7 +2,7 @@ name: 🔍 PR Quality Check
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: [ main, develop ]
 
 env:
   JAVA_VERSION: '21'
