@@ -1,4 +1,6 @@
-# Wallet Service
+# Wallet Service - Legacy Documentation
+
+> ⚠️ **DEPRECATED**: This is archived comprehensive documentation. For current assessment-focused docs, see [Main Documentation](../README.md)
 
 > A high-performance, scalable digital wallet platform built with modern Java technologies
 

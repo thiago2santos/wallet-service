@@ -30,23 +30,23 @@ curl -X POST http://localhost:8080/api/v1/wallets \
 
 ## 📚 Documentation
 
-### 📖 **Assessment Documentation (v2)** - *Start Here*
+### 📖 **Main Documentation** - *Start Here*
 
-**Concise, assessment-focused documentation:**
+**Assessment-focused, concise documentation:**
 
-- **[📋 Overview & Quick Start](docs/v2/README.md)** - Main documentation for assessment
-- **[🏗️ Design Decisions](docs/v2/DESIGN-DECISIONS.md)** - Architectural choices and rationale  
-- **[⚖️ Trade-offs](docs/v2/TRADE-OFFS.md)** - Time constraints and compromises made
-- **[🛠️ Setup Guide](docs/v2/SETUP-GUIDE.md)** - Installation and testing instructions
+- **[📋 Overview & Quick Start](docs/README.md)** - Main documentation for assessment
+- **[🏗️ Design Decisions](docs/DESIGN-DECISIONS.md)** - Architectural choices and rationale  
+- **[⚖️ Trade-offs](docs/TRADE-OFFS.md)** - Time constraints and compromises made
+- **[🛠️ Setup Guide](docs/SETUP-GUIDE.md)** - Installation and testing instructions
 
-### 📚 **Detailed Documentation (v1)** - *Deep Dive*
+### 📚 **Legacy Documentation** - *Deep Dive*
 
-**Comprehensive technical documentation:**
+**Comprehensive technical documentation (archived):**
 
-- **[📖 Comprehensive Docs](docs/v1/README.md)** - Detailed technical documentation
-- **[🏛️ Architecture](docs/v1/architecture.md)** - Complete architectural guide
-- **[📊 Performance Testing](docs/v1/performance/)** - Load testing and results
-- **[📈 Current Status](docs/v1/CURRENT-STATUS.md)** - Detailed implementation status
+- **[📖 Comprehensive Docs](docs/legacy/README.md)** - Detailed technical documentation
+- **[🏛️ Architecture](docs/legacy/architecture.md)** - Complete architectural guide
+- **[📊 Performance Testing](docs/legacy/performance/)** - Load testing and results
+- **[📈 Current Status](docs/legacy/CURRENT-STATUS.md)** - Detailed implementation status
 
 ## 📊 Performance (Validated)
 

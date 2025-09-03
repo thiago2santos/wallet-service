@@ -162,7 +162,7 @@ open http://localhost:8080/q/swagger-ui/
 - **[Design Decisions](DESIGN-DECISIONS.md)** - Architectural choices and rationale
 - **[Trade-offs](TRADE-OFFS.md)** - Time constraints and compromises made
 - **[Setup Guide](SETUP-GUIDE.md)** - Detailed installation and testing instructions
-- **[Detailed Docs](../v1/README.md)** - Comprehensive documentation (v1)
+- **[Legacy Docs](legacy/README.md)** - Comprehensive documentation (archived)
 
 ## 🤝 Contributing
 
