@@ -16,12 +16,4 @@
 [INFO] Copying 3 resources from src/test/resources to target/test-classes
 [INFO] Invoking quarkus:3.8.1:generate-code-tests (default) @ wallet-service
 [INFO] Invoking compiler:3.11.0:testCompile (default-testCompile) @ wallet-service
-[INFO] Changes detected - recompiling the module! :source
-[INFO] Compiling 9 source files with javac [debug release 17] to target/test-classes
-[INFO] Annotation processing is enabled because one or more processors were found
-  on the class path. A future release of javac may disable annotation processing
-  unless at least one processor is specified by name (-processor), or a search
-  path is specified (--processor-path, --processor-module-path), or annotation
-  processing is enabled explicitly (-proc:only, -proc:full).
-  Use -Xlint:-options to suppress this message.
-  Use -proc:none to disable annotation processing.
+[INFO] Nothing to compile - all classes are up to date
