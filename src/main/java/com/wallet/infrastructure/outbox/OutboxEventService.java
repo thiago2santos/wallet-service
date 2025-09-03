@@ -16,7 +16,6 @@ import jakarta.inject.Inject;
 public class OutboxEventService {
 
     @Inject
-    @ReactiveDataSource("write")
     OutboxEventRepository outboxRepository;
 
     @Inject

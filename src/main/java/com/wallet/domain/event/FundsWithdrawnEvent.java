@@ -33,8 +33,8 @@ public class FundsWithdrawnEvent extends WalletEvent {
         return walletId;
     }
 
-    public String getEventType() {
-        return "FundsWithdrawn";
+    public WalletEventType getEventType() {
+        return WalletEventType.FUNDS_WITHDRAWN;
     }
 
     // Getters and setters

@@ -24,7 +24,6 @@ public class OutboxPublisher {
     private static final int BATCH_SIZE = 100;
 
     @Inject
-    @ReactiveDataSource("write")
     OutboxEventRepository outboxRepository;
 
     @Inject

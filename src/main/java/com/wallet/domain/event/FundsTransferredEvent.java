@@ -36,8 +36,8 @@ public class FundsTransferredEvent extends WalletEvent {
         return sourceWalletId; // Use source wallet as primary aggregate
     }
 
-    public String getEventType() {
-        return "FundsTransferred";
+    public WalletEventType getEventType() {
+        return WalletEventType.FUNDS_TRANSFERRED;
     }
 
     // Getters and setters
