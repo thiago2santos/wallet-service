@@ -8,158 +8,16 @@
 [INFO] --- quarkus:3.8.1:dev (default-cli) @ wallet-service ---
 [INFO] Invoking avro:1.11.3:schema (default) @ wallet-service
 [INFO] Invoking resources:3.3.1:resources (default-resources) @ wallet-service
-[INFO] Copying 5 resources from src/main/resources to target/classes
+[INFO] Copying 7 resources from src/main/resources to target/classes
 [INFO] Invoking quarkus:3.8.1:generate-code (default) @ wallet-service
 [INFO] Invoking compiler:3.11.0:compile (default-compile) @ wallet-service
 [INFO] Nothing to compile - all classes are up to date
 [INFO] Invoking resources:3.3.1:testResources (default-testResources) @ wallet-service
-[INFO] Copying 4 resources from src/test/resources to target/test-classes
+[INFO] Copying 3 resources from src/test/resources to target/test-classes
 [INFO] Invoking quarkus:3.8.1:generate-code-tests (default) @ wallet-service
 [INFO] Invoking compiler:3.11.0:testCompile (default-testCompile) @ wallet-service
-[INFO] Nothing to compile - all classes are up to date
-Listening for transport dt_socket at address: 5005
-[INFO] Changes detected to [/Users/thdsantos/wallet/wallet-service/pom.xml], restarting dev mode
-[INFO] Invoking avro:1.11.3:schema (default) @ wallet-service
-[INFO] Invoking resources:3.3.1:resources (default-resources) @ wallet-service
-[INFO] Copying 5 resources from src/main/resources to target/classes
-[INFO] Invoking quarkus:3.8.1:generate-code (default) @ wallet-service
-[INFO] Invoking compiler:3.11.0:compile (default-compile) @ wallet-service
-[INFO] Nothing to compile - all classes are up to date
-[INFO] Invoking resources:3.3.1:testResources (default-testResources) @ wallet-service
-[INFO] Copying 4 resources from src/test/resources to target/test-classes
-[INFO] Invoking quarkus:3.8.1:generate-code-tests (default) @ wallet-service
-Downloading from confluent: https://packages.confluent.io/maven/net/bytebuddy/byte-buddy-agent/1.14.10/byte-buddy-agent-1.14.10.pom
-Downloading from central: https://repo.maven.apache.org/maven2/net/bytebuddy/byte-buddy-agent/1.14.10/byte-buddy-agent-1.14.10.pom
-Progress (1): byte-buddy-agent-1.14.10.pom (1.4/10 kB)Progress (1): byte-buddy-agent-1.14.10.pom (2.8/10 kB)Progress (1): byte-buddy-agent-1.14.10.pom (4.1/10 kB)Progress (1): byte-buddy-agent-1.14.10.pom (5.5/10 kB)Progress (1): byte-buddy-agent-1.14.10.pom (6.9/10 kB)Progress (1): byte-buddy-agent-1.14.10.pom (8.3/10 kB)Progress (1): byte-buddy-agent-1.14.10.pom (9.7/10 kB)Progress (1): byte-buddy-agent-1.14.10.pom (10 kB)                                                      Downloaded from central: https://repo.maven.apache.org/maven2/net/bytebuddy/byte-buddy-agent/1.14.10/byte-buddy-agent-1.14.10.pom (10 kB at 108 kB/s)
-Downloading from confluent: https://packages.confluent.io/maven/net/bytebuddy/byte-buddy-parent/1.14.10/byte-buddy-parent-1.14.10.pom
-Downloading from central: https://repo.maven.apache.org/maven2/net/bytebuddy/byte-buddy-parent/1.14.10/byte-buddy-parent-1.14.10.pom
-Progress (1): byte-buddy-parent-1.14.10.pom (1.4/62 kB)Progress (1): byte-buddy-parent-1.14.10.pom (2.8/62 kB)Progress (1): byte-buddy-parent-1.14.10.pom (4.1/62 kB)Progress (1): byte-buddy-parent-1.14.10.pom (5.5/62 kB)Progress (1): byte-buddy-parent-1.14.10.pom (6.9/62 kB)Progress (1): byte-buddy-parent-1.14.10.pom (8.3/62 kB)Progress (1): byte-buddy-parent-1.14.10.pom (9.7/62 kB)Progress (1): byte-buddy-parent-1.14.10.pom (11/62 kB) Progress (1): byte-buddy-parent-1.14.10.pom (12/62 kB)Progress (1): byte-buddy-parent-1.14.10.pom (14/62 kB)Progress (1): byte-buddy-parent-1.14.10.pom (15/62 kB)Progress (1): byte-buddy-parent-1.14.10.pom (16/62 kB)Progress (1): byte-buddy-parent-1.14.10.pom (18/62 kB)Progress (1): byte-buddy-parent-1.14.10.pom (19/62 kB)Progress (1): byte-buddy-parent-1.14.10.pom (20/62 kB)Progress (1): byte-buddy-parent-1.14.10.pom (22/62 kB)Progress (1): byte-buddy-parent-1.14.10.pom (23/62 kB)Progress (1): byte-buddy-parent-1.14.10.pom (25/62 kB)Progress (1): byte-buddy-parent-1.14.10.pom (26/62 kB)Progress (1): byte-buddy-parent-1.14.10.pom (27/62 kB)Progress (1): byte-buddy-parent-1.14.10.pom (29/62 kB)Progress (1): byte-buddy-parent-1.14.10.pom (30/62 kB)Progress (1): byte-buddy-parent-1.14.10.pom (31/62 kB)Progress (1): byte-buddy-parent-1.14.10.pom (48/62 kB)Progress (1): byte-buddy-parent-1.14.10.pom (62 kB)                                                      Downloaded from central: https://repo.maven.apache.org/maven2/net/bytebuddy/byte-buddy-parent/1.14.10/byte-buddy-parent-1.14.10.pom (62 kB at 1.3 MB/s)
-Downloading from confluent: https://packages.confluent.io/maven/io/quarkus/quarkus-junit5-mockito/3.8.1/quarkus-junit5-mockito-3.8.1.jar
-Downloading from confluent: https://packages.confluent.io/maven/net/bytebuddy/byte-buddy-agent/1.14.10/byte-buddy-agent-1.14.10.jar
-Downloading from confluent: https://packages.confluent.io/maven/io/quarkus/quarkus-junit5-mockito-config/3.8.1/quarkus-junit5-mockito-config-3.8.1.jar
-Downloading from confluent: https://packages.confluent.io/maven/org/mockito/mockito-subclass/5.8.0/mockito-subclass-5.8.0.jar
-Downloading from central: https://repo.maven.apache.org/maven2/io/quarkus/quarkus-junit5-mockito/3.8.1/quarkus-junit5-mockito-3.8.1.jar
-Progress (1): quarkus-junit5-mockito-3.8.1.jar (16/32 kB)Progress (1): quarkus-junit5-mockito-3.8.1.jar (32 kB)                                                         Downloaded from central: https://repo.maven.apache.org/maven2/io/quarkus/quarkus-junit5-mockito/3.8.1/quarkus-junit5-mockito-3.8.1.jar (32 kB at 1.5 MB/s)
-Downloading from central: https://repo.maven.apache.org/maven2/net/bytebuddy/byte-buddy-agent/1.14.10/byte-buddy-agent-1.14.10.jar
-Downloading from central: https://repo.maven.apache.org/maven2/io/quarkus/quarkus-junit5-mockito-config/3.8.1/quarkus-junit5-mockito-config-3.8.1.jar
-Downloading from central: https://repo.maven.apache.org/maven2/org/mockito/mockito-subclass/5.8.0/mockito-subclass-5.8.0.jar
-Progress (1): byte-buddy-agent-1.14.10.jar (16/257 kB)Progress (1): byte-buddy-agent-1.14.10.jar (33/257 kB)Progress (1): byte-buddy-agent-1.14.10.jar (49/257 kB)Progress (1): byte-buddy-agent-1.14.10.jar (66/257 kB)Progress (1): byte-buddy-agent-1.14.10.jar (82/257 kB)Progress (1): byte-buddy-agent-1.14.10.jar (98/257 kB)Progress (1): byte-buddy-agent-1.14.10.jar (115/257 kB)Progress (1): byte-buddy-agent-1.14.10.jar (131/257 kB)Progress (1): byte-buddy-agent-1.14.10.jar (147/257 kB)Progress (1): byte-buddy-agent-1.14.10.jar (164/257 kB)Progress (1): byte-buddy-agent-1.14.10.jar (180/257 kB)Progress (1): byte-buddy-agent-1.14.10.jar (197/257 kB)Progress (1): byte-buddy-agent-1.14.10.jar (213/257 kB)Progress (1): byte-buddy-agent-1.14.10.jar (229/257 kB)Progress (1): byte-buddy-agent-1.14.10.jar (246/257 kB)Progress (1): byte-buddy-agent-1.14.10.jar (257 kB)                                                       Downloaded from central: https://repo.maven.apache.org/maven2/net/bytebuddy/byte-buddy-agent/1.14.10/byte-buddy-agent-1.14.10.jar (257 kB at 3.5 MB/s)
-Progress (1): mockito-subclass-5.8.0.jar (1.4/1.5 kB)Progress (2): mockito-subclass-5.8.0.jar (1.4/1.5 kB) | quarkus-junit5-mockito-config-3.8.1.jar (1.4/3.5 kB)Progress (2): mockito-subclass-5.8.0.jar (1.5 kB) | quarkus-junit5-mockito-config-3.8.1.jar (1.4/3.5 kB)    Progress (2): mockito-subclass-5.8.0.jar (1.5 kB) | quarkus-junit5-mockito-config-3.8.1.jar (2.8/3.5 kB)Progress (2): mockito-subclass-5.8.0.jar (1.5 kB) | quarkus-junit5-mockito-config-3.8.1.jar (3.5 kB)                                                                                                        Downloaded from central: https://repo.maven.apache.org/maven2/org/mockito/mockito-subclass/5.8.0/mockito-subclass-5.8.0.jar (1.5 kB at 18 kB/s)
-Downloaded from central: https://repo.maven.apache.org/maven2/io/quarkus/quarkus-junit5-mockito-config/3.8.1/quarkus-junit5-mockito-config-3.8.1.jar (3.5 kB at 42 kB/s)
-[INFO] Invoking compiler:3.11.0:testCompile (default-testCompile) @ wallet-service
-[INFO] Changes detected - recompiling the module! :dependency
-[INFO] Compiling 6 source files with javac [debug release 17] to target/test-classes
-[INFO] Annotation processing is enabled because one or more processors were found
-  on the class path. A future release of javac may disable annotation processing
-  unless at least one processor is specified by name (-processor), or a search
-  path is specified (--processor-path, --processor-module-path), or annotation
-  processing is enabled explicitly (-proc:only, -proc:full).
-  Use -Xlint:-options to suppress this message.
-  Use -proc:none to disable annotation processing.
-[INFO] -------------------------------------------------------------
-[ERROR] COMPILATION ERROR : 
-[INFO] -------------------------------------------------------------
-[ERROR] /Users/thdsantos/wallet/wallet-service/src/test/java/com/wallet/api/WalletResourceTest.java:[6,37] package io.quarkus.test.junit.mockito does not exist
-[ERROR] /Users/thdsantos/wallet/wallet-service/src/test/java/com/wallet/api/WalletResourceTest.java:[13,26] package org.mockito does not exist
-[ERROR] /Users/thdsantos/wallet/wallet-service/src/test/java/com/wallet/api/WalletResourceTest.java:[13,1] static import only from classes and interfaces
-[ERROR] /Users/thdsantos/wallet/wallet-service/src/test/java/com/wallet/api/WalletResourceTest.java:[14,26] package org.mockito does not exist
-[ERROR] /Users/thdsantos/wallet/wallet-service/src/test/java/com/wallet/api/WalletResourceTest.java:[14,1] static import only from classes and interfaces
-[ERROR] /Users/thdsantos/wallet/wallet-service/src/test/java/com/wallet/application/handler/CreateWalletCommandHandlerTest.java:[8,37] package io.quarkus.test.junit.mockito does not exist
-[ERROR] /Users/thdsantos/wallet/wallet-service/src/test/java/com/wallet/application/handler/CreateWalletCommandHandlerTest.java:[13,19] package org.mockito does not exist
-[ERROR] /Users/thdsantos/wallet/wallet-service/src/test/java/com/wallet/application/handler/CreateWalletCommandHandlerTest.java:[18,26] package org.mockito does not exist
-[ERROR] /Users/thdsantos/wallet/wallet-service/src/test/java/com/wallet/application/handler/CreateWalletCommandHandlerTest.java:[18,1] static import only from classes and interfaces
-[ERROR] /Users/thdsantos/wallet/wallet-service/src/test/java/com/wallet/application/handler/CreateWalletCommandHandlerTest.java:[19,26] package org.mockito does not exist
-[ERROR] /Users/thdsantos/wallet/wallet-service/src/test/java/com/wallet/api/WalletResourceTest.java:[19,6] cannot find symbol
-  symbol:   class InjectMock
-  location: class com.wallet.api.WalletResourceTest
-[ERROR] /Users/thdsantos/wallet/wallet-service/src/test/java/com/wallet/application/handler/CreateWalletCommandHandlerTest.java:[27,6] cannot find symbol
-  symbol:   class InjectMock
-  location: class com.wallet.application.handler.CreateWalletCommandHandlerTest
-[INFO] 12 errors 
-[INFO] -------------------------------------------------------------
-[ERROR] Test compile failed, you will need to fix your tests before you can use continuous testing
-org.apache.maven.plugin.MojoExecutionException: Unable to execute mojo
-    at org.twdata.maven.mojoexecutor.MojoExecutor.executeMojo (MojoExecutor.java:122)
-    at io.quarkus.maven.DevMojo.executeGoal (DevMojo.java:706)
-    at io.quarkus.maven.DevMojo.handleAutoCompile (DevMojo.java:659)
-    at io.quarkus.maven.DevMojo.execute (DevMojo.java:477)
-    at org.apache.maven.plugin.DefaultBuildPluginManager.executeMojo (DefaultBuildPluginManager.java:126)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.doExecute2 (MojoExecutor.java:328)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.doExecute (MojoExecutor.java:316)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:212)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:174)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.access$000 (MojoExecutor.java:75)
-    at org.apache.maven.lifecycle.internal.MojoExecutor$1.run (MojoExecutor.java:162)
-    at org.apache.maven.plugin.DefaultMojosExecutionStrategy.execute (DefaultMojosExecutionStrategy.java:39)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:159)
-    at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject (LifecycleModuleBuilder.java:105)
-    at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject (LifecycleModuleBuilder.java:73)
-    at org.apache.maven.lifecycle.internal.builder.singlethreaded.SingleThreadedBuilder.build (SingleThreadedBuilder.java:53)
-    at org.apache.maven.lifecycle.internal.LifecycleStarter.execute (LifecycleStarter.java:118)
-    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:261)
-    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:173)
-    at org.apache.maven.DefaultMaven.execute (DefaultMaven.java:101)
-    at org.apache.maven.cli.MavenCli.execute (MavenCli.java:906)
-    at org.apache.maven.cli.MavenCli.doMain (MavenCli.java:283)
-    at org.apache.maven.cli.MavenCli.main (MavenCli.java:206)
-    at jdk.internal.reflect.DirectMethodHandleAccessor.invoke (DirectMethodHandleAccessor.java:103)
-    at java.lang.reflect.Method.invoke (Method.java:580)
-    at org.codehaus.plexus.classworlds.launcher.Launcher.launchEnhanced (Launcher.java:283)
-    at org.codehaus.plexus.classworlds.launcher.Launcher.launch (Launcher.java:226)
-    at org.codehaus.plexus.classworlds.launcher.Launcher.mainWithExitCode (Launcher.java:407)
-    at org.codehaus.plexus.classworlds.launcher.Launcher.main (Launcher.java:348)
-    at jdk.internal.reflect.DirectMethodHandleAccessor.invoke (DirectMethodHandleAccessor.java:103)
-    at java.lang.reflect.Method.invoke (Method.java:580)
-    at org.apache.maven.wrapper.BootstrapMainStarter.start (BootstrapMainStarter.java:52)
-    at org.apache.maven.wrapper.WrapperExecutor.execute (WrapperExecutor.java:161)
-    at org.apache.maven.wrapper.MavenWrapperMain.main (MavenWrapperMain.java:73)
-Caused by: org.apache.maven.plugin.compiler.CompilationFailureException: Compilation failure
-    at org.apache.maven.plugin.compiler.AbstractCompilerMojo.execute (AbstractCompilerMojo.java:1212)
-    at org.apache.maven.plugin.compiler.TestCompilerMojo.execute (TestCompilerMojo.java:199)
-    at org.apache.maven.plugin.DefaultBuildPluginManager.executeMojo (DefaultBuildPluginManager.java:126)
-    at org.twdata.maven.mojoexecutor.MojoExecutor.executeMojo (MojoExecutor.java:120)
-    at io.quarkus.maven.DevMojo.executeGoal (DevMojo.java:706)
-    at io.quarkus.maven.DevMojo.handleAutoCompile (DevMojo.java:659)
-    at io.quarkus.maven.DevMojo.execute (DevMojo.java:477)
-    at org.apache.maven.plugin.DefaultBuildPluginManager.executeMojo (DefaultBuildPluginManager.java:126)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.doExecute2 (MojoExecutor.java:328)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.doExecute (MojoExecutor.java:316)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:212)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:174)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.access$000 (MojoExecutor.java:75)
-    at org.apache.maven.lifecycle.internal.MojoExecutor$1.run (MojoExecutor.java:162)
-    at org.apache.maven.plugin.DefaultMojosExecutionStrategy.execute (DefaultMojosExecutionStrategy.java:39)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:159)
-    at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject (LifecycleModuleBuilder.java:105)
-    at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject (LifecycleModuleBuilder.java:73)
-    at org.apache.maven.lifecycle.internal.builder.singlethreaded.SingleThreadedBuilder.build (SingleThreadedBuilder.java:53)
-    at org.apache.maven.lifecycle.internal.LifecycleStarter.execute (LifecycleStarter.java:118)
-    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:261)
-    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:173)
-    at org.apache.maven.DefaultMaven.execute (DefaultMaven.java:101)
-    at org.apache.maven.cli.MavenCli.execute (MavenCli.java:906)
-    at org.apache.maven.cli.MavenCli.doMain (MavenCli.java:283)
-    at org.apache.maven.cli.MavenCli.main (MavenCli.java:206)
-    at jdk.internal.reflect.DirectMethodHandleAccessor.invoke (DirectMethodHandleAccessor.java:103)
-    at java.lang.reflect.Method.invoke (Method.java:580)
-    at org.codehaus.plexus.classworlds.launcher.Launcher.launchEnhanced (Launcher.java:283)
-    at org.codehaus.plexus.classworlds.launcher.Launcher.launch (Launcher.java:226)
-    at org.codehaus.plexus.classworlds.launcher.Launcher.mainWithExitCode (Launcher.java:407)
-    at org.codehaus.plexus.classworlds.launcher.Launcher.main (Launcher.java:348)
-    at jdk.internal.reflect.DirectMethodHandleAccessor.invoke (DirectMethodHandleAccessor.java:103)
-    at java.lang.reflect.Method.invoke (Method.java:580)
-    at org.apache.maven.wrapper.BootstrapMainStarter.start (BootstrapMainStarter.java:52)
-    at org.apache.maven.wrapper.WrapperExecutor.execute (WrapperExecutor.java:161)
-    at org.apache.maven.wrapper.MavenWrapperMain.main (MavenWrapperMain.java:73)
-Listening for transport dt_socket at address: 5005
-[INFO] Changes detected to [/Users/thdsantos/wallet/wallet-service/pom.xml], restarting dev mode
-[INFO] Invoking avro:1.11.3:schema (default) @ wallet-service
-[INFO] Invoking resources:3.3.1:resources (default-resources) @ wallet-service
-[INFO] Copying 5 resources from src/main/resources to target/classes
-[INFO] Invoking quarkus:3.8.1:generate-code (default) @ wallet-service
-[INFO] Invoking compiler:3.11.0:compile (default-compile) @ wallet-service
 [INFO] Changes detected - recompiling the module! :source
-[INFO] Compiling 47 source files with javac [debug release 17] to target/classes
+[INFO] Compiling 9 source files with javac [debug release 17] to target/test-classes
 [INFO] Annotation processing is enabled because one or more processors were found
   on the class path. A future release of javac may disable annotation processing
   unless at least one processor is specified by name (-processor), or a search
@@ -167,121 +25,3 @@ Listening for transport dt_socket at address: 5005
   processing is enabled explicitly (-proc:only, -proc:full).
   Use -Xlint:-options to suppress this message.
   Use -proc:none to disable annotation processing.
-[INFO] /Users/thdsantos/wallet/wallet-service/src/main/java/com/wallet/infrastructure/cache/WalletStateCache.java: /Users/thdsantos/wallet/wallet-service/src/main/java/com/wallet/infrastructure/cache/WalletStateCache.java uses or overrides a deprecated API.
-[INFO] /Users/thdsantos/wallet/wallet-service/src/main/java/com/wallet/infrastructure/cache/WalletStateCache.java: Recompile with -Xlint:deprecation for details.
-[INFO] Invoking resources:3.3.1:testResources (default-testResources) @ wallet-service
-[INFO] Copying 4 resources from src/test/resources to target/test-classes
-[INFO] Invoking quarkus:3.8.1:generate-code-tests (default) @ wallet-service
-[INFO] Invoking compiler:3.11.0:testCompile (default-testCompile) @ wallet-service
-[INFO] Changes detected - recompiling the module! :dependency
-[INFO] Compiling 6 source files with javac [debug release 17] to target/test-classes
-[INFO] Annotation processing is enabled because one or more processors were found
-  on the class path. A future release of javac may disable annotation processing
-  unless at least one processor is specified by name (-processor), or a search
-  path is specified (--processor-path, --processor-module-path), or annotation
-  processing is enabled explicitly (-proc:only, -proc:full).
-  Use -Xlint:-options to suppress this message.
-  Use -proc:none to disable annotation processing.
-[INFO] -------------------------------------------------------------
-[ERROR] COMPILATION ERROR : 
-[INFO] -------------------------------------------------------------
-[ERROR] /Users/thdsantos/wallet/wallet-service/src/test/java/com/wallet/api/WalletResourceTest.java:[6,37] package io.quarkus.test.junit.mockito does not exist
-[ERROR] /Users/thdsantos/wallet/wallet-service/src/test/java/com/wallet/api/WalletResourceTest.java:[13,26] package org.mockito does not exist
-[ERROR] /Users/thdsantos/wallet/wallet-service/src/test/java/com/wallet/api/WalletResourceTest.java:[13,1] static import only from classes and interfaces
-[ERROR] /Users/thdsantos/wallet/wallet-service/src/test/java/com/wallet/api/WalletResourceTest.java:[14,26] package org.mockito does not exist
-[ERROR] /Users/thdsantos/wallet/wallet-service/src/test/java/com/wallet/api/WalletResourceTest.java:[14,1] static import only from classes and interfaces
-[ERROR] /Users/thdsantos/wallet/wallet-service/src/test/java/com/wallet/application/handler/CreateWalletCommandHandlerTest.java:[11,19] package org.mockito does not exist
-[ERROR] /Users/thdsantos/wallet/wallet-service/src/test/java/com/wallet/application/handler/CreateWalletCommandHandlerTest.java:[12,19] package org.mockito does not exist
-[ERROR] /Users/thdsantos/wallet/wallet-service/src/test/java/com/wallet/application/handler/CreateWalletCommandHandlerTest.java:[13,19] package org.mockito does not exist
-[ERROR] /Users/thdsantos/wallet/wallet-service/src/test/java/com/wallet/application/handler/CreateWalletCommandHandlerTest.java:[14,33] package org.mockito.junit.jupiter does not exist
-[ERROR] /Users/thdsantos/wallet/wallet-service/src/test/java/com/wallet/application/handler/CreateWalletCommandHandlerTest.java:[19,26] package org.mockito does not exist
-[ERROR] /Users/thdsantos/wallet/wallet-service/src/test/java/com/wallet/application/handler/CreateWalletCommandHandlerTest.java:[19,1] static import only from classes and interfaces
-[ERROR] /Users/thdsantos/wallet/wallet-service/src/test/java/com/wallet/application/handler/CreateWalletCommandHandlerTest.java:[20,26] package org.mockito does not exist
-[ERROR] /Users/thdsantos/wallet/wallet-service/src/test/java/com/wallet/api/WalletResourceTest.java:[19,6] cannot find symbol
-  symbol:   class InjectMock
-  location: class com.wallet.api.WalletResourceTest
-[ERROR] /Users/thdsantos/wallet/wallet-service/src/test/java/com/wallet/application/handler/CreateWalletCommandHandlerTest.java:[22,13] cannot find symbol
-  symbol: class MockitoExtension
-[ERROR] /Users/thdsantos/wallet/wallet-service/src/test/java/com/wallet/application/handler/CreateWalletCommandHandlerTest.java:[25,6] cannot find symbol
-  symbol:   class InjectMocks
-  location: class com.wallet.application.handler.CreateWalletCommandHandlerTest
-[ERROR] /Users/thdsantos/wallet/wallet-service/src/test/java/com/wallet/application/handler/CreateWalletCommandHandlerTest.java:[28,6] cannot find symbol
-  symbol:   class Mock
-  location: class com.wallet.application.handler.CreateWalletCommandHandlerTest
-[INFO] 16 errors 
-[INFO] -------------------------------------------------------------
-[ERROR] Test compile failed, you will need to fix your tests before you can use continuous testing
-org.apache.maven.plugin.MojoExecutionException: Unable to execute mojo
-    at org.twdata.maven.mojoexecutor.MojoExecutor.executeMojo (MojoExecutor.java:122)
-    at io.quarkus.maven.DevMojo.executeGoal (DevMojo.java:706)
-    at io.quarkus.maven.DevMojo.handleAutoCompile (DevMojo.java:659)
-    at io.quarkus.maven.DevMojo.execute (DevMojo.java:477)
-    at org.apache.maven.plugin.DefaultBuildPluginManager.executeMojo (DefaultBuildPluginManager.java:126)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.doExecute2 (MojoExecutor.java:328)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.doExecute (MojoExecutor.java:316)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:212)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:174)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.access$000 (MojoExecutor.java:75)
-    at org.apache.maven.lifecycle.internal.MojoExecutor$1.run (MojoExecutor.java:162)
-    at org.apache.maven.plugin.DefaultMojosExecutionStrategy.execute (DefaultMojosExecutionStrategy.java:39)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:159)
-    at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject (LifecycleModuleBuilder.java:105)
-    at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject (LifecycleModuleBuilder.java:73)
-    at org.apache.maven.lifecycle.internal.builder.singlethreaded.SingleThreadedBuilder.build (SingleThreadedBuilder.java:53)
-    at org.apache.maven.lifecycle.internal.LifecycleStarter.execute (LifecycleStarter.java:118)
-    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:261)
-    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:173)
-    at org.apache.maven.DefaultMaven.execute (DefaultMaven.java:101)
-    at org.apache.maven.cli.MavenCli.execute (MavenCli.java:906)
-    at org.apache.maven.cli.MavenCli.doMain (MavenCli.java:283)
-    at org.apache.maven.cli.MavenCli.main (MavenCli.java:206)
-    at jdk.internal.reflect.DirectMethodHandleAccessor.invoke (DirectMethodHandleAccessor.java:103)
-    at java.lang.reflect.Method.invoke (Method.java:580)
-    at org.codehaus.plexus.classworlds.launcher.Launcher.launchEnhanced (Launcher.java:283)
-    at org.codehaus.plexus.classworlds.launcher.Launcher.launch (Launcher.java:226)
-    at org.codehaus.plexus.classworlds.launcher.Launcher.mainWithExitCode (Launcher.java:407)
-    at org.codehaus.plexus.classworlds.launcher.Launcher.main (Launcher.java:348)
-    at jdk.internal.reflect.DirectMethodHandleAccessor.invoke (DirectMethodHandleAccessor.java:103)
-    at java.lang.reflect.Method.invoke (Method.java:580)
-    at org.apache.maven.wrapper.BootstrapMainStarter.start (BootstrapMainStarter.java:52)
-    at org.apache.maven.wrapper.WrapperExecutor.execute (WrapperExecutor.java:161)
-    at org.apache.maven.wrapper.MavenWrapperMain.main (MavenWrapperMain.java:73)
-Caused by: org.apache.maven.plugin.compiler.CompilationFailureException: Compilation failure
-    at org.apache.maven.plugin.compiler.AbstractCompilerMojo.execute (AbstractCompilerMojo.java:1212)
-    at org.apache.maven.plugin.compiler.TestCompilerMojo.execute (TestCompilerMojo.java:199)
-    at org.apache.maven.plugin.DefaultBuildPluginManager.executeMojo (DefaultBuildPluginManager.java:126)
-    at org.twdata.maven.mojoexecutor.MojoExecutor.executeMojo (MojoExecutor.java:120)
-    at io.quarkus.maven.DevMojo.executeGoal (DevMojo.java:706)
-    at io.quarkus.maven.DevMojo.handleAutoCompile (DevMojo.java:659)
-    at io.quarkus.maven.DevMojo.execute (DevMojo.java:477)
-    at org.apache.maven.plugin.DefaultBuildPluginManager.executeMojo (DefaultBuildPluginManager.java:126)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.doExecute2 (MojoExecutor.java:328)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.doExecute (MojoExecutor.java:316)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:212)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:174)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.access$000 (MojoExecutor.java:75)
-    at org.apache.maven.lifecycle.internal.MojoExecutor$1.run (MojoExecutor.java:162)
-    at org.apache.maven.plugin.DefaultMojosExecutionStrategy.execute (DefaultMojosExecutionStrategy.java:39)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:159)
-    at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject (LifecycleModuleBuilder.java:105)
-    at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject (LifecycleModuleBuilder.java:73)
-    at org.apache.maven.lifecycle.internal.builder.singlethreaded.SingleThreadedBuilder.build (SingleThreadedBuilder.java:53)
-    at org.apache.maven.lifecycle.internal.LifecycleStarter.execute (LifecycleStarter.java:118)
-    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:261)
-    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:173)
-    at org.apache.maven.DefaultMaven.execute (DefaultMaven.java:101)
-    at org.apache.maven.cli.MavenCli.execute (MavenCli.java:906)
-    at org.apache.maven.cli.MavenCli.doMain (MavenCli.java:283)
-    at org.apache.maven.cli.MavenCli.main (MavenCli.java:206)
-    at jdk.internal.reflect.DirectMethodHandleAccessor.invoke (DirectMethodHandleAccessor.java:103)
-    at java.lang.reflect.Method.invoke (Method.java:580)
-    at org.codehaus.plexus.classworlds.launcher.Launcher.launchEnhanced (Launcher.java:283)
-    at org.codehaus.plexus.classworlds.launcher.Launcher.launch (Launcher.java:226)
-    at org.codehaus.plexus.classworlds.launcher.Launcher.mainWithExitCode (Launcher.java:407)
-    at org.codehaus.plexus.classworlds.launcher.Launcher.main (Launcher.java:348)
-    at jdk.internal.reflect.DirectMethodHandleAccessor.invoke (DirectMethodHandleAccessor.java:103)
-    at java.lang.reflect.Method.invoke (Method.java:580)
-    at org.apache.maven.wrapper.BootstrapMainStarter.start (BootstrapMainStarter.java:52)
-    at org.apache.maven.wrapper.WrapperExecutor.execute (WrapperExecutor.java:161)
-    at org.apache.maven.wrapper.MavenWrapperMain.main (MavenWrapperMain.java:73)
-Listening for transport dt_socket at address: 5005
