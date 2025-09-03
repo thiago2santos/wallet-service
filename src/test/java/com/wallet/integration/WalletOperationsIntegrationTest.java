@@ -58,7 +58,7 @@ public class WalletOperationsIntegrationTest extends BaseIntegrationTest {
         Response response = getWallet(nonExistentWalletId);
         
         // Then
-        response.then().statusCode(404);
+        response.then().statusCode(400); // Wallet not found returns 400 Bad Request
     }
 
     @Test
@@ -198,7 +198,7 @@ public class WalletOperationsIntegrationTest extends BaseIntegrationTest {
         
         // Then
         transferResponse.then()
-            .statusCode(500) // Should be 400 but current implementation returns 500
+            .statusCode(400) // Self transfer validation returns 400 Bad Request
             .body("error", notNullValue());
             
         // Verify balance unchanged

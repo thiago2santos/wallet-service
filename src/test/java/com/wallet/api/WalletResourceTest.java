@@ -1,9 +1,9 @@
 package com.wallet.api;
 
 import com.wallet.api.request.CreateWalletRequest;
-import com.wallet.application.handler.*;
 import com.wallet.application.command.*;
-import com.wallet.application.query.*;
+import com.wallet.core.command.CommandBus;
+import com.wallet.core.query.QueryBus;
 import io.smallrye.mutiny.Uni;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,22 +23,10 @@ import static org.mockito.Mockito.*;
 class WalletResourceTest {
 
     @Mock
-    CreateWalletCommandHandler createWalletHandler;
+    CommandBus commandBus;
     
     @Mock
-    GetWalletQueryHandler getWalletQueryHandler;
-    
-    @Mock
-    DepositFundsCommandHandler depositFundsHandler;
-    
-    @Mock
-    WithdrawFundsCommandHandler withdrawFundsHandler;
-    
-    @Mock
-    TransferFundsCommandHandler transferFundsHandler;
-    
-    @Mock
-    GetHistoricalBalanceQueryHandler historicalBalanceQueryHandler;
+    QueryBus queryBus;
 
     @InjectMocks
     WalletResource walletResource;
@@ -47,7 +35,7 @@ class WalletResourceTest {
     void shouldCreateWalletSuccessfully() {
         // Given
         String walletId = "test-wallet-id-123";
-        when(createWalletHandler.handle(any(CreateWalletCommand.class)))
+        when(commandBus.dispatch(any(CreateWalletCommand.class)))
             .thenReturn(Uni.createFrom().item(walletId));
 
         CreateWalletRequest request = new CreateWalletRequest();
@@ -61,13 +49,13 @@ class WalletResourceTest {
         // Then
         assertEquals(201, response.getStatus());
         assertEquals(URI.create("/api/v1/wallets/" + walletId), response.getLocation());
-        verify(createWalletHandler).handle(any(CreateWalletCommand.class));
+        verify(commandBus).dispatch(any(CreateWalletCommand.class));
     }
 
     @Test
     void shouldHandleHandlerFailure() {
         // Given
-        when(createWalletHandler.handle(any(CreateWalletCommand.class)))
+        when(commandBus.dispatch(any(CreateWalletCommand.class)))
             .thenReturn(Uni.createFrom().failure(new RuntimeException("Database error")));
 
         CreateWalletRequest request = new CreateWalletRequest();
@@ -77,7 +65,7 @@ class WalletResourceTest {
         // When & Then
         Uni<Response> result = walletResource.createWallet(request);
         assertThrows(RuntimeException.class, () -> result.await().indefinitely());
-        verify(createWalletHandler).handle(any(CreateWalletCommand.class));
+        verify(commandBus).dispatch(any(CreateWalletCommand.class));
     }
 
 
@@ -86,7 +74,7 @@ class WalletResourceTest {
     void shouldVerifyCommandCreation() {
         // Given
         String expectedWalletId = "test-wallet-123";
-        when(createWalletHandler.handle(any(CreateWalletCommand.class)))
+        when(commandBus.dispatch(any(CreateWalletCommand.class)))
             .thenReturn(Uni.createFrom().item(expectedWalletId));
 
         CreateWalletRequest request = new CreateWalletRequest();
@@ -101,7 +89,7 @@ class WalletResourceTest {
         assertEquals(201, response.getStatus());
         
         // Verify the command was created with correct parameters
-        verify(createWalletHandler).handle(argThat(command -> 
+        verify(commandBus).dispatch(argThat(command -> 
             "user-456".equals(command.getUserId())
         ));
     }

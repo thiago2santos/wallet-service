@@ -4,6 +4,8 @@ import com.wallet.application.command.CreateWalletCommand;
 import com.wallet.domain.model.Wallet;
 import com.wallet.domain.model.WalletStatus;
 import com.wallet.infrastructure.persistence.WalletRepository;
+import com.wallet.infrastructure.metrics.WalletMetrics;
+import com.wallet.infrastructure.outbox.OutboxEventService;
 import io.smallrye.mutiny.Uni;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,11 +30,23 @@ class CreateWalletCommandHandlerTest {
     @Mock
     WalletRepository walletRepository;
 
+    @Mock
+    WalletMetrics walletMetrics;
+
+    @Mock
+    OutboxEventService outboxEventService;
+
     private CreateWalletCommand command;
 
     @BeforeEach
     void setUp() {
         command = new CreateWalletCommand("user-123");
+        
+        // Setup common mocks
+        when(walletMetrics.startWalletCreationTimer())
+            .thenReturn(() -> {}); // Mock timer that does nothing
+        when(outboxEventService.storeEvent(any(), any(), any()))
+            .thenReturn(Uni.createFrom().voidItem());
     }
 
     @Test
