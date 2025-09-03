@@ -109,7 +109,7 @@ open http://localhost:8080/q/swagger-ui/
 ### **🔒 Security Strategy**
 - **Development**: Comprehensive input validation and error handling
 - **Production**: AWS API Gateway + WAF for enterprise security
-- **Approach**: Leverage cloud services for security concerns
+- **Approach**: AWS-native security services for enterprise-grade protection
 
 ### **📊 Monitoring Stack**
 - **Metrics**: Custom Prometheus metrics for business operations

@@ -31,9 +31,9 @@
   - [Contributing](contributing.md)
 
 - **Operations**
+  - [🚀 AWS Architecture](aws-architecture.md)
   - [Deployment](deployment.md)
   - [Monitoring](monitoring.md)
-
   - [Performance](performance.md)
 
 - **Infrastructure**

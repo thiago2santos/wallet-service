@@ -298,7 +298,7 @@ data:
   password: <base64-encoded-password>
 ```
 
-### Google GKE
+### AWS EKS (Recommended)
 
 #### GKE Cluster
 ```bash
@@ -314,7 +314,7 @@ gcloud container clusters create wallet-service-cluster \
 gcloud container clusters get-credentials wallet-service-cluster --zone us-central1-a
 ```
 
-### Azure AKS
+### AWS ECS (Alternative)
 
 #### AKS Cluster
 ```bash

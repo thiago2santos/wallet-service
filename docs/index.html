@@ -48,7 +48,17 @@
         tabHeadings: true
       },
       mermaid: {
-        theme: 'default'
+        theme: 'default',
+        themeCSS: `
+          .node rect,
+          .node circle,
+          .node ellipse,
+          .node polygon {
+            fill: #f9f9f9;
+            stroke: #333;
+            stroke-width: 1px;
+          }
+        `
       },
       plantuml: {
         skin: 'default'
@@ -68,6 +78,18 @@
   <!-- Mermaid support -->
   <script src="//cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/docsify-mermaid@2/dist/docsify-mermaid.js"></script>
+  <script>
+    // Initialize Mermaid
+    mermaid.initialize({ 
+      startOnLoad: true,
+      theme: 'default',
+      securityLevel: 'loose',
+      flowchart: {
+        useMaxWidth: true,
+        htmlLabels: true
+      }
+    });
+  </script>
   <!-- PlantUML support -->
   <script src="//cdn.jsdelivr.net/npm/docsify-plantuml@1/dist/docsify-plantuml.min.js"></script>
   <!-- Syntax highlighting -->

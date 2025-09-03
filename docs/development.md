@@ -472,7 +472,7 @@ export MAVEN_OPTS="-Xmx2g"
 - [Quarkus University](https://developers.redhat.com/learn/quarkus)
 
 ### CQRS & Event Sourcing
-- [Microsoft CQRS Guide](https://docs.microsoft.com/en-us/azure/architecture/patterns/cqrs)
+- [AWS CQRS Patterns](https://aws.amazon.com/blogs/compute/implementing-cqrs-and-event-sourcing-patterns-with-aws-lambda-and-amazon-eventbridge/)
 - [Event Sourcing Pattern](https://martinfowler.com/eaaDev/EventSourcing.html)
 
 ### Reactive Programming

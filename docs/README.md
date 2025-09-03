@@ -198,9 +198,11 @@ docker run -p 8080:8080 wallet-service
 ./target/wallet-service-*-runner
 ```
 
-### **Kubernetes**
+### **AWS EKS Deployment**
 ```bash
+# Deploy to AWS EKS
 kubectl apply -f k8s/
+# See AWS Architecture guide for complete setup
 ```
 
 ## 📚 Documentation Structure

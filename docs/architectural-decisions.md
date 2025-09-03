@@ -349,7 +349,7 @@ Modern applications need:
 - ✅ **Health checks** - Automatic restart of failed pods
 - ✅ **Rolling updates** - Zero-downtime deployments
 - ✅ **Resource management** - CPU and memory limits
-- ✅ **Cloud agnostic** - Runs on any cloud provider
+- ✅ **AWS optimized** - Designed for AWS services and infrastructure
 
 ### Deployment Architecture
 
