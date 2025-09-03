@@ -3,9 +3,6 @@ name: 🧪 PR Unit Tests
 on:
   pull_request:
     branches: [ develop ]
-  push:
-    branches-ignore: [ main, develop ]
-    # This triggers on pushes to feature branches that have PRs open to develop
 
 env:
   JAVA_VERSION: '21'
