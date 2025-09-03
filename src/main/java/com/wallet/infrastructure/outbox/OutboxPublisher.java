@@ -7,7 +7,8 @@ import io.smallrye.reactive.messaging.MutinyEmitter;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.reactive.messaging.Channel;
-import org.jboss.logging.Logger;
+import com.wallet.infrastructure.metrics.WalletMetrics;
+import io.micrometer.core.instrument.Timer;
 
 import java.util.List;
 
@@ -20,7 +21,6 @@ import java.util.List;
 @ApplicationScoped
 public class OutboxPublisher {
 
-    private static final Logger LOG = Logger.getLogger(OutboxPublisher.class);
     private static final int BATCH_SIZE = 100;
 
     @Inject
@@ -29,6 +29,9 @@ public class OutboxPublisher {
     @Inject
     @Channel("wallet-events")
     MutinyEmitter<String> eventEmitter;
+    
+    @Inject
+    WalletMetrics metrics;
 
     /**
      * Scheduled method that processes unprocessed outbox events.
@@ -36,14 +39,15 @@ public class OutboxPublisher {
      */
     @Scheduled(every = "5s")
     public Uni<Void> publishPendingEvents() {
-        LOG.debug("Starting outbox event publishing cycle");
+        Timer.Sample sample = metrics.startOutboxPublishingTimer();
         
         return outboxRepository.findUnprocessedEvents(BATCH_SIZE)
                 .chain(this::publishEvents)
-                .onItem().invoke(() -> LOG.debug("Completed outbox event publishing cycle"))
-                .onFailure().invoke(throwable -> 
-                    LOG.error("Error during outbox event publishing", throwable)
-                );
+                .onItem().invoke(() -> metrics.recordOutboxPublishing(sample))
+                .onFailure().invoke(throwable -> {
+                    metrics.recordOutboxEventFailed();
+                    metrics.recordOutboxPublishing(sample);
+                });
     }
 
     /**
@@ -54,7 +58,8 @@ public class OutboxPublisher {
             return Uni.createFrom().voidItem();
         }
 
-        LOG.infof("Publishing %d outbox events to Kafka", events.size());
+        // Record metrics instead of logging
+        events.forEach(event -> metrics.recordOutboxEventPublished());
 
         return Uni.combine().all().unis(
             events.stream()
@@ -67,7 +72,6 @@ public class OutboxPublisher {
      * Publish a single event to Kafka and mark it as processed
      */
     private Uni<Void> publishSingleEvent(OutboxEvent event) {
-        LOG.debugf("Publishing event: %s for aggregate: %s", event.eventType, event.aggregateId);
 
         // Create the Kafka message with proper key for partitioning
         String kafkaKey = event.aggregateId;
@@ -75,14 +79,7 @@ public class OutboxPublisher {
 
         return eventEmitter.send(kafkaMessage)
                 .chain(() -> markEventAsProcessed(event))
-                .onItem().invoke(() -> 
-                    LOG.debugf("Successfully published event: %s for aggregate: %s", 
-                        event.eventType, event.aggregateId)
-                )
-                .onFailure().invoke(throwable -> 
-                    LOG.errorf(throwable, "Failed to publish event: %s for aggregate: %s", 
-                        event.eventType, event.aggregateId)
-                );
+                .onFailure().invoke(throwable -> metrics.recordOutboxEventFailed());
     }
 
     /**
@@ -106,13 +103,18 @@ public class OutboxPublisher {
      * Manual trigger for publishing events (useful for testing or manual operations)
      */
     public Uni<Integer> publishAllPendingEvents() {
-        LOG.info("Manual trigger: publishing all pending outbox events");
+        Timer.Sample sample = metrics.startOutboxPublishingTimer();
         
         return outboxRepository.findUnprocessedEvents()
                 .chain(events -> {
                     int eventCount = events.size();
                     return publishEvents(events)
                             .map(v -> eventCount);
+                })
+                .onItem().invoke(() -> metrics.recordOutboxPublishing(sample))
+                .onFailure().invoke(throwable -> {
+                    metrics.recordOutboxEventFailed();
+                    metrics.recordOutboxPublishing(sample);
                 });
     }
 }

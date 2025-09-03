@@ -7,6 +7,8 @@ import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
+import com.wallet.infrastructure.metrics.WalletMetrics;
+import io.micrometer.core.instrument.Timer;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -16,18 +18,18 @@ import java.util.Map;
 public class CommandBusImpl implements CommandBus {
 
     private final Map<Class<?>, CommandHandler<?, ?>> handlers = new HashMap<>();
+    
+    @Inject
+    WalletMetrics metrics;
 
     @Inject
     public CommandBusImpl(Instance<CommandHandler<?, ?>> handlerInstances) {
-        System.out.println("CommandBusImpl: Initializing with handlers...");
         for (CommandHandler<?, ?> handler : handlerInstances) {
             Class<?> commandType = getCommandType(handler.getClass());
-            System.out.println("CommandBusImpl: Found handler " + handler.getClass().getSimpleName() + " for command type: " + commandType);
             if (commandType != null) {
                 handlers.put(commandType, handler);
             }
         }
-        System.out.println("CommandBusImpl: Total handlers registered: " + handlers.size());
     }
 
     @Override

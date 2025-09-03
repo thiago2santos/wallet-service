@@ -35,13 +35,13 @@ public class GetHistoricalBalanceQueryHandler implements QueryHandler<GetHistori
     @Override
     public Uni<HistoricalBalanceResponse> handle(GetHistoricalBalanceQuery query) {
         var timer = walletMetrics.startQueryTimer();
-        System.out.println("GetHistoricalBalanceQueryHandler: Processing query for wallet " + query.getWalletId() + " at timestamp " + query.getTimestamp());
+
 
         // First, verify the wallet exists
         return walletReadRepository.findById(query.getWalletId())
             .onItem().ifNull().failWith(() -> new IllegalArgumentException("Wallet not found: " + query.getWalletId()))
             .chain(wallet -> {
-                System.out.println("GetHistoricalBalanceQueryHandler: Found wallet");
+
                 
                 // Get all transactions up to the specified timestamp, ordered by creation time
                 return transactionRepository.find(
@@ -50,12 +50,12 @@ public class GetHistoricalBalanceQueryHandler implements QueryHandler<GetHistori
                     query.getTimestamp()
                 ).list()
                 .map(transactions -> {
-                    System.out.println("GetHistoricalBalanceQueryHandler: Found " + transactions.size() + " transactions up to " + query.getTimestamp());
+
                     
                     // Calculate balance by replaying all transactions chronologically
                     BigDecimal historicalBalance = calculateBalanceFromTransactions(transactions);
                     
-                    System.out.println("GetHistoricalBalanceQueryHandler: Calculated historical balance: " + historicalBalance);
+
                     
                     return new HistoricalBalanceResponse(
                         query.getWalletId(),
@@ -85,11 +85,11 @@ public class GetHistoricalBalanceQueryHandler implements QueryHandler<GetHistori
             switch (transaction.getType()) {
                 case DEPOSIT:
                     balance = balance.add(transaction.getAmount());
-                    System.out.println("  + DEPOSIT: " + transaction.getAmount() + " -> Balance: " + balance);
+
                     break;
                 case WITHDRAWAL:
                     balance = balance.subtract(transaction.getAmount());
-                    System.out.println("  - WITHDRAWAL: " + transaction.getAmount() + " -> Balance: " + balance);
+
                     break;
                 case TRANSFER:
                     // For transfers, we need to check if this wallet is source or destination
@@ -97,15 +97,15 @@ public class GetHistoricalBalanceQueryHandler implements QueryHandler<GetHistori
                         transaction.getDestinationWalletId().equals(transaction.getWalletId())) {
                         // This wallet is the destination - add the amount
                         balance = balance.add(transaction.getAmount());
-                        System.out.println("  + TRANSFER IN: " + transaction.getAmount() + " -> Balance: " + balance);
+
                     } else {
                         // This wallet is the source - subtract the amount
                         balance = balance.subtract(transaction.getAmount());
-                        System.out.println("  - TRANSFER OUT: " + transaction.getAmount() + " -> Balance: " + balance);
+
                     }
                     break;
                 default:
-                    System.out.println("  ? UNKNOWN TYPE: " + transaction.getType() + " - skipping");
+
                     break;
             }
         }

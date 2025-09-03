@@ -23,6 +23,16 @@ public class WalletMetrics {
     private final Counter queriesCounter;
     private final Counter failedOperationsCounter;
     
+    // Outbox and Event Publishing metrics
+    private final Counter outboxEventsCreatedCounter;
+    private final Counter outboxEventsPublishedCounter;
+    private final Counter outboxEventsFailedCounter;
+    
+    // CQRS Bus metrics
+    private final Counter commandsDispatchedCounter;
+    private final Counter queriesDispatchedCounter;
+    private final Counter busErrorsCounter;
+    
     // Money amount counters
     private final Counter moneyDepositedCounter;
     private final Counter moneyWithdrawnCounter;
@@ -34,6 +44,9 @@ public class WalletMetrics {
     private final Timer withdrawalTimer;
     private final Timer transferTimer;
     private final Timer queryTimer;
+    private final Timer outboxPublishingTimer;
+    private final Timer commandDispatchTimer;
+    private final Timer queryDispatchTimer;
     
     // Gauges for current state
     private final AtomicLong totalWallets = new AtomicLong(0);
@@ -69,6 +82,32 @@ public class WalletMetrics {
                 .tag("type", "all")
                 .register(meterRegistry);
         
+        // Initialize outbox metrics
+        this.outboxEventsCreatedCounter = Counter.builder("wallet_outbox_events_created_total")
+                .description("Total number of outbox events created")
+                .register(meterRegistry);
+                
+        this.outboxEventsPublishedCounter = Counter.builder("wallet_outbox_events_published_total")
+                .description("Total number of outbox events published to Kafka")
+                .register(meterRegistry);
+                
+        this.outboxEventsFailedCounter = Counter.builder("wallet_outbox_events_failed_total")
+                .description("Total number of outbox events that failed to publish")
+                .register(meterRegistry);
+        
+        // Initialize CQRS bus metrics
+        this.commandsDispatchedCounter = Counter.builder("wallet_cqrs_commands_dispatched_total")
+                .description("Total number of commands dispatched")
+                .register(meterRegistry);
+                
+        this.queriesDispatchedCounter = Counter.builder("wallet_cqrs_queries_dispatched_total")
+                .description("Total number of queries dispatched")
+                .register(meterRegistry);
+                
+        this.busErrorsCounter = Counter.builder("wallet_cqrs_bus_errors_total")
+                .description("Total number of CQRS bus errors")
+                .register(meterRegistry);
+        
         // Initialize money amount counters
         this.moneyDepositedCounter = Counter.builder("wallet_money_deposited_total")
                 .description("Total amount of money deposited")
@@ -101,6 +140,18 @@ public class WalletMetrics {
                 
         this.queryTimer = Timer.builder("wallet_operations_query_duration_seconds")
                 .description("Time taken to process queries")
+                .register(meterRegistry);
+                
+        this.outboxPublishingTimer = Timer.builder("wallet_outbox_publishing_duration_seconds")
+                .description("Time taken to publish outbox events")
+                .register(meterRegistry);
+                
+        this.commandDispatchTimer = Timer.builder("wallet_cqrs_command_dispatch_duration_seconds")
+                .description("Time taken to dispatch commands")
+                .register(meterRegistry);
+                
+        this.queryDispatchTimer = Timer.builder("wallet_cqrs_query_dispatch_duration_seconds")
+                .description("Time taken to dispatch queries")
                 .register(meterRegistry);
         
         // Initialize gauges
@@ -185,6 +236,56 @@ public class WalletMetrics {
     
     public void recordQuery(Timer.Sample sample) {
         sample.stop(queryTimer);
+    }
+    
+    // Outbox metrics
+    public void recordOutboxEventCreated() {
+        outboxEventsCreatedCounter.increment();
+    }
+    
+    public void recordOutboxEventPublished() {
+        outboxEventsPublishedCounter.increment();
+    }
+    
+    public void recordOutboxEventFailed() {
+        outboxEventsFailedCounter.increment();
+    }
+    
+    public Timer.Sample startOutboxPublishingTimer() {
+        return Timer.start(meterRegistry);
+    }
+    
+    public void recordOutboxPublishing(Timer.Sample sample) {
+        sample.stop(outboxPublishingTimer);
+    }
+    
+    // CQRS Bus metrics
+    public void recordCommandDispatched() {
+        commandsDispatchedCounter.increment();
+    }
+    
+    public void recordQueryDispatched() {
+        queriesDispatchedCounter.increment();
+    }
+    
+    public void recordBusError() {
+        busErrorsCounter.increment();
+    }
+    
+    public Timer.Sample startCommandDispatchTimer() {
+        return Timer.start(meterRegistry);
+    }
+    
+    public void recordCommandDispatch(Timer.Sample sample) {
+        sample.stop(commandDispatchTimer);
+    }
+    
+    public Timer.Sample startQueryDispatchTimer() {
+        return Timer.start(meterRegistry);
+    }
+    
+    public void recordQueryDispatch(Timer.Sample sample) {
+        sample.stop(queryDispatchTimer);
     }
     
     // Amount tracking

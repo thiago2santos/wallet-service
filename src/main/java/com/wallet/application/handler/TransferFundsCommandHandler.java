@@ -82,8 +82,8 @@ public class TransferFundsCommandHandler implements CommandHandler<TransferFunds
                             );
                         }
 
-                System.out.println("TransferFundsCommandHandler: Source wallet balance: " + sourceWallet.getBalance());
-                System.out.println("TransferFundsCommandHandler: Destination wallet balance: " + destinationWallet.getBalance());
+
+
 
                 // Check if sufficient funds are available in source wallet
                 if (sourceWallet.getBalance().compareTo(command.getAmount()) < 0) {
@@ -99,8 +99,8 @@ public class TransferFundsCommandHandler implements CommandHandler<TransferFunds
                 destinationWallet.setBalance(destinationWallet.getBalance().add(command.getAmount()));
                 destinationWallet.setUpdatedAt(java.time.Instant.now());
 
-                System.out.println("TransferFundsCommandHandler: Updated source balance to: " + sourceWallet.getBalance());
-                System.out.println("TransferFundsCommandHandler: Updated destination balance to: " + destinationWallet.getBalance());
+
+
 
                 // Create transaction record
                 Transaction transaction = new Transaction(
@@ -117,22 +117,22 @@ public class TransferFundsCommandHandler implements CommandHandler<TransferFunds
                 // Persist both wallets and transaction sequentially, then invalidate cache for both wallets
                 return walletWriteRepository.persist(sourceWallet)
                     .chain(() -> {
-                        System.out.println("TransferFundsCommandHandler: Source wallet persisted");
+
                         return walletWriteRepository.persist(destinationWallet);
                     })
                     .chain(() -> {
-                        System.out.println("TransferFundsCommandHandler: Destination wallet persisted, now persisting transaction");
+
                         return transactionRepository.persist(transaction);
                     })
                     .chain(() -> {
-                        System.out.println("TransferFundsCommandHandler: Transaction persisted, now invalidating caches");
+
                         return walletCache.invalidateWallet(command.getSourceWalletId());
                     })
                     .chain(() -> {
                         return walletCache.invalidateWallet(command.getDestinationWalletId());
                     })
                     .map(v -> {
-                        System.out.println("TransferFundsCommandHandler: Caches invalidated, returning ID: " + transactionId);
+
                         walletMetrics.incrementTransfers();
                         walletMetrics.recordTransferAmount(command.getAmount());
                         walletMetrics.recordTransfer(timer);

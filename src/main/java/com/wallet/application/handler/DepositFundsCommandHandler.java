@@ -64,13 +64,13 @@ public class DepositFundsCommandHandler implements CommandHandler<DepositFundsCo
         return walletReadRepository.findById(command.getWalletId())
             .onItem().ifNull().failWith(() -> new IllegalArgumentException("Wallet not found: " + command.getWalletId()))
             .chain(wallet -> {
-                System.out.println("DepositFundsCommandHandler: Found wallet with balance: " + wallet.getBalance());
+
                 
                 // Update wallet balance
                 wallet.setBalance(wallet.getBalance().add(command.getAmount()));
                 wallet.setUpdatedAt(java.time.Instant.now());
                 
-                System.out.println("DepositFundsCommandHandler: Updated balance to: " + wallet.getBalance());
+
 
                 // Create transaction record
                 Transaction transaction = new Transaction(
@@ -95,11 +95,11 @@ public class DepositFundsCommandHandler implements CommandHandler<DepositFundsCo
                 // Persist wallet, transaction, and event in same database transaction
                 return walletWriteRepository.persist(wallet)
                     .chain(() -> {
-                        System.out.println("DepositFundsCommandHandler: Wallet persisted, now persisting transaction");
+
                         return transactionRepository.persist(transaction);
                     })
                     .chain(() -> {
-                        System.out.println("DepositFundsCommandHandler: Transaction persisted, now storing event");
+
                         return outboxEventService.storeWalletEvent(
                             command.getWalletId(),
                             "FundsDeposited",
@@ -107,11 +107,11 @@ public class DepositFundsCommandHandler implements CommandHandler<DepositFundsCo
                         );
                     })
                     .chain(() -> {
-                        System.out.println("DepositFundsCommandHandler: Event stored, now invalidating cache");
+
                         return walletCache.invalidateWallet(command.getWalletId());
                     })
                     .map(v -> {
-                        System.out.println("DepositFundsCommandHandler: Cache invalidated, returning ID: " + transactionId);
+
                         // Record successful deposit metrics
                         walletMetrics.incrementDeposits();
                         walletMetrics.recordDepositAmount(command.getAmount());

@@ -66,7 +66,7 @@ public class WithdrawFundsCommandHandler implements CommandHandler<WithdrawFunds
         return walletReadRepository.findById(command.getWalletId())
             .onItem().ifNull().failWith(() -> new WalletNotFoundException(command.getWalletId()))
             .chain(wallet -> {
-                System.out.println("WithdrawFundsCommandHandler: Found wallet with balance: " + wallet.getBalance());
+
                 
                 // Check if sufficient funds are available
                 if (wallet.getBalance().compareTo(command.getAmount()) < 0) {
@@ -79,7 +79,7 @@ public class WithdrawFundsCommandHandler implements CommandHandler<WithdrawFunds
                 wallet.setBalance(wallet.getBalance().subtract(command.getAmount()));
                 wallet.setUpdatedAt(java.time.Instant.now());
                 
-                System.out.println("WithdrawFundsCommandHandler: Updated balance to: " + wallet.getBalance());
+
 
                 // Create transaction record
                 Transaction transaction = new Transaction(
@@ -104,15 +104,15 @@ public class WithdrawFundsCommandHandler implements CommandHandler<WithdrawFunds
                 // Persist wallet, transaction, and event in same database transaction
                 return walletWriteRepository.persist(wallet)
                     .chain(() -> {
-                        System.out.println("WithdrawFundsCommandHandler: Wallet persisted, now persisting transaction");
+
                         return transactionRepository.persist(transaction);
                     })
                     .chain(() -> {
-                        System.out.println("WithdrawFundsCommandHandler: Transaction persisted, now invalidating cache");
+
                         return walletCache.invalidateWallet(command.getWalletId());
                     })
                     .map(v -> {
-                        System.out.println("WithdrawFundsCommandHandler: Cache invalidated, returning ID: " + transactionId);
+
                         walletMetrics.incrementWithdrawals();
                         walletMetrics.recordWithdrawalAmount(command.getAmount());
                         walletMetrics.recordWithdrawal(timer);

@@ -6,6 +6,7 @@ import io.quarkus.reactive.datasource.ReactiveDataSource;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import com.wallet.infrastructure.metrics.WalletMetrics;
 
 /**
  * Service for managing outbox events.
@@ -20,6 +21,9 @@ public class OutboxEventService {
 
     @Inject
     ObjectMapper objectMapper;
+    
+    @Inject
+    WalletMetrics metrics;
 
     /**
      * Store an event in the outbox as part of the current transaction.
@@ -32,6 +36,7 @@ public class OutboxEventService {
             OutboxEvent outboxEvent = new OutboxEvent(aggregateType, aggregateId, eventType, eventData);
             
             return outboxRepository.persist(outboxEvent)
+                    .onItem().invoke(() -> metrics.recordOutboxEventCreated())
                     .map(v -> outboxEvent);
         } catch (JsonProcessingException e) {
             return Uni.createFrom().failure(
