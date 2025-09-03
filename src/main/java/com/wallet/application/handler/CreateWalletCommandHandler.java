@@ -10,11 +10,10 @@ import com.wallet.domain.model.Wallet;
 import com.wallet.domain.model.WalletStatus;
 import com.wallet.infrastructure.persistence.WalletRepository;
 import com.wallet.infrastructure.metrics.WalletMetrics;
+import com.wallet.infrastructure.outbox.OutboxEventService;
 
 import io.quarkus.reactive.datasource.ReactiveDataSource;
 import io.smallrye.mutiny.Uni;
-import io.smallrye.reactive.messaging.MutinyEmitter;
-import org.eclipse.microprofile.reactive.messaging.Channel;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -25,10 +24,8 @@ public class CreateWalletCommandHandler implements CommandHandler<CreateWalletCo
     @ReactiveDataSource("write")
     WalletRepository writeRepository;
 
-    // Event emitter for publishing wallet events to Kafka
     @Inject
-    @Channel("wallet-events")
-    MutinyEmitter<WalletCreatedEvent> eventEmitter;
+    OutboxEventService outboxEventService;
     
     @Inject
     WalletMetrics walletMetrics;
@@ -41,7 +38,7 @@ public class CreateWalletCommandHandler implements CommandHandler<CreateWalletCo
         
         String walletId = UUID.randomUUID().toString();
         
-        // Create event for publishing to Kafka
+        // Create event for publishing to Kafka via outbox
         WalletCreatedEvent event = new WalletCreatedEvent(
             walletId,
             command.getUserId()
@@ -56,15 +53,19 @@ public class CreateWalletCommandHandler implements CommandHandler<CreateWalletCo
         wallet.setCreatedAt(java.time.Instant.now());
         wallet.setUpdatedAt(java.time.Instant.now());
 
+        // FIXED: Use outbox pattern for reliable event publishing
+        // Both wallet and event are stored in the same database transaction
         return writeRepository.persist(wallet)
-            .chain(() -> eventEmitter.send(event)
-                .onItem().invoke(() -> walletMetrics.recordEventPublished("WALLET_CREATED"))
-                .onFailure().invoke(throwable -> walletMetrics.recordEventPublishFailure("WALLET_CREATED"))
-            )
+            .chain(() -> outboxEventService.storeWalletEvent(
+                walletId, 
+                "WalletCreated", 
+                event
+            ))
             .map(v -> {
                 // Record successful wallet creation
                 walletMetrics.incrementWalletsCreated();
                 walletMetrics.recordWalletCreation(timer);
+                walletMetrics.recordEventPublished("WALLET_CREATED");
                 return wallet.getId();
             })
             .onFailure().invoke(throwable -> {
