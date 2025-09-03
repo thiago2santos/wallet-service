@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import com.wallet.domain.event.WalletEvent;
 import com.wallet.domain.model.Wallet;
 import com.wallet.infrastructure.cache.WalletStateCache;
-import com.wallet.infrastructure.persistence.WalletReadRepository;
+import com.wallet.infrastructure.persistence.WalletRepository;
 
 import io.quarkus.reactive.datasource.ReactiveDataSource;
 import io.smallrye.mutiny.Uni;
@@ -17,7 +17,7 @@ public class WalletEventHandler {
 
     @Inject
     @ReactiveDataSource("write")
-    WalletReadRepository walletRepository;
+    WalletRepository walletRepository;
 
     @Inject
     WalletStateCache walletCache;

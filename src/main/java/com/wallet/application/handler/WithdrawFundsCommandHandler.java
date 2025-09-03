@@ -23,7 +23,7 @@ import jakarta.transaction.Transactional;
 public class WithdrawFundsCommandHandler implements CommandHandler<WithdrawFundsCommand, String> {
 
     @Inject
-    @ReactiveDataSource("write")
+    @ReactiveDataSource("read")
     WalletReadRepository walletReadRepository;
 
     @Inject

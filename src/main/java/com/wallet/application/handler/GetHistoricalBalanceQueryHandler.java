@@ -9,7 +9,7 @@ import com.wallet.core.query.QueryHandler;
 import com.wallet.domain.model.Transaction;
 import com.wallet.domain.model.TransactionType;
 import com.wallet.dto.HistoricalBalanceResponse;
-import com.wallet.infrastructure.persistence.TransactionRepository;
+import com.wallet.infrastructure.persistence.TransactionReadRepository;
 import com.wallet.infrastructure.persistence.WalletReadRepository;
 
 import io.quarkus.reactive.datasource.ReactiveDataSource;
@@ -21,12 +21,12 @@ import jakarta.inject.Inject;
 public class GetHistoricalBalanceQueryHandler implements QueryHandler<GetHistoricalBalanceQuery, HistoricalBalanceResponse> {
 
     @Inject
-    @ReactiveDataSource("write")
+    @ReactiveDataSource("read")
     WalletReadRepository walletReadRepository;
 
     @Inject
-    @ReactiveDataSource("write")
-    TransactionRepository transactionRepository;
+    @ReactiveDataSource("read")
+    TransactionReadRepository transactionRepository;
 
     @Override
     public Uni<HistoricalBalanceResponse> handle(GetHistoricalBalanceQuery query) {

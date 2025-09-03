@@ -7,6 +7,6 @@ import io.quarkus.reactive.datasource.ReactiveDataSource;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-@ReactiveDataSource("write")  // Temporarily use primary database until replication is fixed
+@ReactiveDataSource("read")  // Use replica database for read operations
 public class WalletReadRepository implements PanacheRepositoryBase<Wallet, String> {
 }

@@ -16,7 +16,7 @@ import jakarta.inject.Inject;
 public class GetWalletQueryHandler implements QueryHandler<GetWalletQuery, Wallet> {
 
     @Inject
-    @ReactiveDataSource("write")
+    @ReactiveDataSource("read")
     WalletReadRepository walletRepository;
 
     @Inject
