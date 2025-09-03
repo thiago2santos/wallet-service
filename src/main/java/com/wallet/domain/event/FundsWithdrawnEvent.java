@@ -6,7 +6,7 @@ import java.time.Instant;
 /**
  * Event published when funds are withdrawn from a wallet
  */
-public class FundsWithdrawnEvent implements WalletEvent {
+public class FundsWithdrawnEvent extends WalletEvent {
     
     private String walletId;
     private String transactionId;
@@ -29,19 +29,12 @@ public class FundsWithdrawnEvent implements WalletEvent {
         this.timestamp = Instant.now();
     }
 
-    @Override
     public String getAggregateId() {
         return walletId;
     }
 
-    @Override
     public String getEventType() {
         return "FundsWithdrawn";
-    }
-
-    @Override
-    public Instant getTimestamp() {
-        return timestamp;
     }
 
     // Getters and setters

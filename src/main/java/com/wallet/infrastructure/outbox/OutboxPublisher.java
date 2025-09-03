@@ -55,7 +55,7 @@ public class OutboxPublisher {
             return Uni.createFrom().voidItem();
         }
 
-        LOG.info("Publishing {} outbox events to Kafka", events.size());
+        LOG.infof("Publishing %d outbox events to Kafka", events.size());
 
         return Uni.combine().all().unis(
             events.stream()
@@ -68,7 +68,7 @@ public class OutboxPublisher {
      * Publish a single event to Kafka and mark it as processed
      */
     private Uni<Void> publishSingleEvent(OutboxEvent event) {
-        LOG.debug("Publishing event: {} for aggregate: {}", event.eventType, event.aggregateId);
+        LOG.debugf("Publishing event: %s for aggregate: %s", event.eventType, event.aggregateId);
 
         // Create the Kafka message with proper key for partitioning
         String kafkaKey = event.aggregateId;
@@ -77,12 +77,12 @@ public class OutboxPublisher {
         return eventEmitter.send(kafkaMessage)
                 .chain(() -> markEventAsProcessed(event))
                 .onItem().invoke(() -> 
-                    LOG.debug("Successfully published event: {} for aggregate: {}", 
+                    LOG.debugf("Successfully published event: %s for aggregate: %s", 
                         event.eventType, event.aggregateId)
                 )
                 .onFailure().invoke(throwable -> 
-                    LOG.error("Failed to publish event: {} for aggregate: {}", 
-                        event.eventType, event.aggregateId, throwable)
+                    LOG.errorf(throwable, "Failed to publish event: %s for aggregate: %s", 
+                        event.eventType, event.aggregateId)
                 );
     }
 

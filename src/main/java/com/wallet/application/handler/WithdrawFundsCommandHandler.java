@@ -98,7 +98,7 @@ public class WithdrawFundsCommandHandler implements CommandHandler<WithdrawFunds
                     transactionId,
                     command.getAmount(),
                     command.getReferenceId(),
-                    command.getDescription()
+                    "Withdrawal from wallet"
                 );
 
                 // Persist wallet, transaction, and event in same database transaction

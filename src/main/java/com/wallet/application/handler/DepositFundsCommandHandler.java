@@ -89,7 +89,7 @@ public class DepositFundsCommandHandler implements CommandHandler<DepositFundsCo
                     transactionId,
                     command.getAmount(),
                     command.getReferenceId(),
-                    command.getDescription()
+                    "Deposit to wallet"
                 );
 
                 // Persist wallet, transaction, and event in same database transaction
