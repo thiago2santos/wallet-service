@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import com.wallet.application.command.DepositFundsCommand;
 import com.wallet.core.command.CommandHandler;
+import com.wallet.domain.event.FundsDepositedEvent;
 import com.wallet.domain.model.Transaction;
 import com.wallet.domain.model.TransactionStatus;
 import com.wallet.domain.model.TransactionType;
@@ -13,6 +14,7 @@ import com.wallet.infrastructure.persistence.WalletReadRepository;
 import com.wallet.infrastructure.persistence.WalletRepository;
 import com.wallet.infrastructure.cache.WalletStateCache;
 import com.wallet.infrastructure.metrics.WalletMetrics;
+import com.wallet.infrastructure.outbox.OutboxEventService;
 import io.quarkus.reactive.datasource.ReactiveDataSource;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -39,6 +41,9 @@ public class DepositFundsCommandHandler implements CommandHandler<DepositFundsCo
     
     @Inject
     WalletMetrics walletMetrics;
+
+    @Inject
+    OutboxEventService outboxEventService;
 
     @Override
     @Transactional
@@ -78,14 +83,31 @@ public class DepositFundsCommandHandler implements CommandHandler<DepositFundsCo
                 );
                 transaction.setDescription("Deposit to wallet");
 
-                // Persist both wallet and transaction, then invalidate cache
+                // Create event for publishing
+                FundsDepositedEvent event = new FundsDepositedEvent(
+                    command.getWalletId(),
+                    transactionId,
+                    command.getAmount(),
+                    command.getReferenceId(),
+                    command.getDescription()
+                );
+
+                // Persist wallet, transaction, and event in same database transaction
                 return walletWriteRepository.persist(wallet)
                     .chain(() -> {
                         System.out.println("DepositFundsCommandHandler: Wallet persisted, now persisting transaction");
                         return transactionRepository.persist(transaction);
                     })
                     .chain(() -> {
-                        System.out.println("DepositFundsCommandHandler: Transaction persisted, now invalidating cache");
+                        System.out.println("DepositFundsCommandHandler: Transaction persisted, now storing event");
+                        return outboxEventService.storeWalletEvent(
+                            command.getWalletId(),
+                            "FundsDeposited",
+                            event
+                        );
+                    })
+                    .chain(() -> {
+                        System.out.println("DepositFundsCommandHandler: Event stored, now invalidating cache");
                         return walletCache.invalidateWallet(command.getWalletId());
                     })
                     .map(v -> {
@@ -94,6 +116,7 @@ public class DepositFundsCommandHandler implements CommandHandler<DepositFundsCo
                         walletMetrics.incrementDeposits();
                         walletMetrics.recordDepositAmount(command.getAmount());
                         walletMetrics.recordDeposit(timer);
+                        walletMetrics.recordEventPublished("FUNDS_DEPOSITED");
                         return transactionId;
                     });
             })
