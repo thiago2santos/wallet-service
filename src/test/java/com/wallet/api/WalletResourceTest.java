@@ -90,7 +90,8 @@ class WalletResourceTest {
         
         // Verify the command was created with correct parameters
         verify(commandBus).dispatch(argThat(command -> 
-            "user-456".equals(command.getUserId())
+            command instanceof CreateWalletCommand && 
+            "user-456".equals(((CreateWalletCommand) command).getUserId())
         ));
     }
 }

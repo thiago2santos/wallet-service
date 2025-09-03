@@ -6,6 +6,8 @@ import com.wallet.domain.model.WalletStatus;
 import com.wallet.infrastructure.persistence.WalletRepository;
 import com.wallet.infrastructure.metrics.WalletMetrics;
 import com.wallet.infrastructure.outbox.OutboxEventService;
+import com.wallet.infrastructure.outbox.OutboxEvent;
+import io.micrometer.core.instrument.Timer;
 import io.smallrye.mutiny.Uni;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,10 +45,12 @@ class CreateWalletCommandHandlerTest {
         command = new CreateWalletCommand("user-123");
         
         // Setup common mocks
+        Timer.Sample mockTimerSample = mock(Timer.Sample.class);
         when(walletMetrics.startWalletCreationTimer())
-            .thenReturn(() -> {}); // Mock timer that does nothing
-        when(outboxEventService.storeEvent(any(), any(), any()))
-            .thenReturn(Uni.createFrom().voidItem());
+            .thenReturn(mockTimerSample);
+        OutboxEvent mockOutboxEvent = new OutboxEvent();
+        when(outboxEventService.storeEvent(any(), any(), any(), any()))
+            .thenReturn(Uni.createFrom().item(mockOutboxEvent));
     }
 
     @Test
