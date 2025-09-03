@@ -2,6 +2,7 @@
 
 - **Getting Started**
   - [Overview](README.md)
+  - [🚀 Current Status](CURRENT-STATUS.md)
   - [🚨 Implementation Status](implementation-status.md)
   - [Development Setup](development.md)
 
@@ -17,11 +18,15 @@
   - [Error Handling](error-handling.md)
   - [Rate Limiting](rate-limiting.md)
 
+- **Performance & Testing**
+  - [📊 Performance Report](performance/results/baseline-performance-report.md)
+  - [⚡ Performance Testing](performance/execution-guide.md)
+  - [🧪 Testing Strategy](testing.md)
+  - [📈 Load Testing Plan](load-testing-plan.md)
+
 - **Development**
   - [Local Setup](development.md)
   - [Git Workflow](git-workflow.md)
-  - [Testing Strategy](testing.md)
-  - [Load Testing Plan](load-testing-plan.md)
   - [Code Quality](code-quality.md)
   - [Contributing](contributing.md)
 
