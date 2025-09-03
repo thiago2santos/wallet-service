@@ -38,9 +38,9 @@ updates:
       - "dependencies"
       - "github-actions"
     
-  # Docker dependencies
+  # Docker dependencies - Quarkus Dockerfiles location
   - package-ecosystem: "docker"
-    directory: "/"
+    directory: "/src/main/docker"
     schedule:
       interval: "weekly"
       day: "monday"
