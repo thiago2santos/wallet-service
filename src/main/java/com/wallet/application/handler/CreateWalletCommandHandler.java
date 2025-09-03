@@ -9,6 +9,7 @@ import com.wallet.domain.event.WalletCreatedEvent;
 import com.wallet.domain.model.Wallet;
 import com.wallet.domain.model.WalletStatus;
 import com.wallet.infrastructure.persistence.WalletRepository;
+import com.wallet.infrastructure.metrics.WalletMetrics;
 
 import io.quarkus.reactive.datasource.ReactiveDataSource;
 import io.smallrye.mutiny.Uni;
@@ -28,13 +29,19 @@ public class CreateWalletCommandHandler implements CommandHandler<CreateWalletCo
     @Inject
     @Channel("wallet-events")
     MutinyEmitter<WalletCreatedEvent> eventEmitter;
+    
+    @Inject
+    WalletMetrics walletMetrics;
 
     @Override
     @Transactional
     public Uni<String> handle(CreateWalletCommand command) {
+        // Start metrics timer
+        var timer = walletMetrics.startWalletCreationTimer();
+        
         String walletId = UUID.randomUUID().toString();
         
-        // Create event for future use (currently not emitted)
+        // Create event for publishing to Kafka
         WalletCreatedEvent event = new WalletCreatedEvent(
             walletId,
             command.getUserId()
@@ -50,7 +57,20 @@ public class CreateWalletCommandHandler implements CommandHandler<CreateWalletCo
         wallet.setUpdatedAt(java.time.Instant.now());
 
         return writeRepository.persist(wallet)
-            .chain(() -> eventEmitter.send(event)) // ENABLED: Publish event to Kafka
-            .map(v -> wallet.getId());
+            .chain(() -> eventEmitter.send(event)
+                .onItem().invoke(() -> walletMetrics.recordEventPublished("WALLET_CREATED"))
+                .onFailure().invoke(throwable -> walletMetrics.recordEventPublishFailure("WALLET_CREATED"))
+            )
+            .map(v -> {
+                // Record successful wallet creation
+                walletMetrics.incrementWalletsCreated();
+                walletMetrics.recordWalletCreation(timer);
+                return wallet.getId();
+            })
+            .onFailure().invoke(throwable -> {
+                // Record failed operation
+                walletMetrics.incrementFailedOperations("wallet_creation");
+                walletMetrics.recordWalletCreation(timer);
+            });
     }
 }

@@ -11,6 +11,7 @@ import com.wallet.infrastructure.persistence.TransactionRepository;
 import com.wallet.infrastructure.persistence.WalletReadRepository;
 import com.wallet.infrastructure.persistence.WalletRepository;
 import com.wallet.infrastructure.cache.WalletStateCache;
+import com.wallet.infrastructure.metrics.WalletMetrics;
 import io.quarkus.reactive.datasource.ReactiveDataSource;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -34,10 +35,16 @@ public class DepositFundsCommandHandler implements CommandHandler<DepositFundsCo
 
     @Inject
     WalletStateCache walletCache;
+    
+    @Inject
+    WalletMetrics walletMetrics;
 
     @Override
     @Transactional
     public Uni<String> handle(DepositFundsCommand command) {
+        // Start metrics timer
+        var timer = walletMetrics.startDepositTimer();
+        
         String transactionId = UUID.randomUUID().toString();
 
         // First, check if wallet exists and get current balance
@@ -75,8 +82,17 @@ public class DepositFundsCommandHandler implements CommandHandler<DepositFundsCo
                     })
                     .map(v -> {
                         System.out.println("DepositFundsCommandHandler: Cache invalidated, returning ID: " + transactionId);
+                        // Record successful deposit metrics
+                        walletMetrics.incrementDeposits();
+                        walletMetrics.recordDepositAmount(command.getAmount());
+                        walletMetrics.recordDeposit(timer);
                         return transactionId;
                     });
+            })
+            .onFailure().invoke(throwable -> {
+                // Record failed deposit
+                walletMetrics.incrementFailedOperations("deposit");
+                walletMetrics.recordDeposit(timer);
             });
     }
 }

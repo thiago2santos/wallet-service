@@ -5,6 +5,7 @@ import com.wallet.core.query.QueryHandler;
 import com.wallet.domain.model.Wallet;
 import com.wallet.infrastructure.cache.WalletStateCache;
 import com.wallet.infrastructure.persistence.WalletReadRepository;
+import com.wallet.infrastructure.metrics.WalletMetrics;
 
 import io.quarkus.reactive.datasource.ReactiveDataSource;
 import io.smallrye.mutiny.Uni;
@@ -20,15 +21,25 @@ public class GetWalletQueryHandler implements QueryHandler<GetWalletQuery, Walle
 
     @Inject
     WalletStateCache walletCache;
+    
+    @Inject
+    WalletMetrics walletMetrics;
 
     @Override
     public Uni<Wallet> handle(GetWalletQuery query) {
+        var timer = walletMetrics.startQueryTimer();
+        
         return walletCache.getWallet(query.getWalletId())
                 .onItem().ifNull().switchTo(() -> 
                     walletRepository.findById(query.getWalletId())
                         .onItem().ifNotNull().call(wallet -> 
                             walletCache.cacheWallet(wallet)
                         )
-                );
+                )
+                .onItem().invoke(wallet -> walletMetrics.recordQuery(timer))
+                .onFailure().invoke(throwable -> {
+                    walletMetrics.incrementFailedOperations("query");
+                    walletMetrics.recordQuery(timer);
+                });
     }
 }
