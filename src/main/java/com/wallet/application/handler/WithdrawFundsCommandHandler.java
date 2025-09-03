@@ -16,6 +16,8 @@ import com.wallet.exception.WalletNotFoundException;
 import com.wallet.exception.InsufficientFundsException;
 import com.wallet.exception.InvalidTransferException;
 import com.wallet.infrastructure.metrics.WalletMetrics;
+import com.wallet.infrastructure.outbox.OutboxEventService;
+import com.wallet.domain.event.FundsWithdrawnEvent;
 
 import io.quarkus.reactive.datasource.ReactiveDataSource;
 import io.smallrye.mutiny.Uni;
@@ -43,6 +45,9 @@ public class WithdrawFundsCommandHandler implements CommandHandler<WithdrawFunds
 
     @Inject
     WalletMetrics walletMetrics;
+
+    @Inject
+    OutboxEventService outboxEventService;
 
     @Override
     @Transactional
@@ -87,7 +92,16 @@ public class WithdrawFundsCommandHandler implements CommandHandler<WithdrawFunds
                 );
                 transaction.setDescription("Withdrawal from wallet");
 
-                // Persist both wallet and transaction, then invalidate cache
+                // Create event for publishing
+                FundsWithdrawnEvent event = new FundsWithdrawnEvent(
+                    command.getWalletId(),
+                    transactionId,
+                    command.getAmount(),
+                    command.getReferenceId(),
+                    command.getDescription()
+                );
+
+                // Persist wallet, transaction, and event in same database transaction
                 return walletWriteRepository.persist(wallet)
                     .chain(() -> {
                         System.out.println("WithdrawFundsCommandHandler: Wallet persisted, now persisting transaction");

@@ -113,3 +113,4 @@ Hibernate:
         (balance, createdAt, status, updatedAt, userId, id) 
     values
         (?, ?, ?, ?, ?, ?)
+2025-09-03 10:21:03,468 INFO  [io.quarkus] (Shutdown thread) wallet-service stopped in 0.492s
