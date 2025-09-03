@@ -111,8 +111,8 @@ public class WalletResource {
             request.getReferenceId()
         );
 
-        // Temporary direct call to test the handler
-        return depositFundsHandler.handle(command)
+        // Using CommandBus for proper CQRS architecture
+        return commandBus.dispatch(command)
             .map(transactionId -> Response.ok()
                 .location(URI.create("/api/v1/transactions/" + transactionId))
                 .build()
@@ -132,8 +132,8 @@ public class WalletResource {
             request.getReferenceId()
         );
 
-        // Temporary direct call to test the handler
-        return withdrawFundsHandler.handle(command)
+        // Using CommandBus for proper CQRS architecture
+        return commandBus.dispatch(command)
             .map(transactionId -> Response.ok()
                 .location(URI.create("/api/v1/transactions/" + transactionId))
                 .build()
@@ -154,8 +154,8 @@ public class WalletResource {
             request.getReferenceId()
         );
 
-        // Temporary direct call to test the handler
-        return transferFundsHandler.handle(command)
+        // Using CommandBus for proper CQRS architecture
+        return commandBus.dispatch(command)
             .map(transactionId -> Response.ok()
                 .location(URI.create("/api/v1/transactions/" + transactionId))
                 .build()
@@ -184,12 +184,12 @@ public class WalletResource {
             
             GetHistoricalBalanceQuery query = new GetHistoricalBalanceQuery(walletId, timestamp);
 
-            // Temporary direct call to test the handler
-            return historicalBalanceQueryHandler.handle(query)
+            // Using QueryBus for proper CQRS architecture
+            return queryBus.dispatch(query)
                 .map(response -> Response.ok(response).build())
                 .onFailure(IllegalArgumentException.class)
-                .recoverWithItem(e -> Response.status(Response.Status.NOT_FOUND)
-                    .entity("{\"error\": \"" + e.getMessage() + "\"}")
+                .recoverWithItem(ex -> Response.status(Response.Status.NOT_FOUND)
+                    .entity("{\"error\": \"" + ((Exception) ex).getMessage() + "\"}")
                     .build());
         } catch (Exception e) {
             return Uni.createFrom().item(
