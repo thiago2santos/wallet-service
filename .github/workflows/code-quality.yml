@@ -2,12 +2,13 @@ name: 🔍 Code Quality & Security Analysis
 
 on:
   push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main, develop ]
-  schedule:
-    # Run security scans daily at 2 AM UTC
-    - cron: '0 2 * * *'
+    branches: [ main ]
+  # Disabled for now - keeping it simple
+  # pull_request:
+  #   branches: [ main, develop ]
+  # schedule:
+  #   # Run security scans daily at 2 AM UTC
+  #   - cron: '0 2 * * *'
 
 env:
   JAVA_VERSION: '21'

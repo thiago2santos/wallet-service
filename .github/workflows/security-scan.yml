@@ -1,12 +1,13 @@
 name: 🔒 Security Scan
 
+# Disabled for now - keeping it simple
 on:
-  push:
-    branches: [ main ]
-  schedule:
-    # Run security scans daily at 2 AM UTC
-    - cron: '0 2 * * *'
   workflow_dispatch:
+  # push:
+  #   branches: [ main ]
+  # schedule:
+  #   # Run security scans daily at 2 AM UTC
+  #   - cron: '0 2 * * *'
 
 env:
   JAVA_VERSION: '21'
