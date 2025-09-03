@@ -2,7 +2,7 @@ name: 🔍 PR Quality Check
 
 on:
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main ]
 
 env:
   JAVA_VERSION: '21'
@@ -26,6 +26,9 @@ jobs:
         java-version: ${{ env.JAVA_VERSION }}
         distribution: 'temurin'
         cache: maven
+    
+    - name: 🔧 Make Maven Wrapper Executable
+      run: chmod +x ./mvnw
     
     - name: 🧪 Run Tests
       run: ./mvnw clean test -B

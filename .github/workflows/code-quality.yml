@@ -2,9 +2,9 @@ name: 🔍 Code Quality & Security Analysis
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main ]
   schedule:
     # Run security scans daily at 2 AM UTC
     - cron: '0 2 * * *'
@@ -31,6 +31,9 @@ jobs:
         java-version: ${{ env.JAVA_VERSION }}
         distribution: 'temurin'
         cache: maven
+    
+    - name: 🔧 Make Maven Wrapper Executable
+      run: chmod +x ./mvnw
     
     - name: 🧪 Run Unit Tests
       run: ./mvnw clean test -B
@@ -188,7 +191,9 @@ jobs:
         image: mysql:8.0
         env:
           MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: wallet_test
+          MYSQL_DATABASE: wallet
+          MYSQL_USER: wallet
+          MYSQL_PASSWORD: wallet
         options: >-
           --health-cmd="mysqladmin ping"
           --health-interval=10s
@@ -219,9 +224,9 @@ jobs:
     - name: 🧪 Run Integration Tests
       run: ./mvnw verify -B -DskipITs=false
       env:
-        QUARKUS_DATASOURCE_JDBC_URL: jdbc:mysql://localhost:3306/wallet_test
-        QUARKUS_DATASOURCE_USERNAME: root
-        QUARKUS_DATASOURCE_PASSWORD: root
+        QUARKUS_DATASOURCE_JDBC_URL: jdbc:mysql://localhost:3306/wallet
+        QUARKUS_DATASOURCE_USERNAME: wallet
+        QUARKUS_DATASOURCE_PASSWORD: wallet
     
     - name: 📊 Upload Integration Test Results
       uses: dorny/test-reporter@v1
@@ -268,8 +273,8 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       run: |
         ./mvnw clean verify sonar:sonar \
-          -Dsonar.projectKey=wallet-service \
-          -Dsonar.organization=your-org \
+          -Dsonar.projectKey=thiago2santos_wallet-service \
+          -Dsonar.organization=thiago2santos \
           -Dsonar.host.url=https://sonarcloud.io \
           -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
 
