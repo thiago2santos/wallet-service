@@ -4,8 +4,9 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import com.wallet.core.query.Query;
+import com.wallet.dto.HistoricalBalanceResponse;
 
-public class GetHistoricalBalanceQuery implements Query {
+public class GetHistoricalBalanceQuery implements Query<HistoricalBalanceResponse> {
     private final String queryId;
     private final String walletId;
     private final LocalDateTime timestamp;

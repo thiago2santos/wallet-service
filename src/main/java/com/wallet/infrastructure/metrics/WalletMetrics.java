@@ -20,6 +20,7 @@ public class WalletMetrics {
     private final Counter depositsCounter;
     private final Counter withdrawalsCounter;
     private final Counter transfersCounter;
+    private final Counter queriesCounter;
     private final Counter failedOperationsCounter;
     
     // Timers for operation performance
@@ -38,45 +39,49 @@ public class WalletMetrics {
         this.meterRegistry = meterRegistry;
         
         // Initialize counters
-        this.walletsCreatedCounter = Counter.builder("wallet.operations.created")
+        this.walletsCreatedCounter = Counter.builder("wallet_operations_created_total")
                 .description("Total number of wallets created")
                 .register(meterRegistry);
                 
-        this.depositsCounter = Counter.builder("wallet.operations.deposits")
+        this.depositsCounter = Counter.builder("wallet_operations_deposits_total")
                 .description("Total number of deposit operations")
                 .register(meterRegistry);
                 
-        this.withdrawalsCounter = Counter.builder("wallet.operations.withdrawals")
+        this.withdrawalsCounter = Counter.builder("wallet_operations_withdrawals_total")
                 .description("Total number of withdrawal operations")
                 .register(meterRegistry);
                 
-        this.transfersCounter = Counter.builder("wallet.operations.transfers")
+        this.transfersCounter = Counter.builder("wallet_operations_transfers_total")
                 .description("Total number of transfer operations")
                 .register(meterRegistry);
                 
-        this.failedOperationsCounter = Counter.builder("wallet.operations.failed")
+        this.queriesCounter = Counter.builder("wallet_operations_queries_total")
+                .description("Total number of query operations")
+                .register(meterRegistry);
+                
+        this.failedOperationsCounter = Counter.builder("wallet_operations_failed_total")
                 .description("Total number of failed operations")
                 .tag("type", "all")
                 .register(meterRegistry);
         
         // Initialize timers
-        this.walletCreationTimer = Timer.builder("wallet.operations.creation.duration")
+        this.walletCreationTimer = Timer.builder("wallet_operations_creation_duration_seconds")
                 .description("Time taken to create a wallet")
                 .register(meterRegistry);
                 
-        this.depositTimer = Timer.builder("wallet.operations.deposit.duration")
+        this.depositTimer = Timer.builder("wallet_operations_deposit_duration_seconds")
                 .description("Time taken to process a deposit")
                 .register(meterRegistry);
                 
-        this.withdrawalTimer = Timer.builder("wallet.operations.withdrawal.duration")
+        this.withdrawalTimer = Timer.builder("wallet_operations_withdrawal_duration_seconds")
                 .description("Time taken to process a withdrawal")
                 .register(meterRegistry);
                 
-        this.transferTimer = Timer.builder("wallet.operations.transfer.duration")
+        this.transferTimer = Timer.builder("wallet_operations_transfer_duration_seconds")
                 .description("Time taken to process a transfer")
                 .register(meterRegistry);
                 
-        this.queryTimer = Timer.builder("wallet.operations.query.duration")
+        this.queryTimer = Timer.builder("wallet_operations_query_duration_seconds")
                 .description("Time taken to process queries")
                 .register(meterRegistry);
         
@@ -109,6 +114,10 @@ public class WalletMetrics {
     public void incrementTransfers() {
         transfersCounter.increment();
         totalTransactions.incrementAndGet();
+    }
+    
+    public void incrementQueries() {
+        queriesCounter.increment();
     }
     
     public void incrementFailedOperations(String operationType) {

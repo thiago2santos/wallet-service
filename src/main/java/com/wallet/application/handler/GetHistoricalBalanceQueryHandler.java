@@ -11,6 +11,7 @@ import com.wallet.domain.model.TransactionType;
 import com.wallet.dto.HistoricalBalanceResponse;
 import com.wallet.infrastructure.persistence.TransactionReadRepository;
 import com.wallet.infrastructure.persistence.WalletReadRepository;
+import com.wallet.infrastructure.metrics.WalletMetrics;
 
 import io.quarkus.reactive.datasource.ReactiveDataSource;
 import io.smallrye.mutiny.Uni;
@@ -28,8 +29,12 @@ public class GetHistoricalBalanceQueryHandler implements QueryHandler<GetHistori
     @ReactiveDataSource("read")
     TransactionReadRepository transactionRepository;
 
+    @Inject
+    WalletMetrics walletMetrics;
+
     @Override
     public Uni<HistoricalBalanceResponse> handle(GetHistoricalBalanceQuery query) {
+        var timer = walletMetrics.startQueryTimer();
         System.out.println("GetHistoricalBalanceQueryHandler: Processing query for wallet " + query.getWalletId() + " at timestamp " + query.getTimestamp());
 
         // First, verify the wallet exists
@@ -58,6 +63,14 @@ public class GetHistoricalBalanceQueryHandler implements QueryHandler<GetHistori
                         query.getTimestamp()
                     );
                 });
+            })
+            .onItem().invoke(response -> {
+                walletMetrics.incrementQueries();
+                walletMetrics.recordQuery(timer);
+            })
+            .onFailure().invoke(throwable -> {
+                walletMetrics.incrementFailedOperations("query");
+                walletMetrics.recordQuery(timer);
             });
     }
 

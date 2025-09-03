@@ -7,6 +7,8 @@ import com.wallet.infrastructure.cache.WalletStateCache;
 import com.wallet.infrastructure.persistence.WalletReadRepository;
 import com.wallet.infrastructure.metrics.WalletMetrics;
 
+import jakarta.ws.rs.NotFoundException;
+
 import io.quarkus.reactive.datasource.ReactiveDataSource;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -36,7 +38,13 @@ public class GetWalletQueryHandler implements QueryHandler<GetWalletQuery, Walle
                             walletCache.cacheWallet(wallet)
                         )
                 )
-                .onItem().invoke(wallet -> walletMetrics.recordQuery(timer))
+                .onItem().ifNull().failWith(() -> 
+                    new NotFoundException("Wallet not found: " + query.getWalletId())
+                )
+                .onItem().invoke(wallet -> {
+                    walletMetrics.incrementQueries();
+                    walletMetrics.recordQuery(timer);
+                })
                 .onFailure().invoke(throwable -> {
                     walletMetrics.incrementFailedOperations("query");
                     walletMetrics.recordQuery(timer);

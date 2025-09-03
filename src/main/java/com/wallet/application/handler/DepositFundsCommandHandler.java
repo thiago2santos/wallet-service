@@ -1,5 +1,6 @@
 package com.wallet.application.handler;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 import com.wallet.application.command.DepositFundsCommand;
@@ -44,6 +45,13 @@ public class DepositFundsCommandHandler implements CommandHandler<DepositFundsCo
     public Uni<String> handle(DepositFundsCommand command) {
         // Start metrics timer
         var timer = walletMetrics.startDepositTimer();
+        
+        // Validate amount is positive
+        if (command.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
+            return Uni.createFrom().failure(
+                new IllegalArgumentException("Deposit amount must be positive")
+            );
+        }
         
         String transactionId = UUID.randomUUID().toString();
 
