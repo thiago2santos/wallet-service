@@ -32,7 +32,7 @@ class CreateWalletCommandHandlerTest {
 
     @BeforeEach
     void setUp() {
-        command = new CreateWalletCommand("user-123", "USD");
+        command = new CreateWalletCommand("user-123");
     }
 
     @Test
@@ -57,7 +57,7 @@ class CreateWalletCommandHandlerTest {
         
         Wallet capturedWallet = walletCaptor.getValue();
         assertEquals("user-123", capturedWallet.getUserId());
-        assertEquals("USD", capturedWallet.getCurrency());
+
         assertEquals(BigDecimal.ZERO, capturedWallet.getBalance());
         assertEquals(WalletStatus.ACTIVE.name(), capturedWallet.getStatus());
         assertNotNull(capturedWallet.getId());
@@ -85,30 +85,7 @@ class CreateWalletCommandHandlerTest {
         assertNotEquals(walletId1, walletId2);
     }
 
-    @Test
-    void shouldHandleDifferentCurrencies() {
-        // Given
-        CreateWalletCommand eurCommand = new CreateWalletCommand("user-456", "EUR");
-        when(walletRepository.persist(any(Wallet.class)))
-            .thenAnswer(invocation -> {
-                Wallet wallet = invocation.getArgument(0);
-                return Uni.createFrom().item(wallet);
-            });
 
-        // When
-        Uni<String> result = handler.handle(eurCommand);
-
-        // Then
-        String walletId = result.await().indefinitely();
-        assertNotNull(walletId);
-
-        ArgumentCaptor<Wallet> walletCaptor = ArgumentCaptor.forClass(Wallet.class);
-        verify(walletRepository).persist(walletCaptor.capture());
-        
-        Wallet capturedWallet = walletCaptor.getValue();
-        assertEquals("user-456", capturedWallet.getUserId());
-        assertEquals("EUR", capturedWallet.getCurrency());
-    }
 
     @Test
     void shouldPropagateRepositoryFailure() {

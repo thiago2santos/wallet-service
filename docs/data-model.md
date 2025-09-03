@@ -11,7 +11,7 @@ classDiagram
     class Wallet {
         +String id
         +String userId
-        +String currency
+
         +BigDecimal balance
         +WalletStatus status
         +DateTime createdAt
@@ -54,7 +54,7 @@ classDiagram
 CREATE TABLE wallet (
     id VARCHAR(36) PRIMARY KEY,
     user_id VARCHAR(36) NOT NULL,
-    currency VARCHAR(3) NOT NULL,
+
     balance DECIMAL(19,4) NOT NULL DEFAULT 0.0000,
     status ENUM('ACTIVE', 'FROZEN', 'CLOSED') NOT NULL DEFAULT 'ACTIVE',
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -201,7 +201,7 @@ CREATE TABLE transaction (
 Key: wallet:{wallet_id}:balance
 Value: {
   "balance": "100.50",
-  "currency": "USD",
+
   "updated_at": "2024-03-21T10:30:00Z"
 }
 TTL: 300 seconds

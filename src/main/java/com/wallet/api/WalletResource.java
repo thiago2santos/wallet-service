@@ -73,8 +73,7 @@ public class WalletResource {
 
     public Uni<Response> createWallet(CreateWalletRequest request) {
         CreateWalletCommand command = new CreateWalletCommand(
-            request.getUserId(),
-            request.getCurrency()
+            request.getUserId()
         );
 
         // Temporary direct call for debugging

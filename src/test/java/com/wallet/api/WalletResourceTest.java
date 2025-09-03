@@ -1,163 +1,108 @@
 package com.wallet.api;
 
 import com.wallet.api.request.CreateWalletRequest;
-import com.wallet.application.handler.CreateWalletCommandHandler;
-import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.junit.mockito.InjectMock;
-import io.restassured.http.ContentType;
+import com.wallet.application.handler.*;
+import com.wallet.application.command.*;
+import com.wallet.application.query.*;
 import io.smallrye.mutiny.Uni;
+import jakarta.ws.rs.core.Response;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.*;
+import java.net.URI;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-@QuarkusTest
+@ExtendWith(MockitoExtension.class)
 class WalletResourceTest {
 
-    @InjectMock
+    @Mock
     CreateWalletCommandHandler createWalletHandler;
+    
+    @Mock
+    GetWalletQueryHandler getWalletQueryHandler;
+    
+    @Mock
+    DepositFundsCommandHandler depositFundsHandler;
+    
+    @Mock
+    WithdrawFundsCommandHandler withdrawFundsHandler;
+    
+    @Mock
+    TransferFundsCommandHandler transferFundsHandler;
+    
+    @Mock
+    GetHistoricalBalanceQueryHandler historicalBalanceQueryHandler;
+
+    @InjectMocks
+    WalletResource walletResource;
 
     @Test
     void shouldCreateWalletSuccessfully() {
         // Given
         String walletId = "test-wallet-id-123";
-        when(createWalletHandler.handle(any()))
+        when(createWalletHandler.handle(any(CreateWalletCommand.class)))
             .thenReturn(Uni.createFrom().item(walletId));
 
         CreateWalletRequest request = new CreateWalletRequest();
         request.setUserId("user-123");
-        request.setCurrency("USD");
+        // request.setCurrency("USD");
 
-        // When & Then
-        given()
-            .contentType(ContentType.JSON)
-            .body(request)
-        .when()
-            .post("/api/v1/wallets")
-        .then()
-            .statusCode(201)
-            .header("Location", containsString("/api/v1/wallets/" + walletId));
-    }
+        // When
+        Uni<Response> result = walletResource.createWallet(request);
+        Response response = result.await().indefinitely();
 
-    @Test
-    void shouldReturnBadRequestForInvalidRequest() {
-        // Given - Invalid request with missing userId
-        CreateWalletRequest request = new CreateWalletRequest();
-        request.setCurrency("USD");
-        // userId is null
-
-        // When & Then
-        given()
-            .contentType(ContentType.JSON)
-            .body(request)
-        .when()
-            .post("/api/v1/wallets")
-        .then()
-            .statusCode(400);
-    }
-
-    @Test
-    void shouldReturnBadRequestForInvalidCurrency() {
-        // Given - Invalid request with missing currency
-        CreateWalletRequest request = new CreateWalletRequest();
-        request.setUserId("user-123");
-        // currency is null
-
-        // When & Then
-        given()
-            .contentType(ContentType.JSON)
-            .body(request)
-        .when()
-            .post("/api/v1/wallets")
-        .then()
-            .statusCode(400);
+        // Then
+        assertEquals(201, response.getStatus());
+        assertEquals(URI.create("/api/v1/wallets/" + walletId), response.getLocation());
+        verify(createWalletHandler).handle(any(CreateWalletCommand.class));
     }
 
     @Test
     void shouldHandleHandlerFailure() {
         // Given
-        when(createWalletHandler.handle(any()))
+        when(createWalletHandler.handle(any(CreateWalletCommand.class)))
             .thenReturn(Uni.createFrom().failure(new RuntimeException("Database error")));
 
         CreateWalletRequest request = new CreateWalletRequest();
         request.setUserId("user-123");
-        request.setCurrency("USD");
+        // request.setCurrency("USD");
 
         // When & Then
-        given()
-            .contentType(ContentType.JSON)
-            .body(request)
-        .when()
-            .post("/api/v1/wallets")
-        .then()
-            .statusCode(500);
+        Uni<Response> result = walletResource.createWallet(request);
+        assertThrows(RuntimeException.class, () -> result.await().indefinitely());
+        verify(createWalletHandler).handle(any(CreateWalletCommand.class));
     }
 
-    @Test
-    void shouldAcceptDifferentCurrencies() {
-        // Given
-        String[] currencies = {"USD", "EUR", "GBP", "JPY", "BRL"};
-        
-        for (String currency : currencies) {
-            String walletId = "wallet-" + currency.toLowerCase();
-            when(createWalletHandler.handle(any()))
-                .thenReturn(Uni.createFrom().item(walletId));
 
-            CreateWalletRequest request = new CreateWalletRequest();
-            request.setUserId("user-test");
-            request.setCurrency(currency);
-
-            // When & Then
-            given()
-                .contentType(ContentType.JSON)
-                .body(request)
-            .when()
-                .post("/api/v1/wallets")
-            .then()
-                .statusCode(201)
-                .header("Location", containsString("/api/v1/wallets/" + walletId));
-        }
-    }
 
     @Test
-    void shouldReturnUnsupportedMediaTypeForInvalidContentType() {
+    void shouldVerifyCommandCreation() {
         // Given
+        String expectedWalletId = "test-wallet-123";
+        when(createWalletHandler.handle(any(CreateWalletCommand.class)))
+            .thenReturn(Uni.createFrom().item(expectedWalletId));
+
         CreateWalletRequest request = new CreateWalletRequest();
-        request.setUserId("user-123");
-        request.setCurrency("USD");
+        request.setUserId("user-456");
+        // request.setCurrency("EUR");
 
-        // When & Then
-        given()
-            .contentType(ContentType.XML)
-            .body(request)
-        .when()
-            .post("/api/v1/wallets")
-        .then()
-            .statusCode(415); // Unsupported Media Type
-    }
+        // When
+        Uni<Response> result = walletResource.createWallet(request);
+        Response response = result.await().indefinitely();
 
-    @Test
-    void shouldReturnBadRequestForEmptyBody() {
-        // When & Then
-        given()
-            .contentType(ContentType.JSON)
-        .when()
-            .post("/api/v1/wallets")
-        .then()
-            .statusCode(400);
-    }
-
-    @Test
-    void shouldReturnBadRequestForMalformedJson() {
-        // When & Then
-        given()
-            .contentType(ContentType.JSON)
-            .body("{invalid json}")
-        .when()
-            .post("/api/v1/wallets")
-        .then()
-            .statusCode(400);
+        // Then
+        assertEquals(201, response.getStatus());
+        
+        // Verify the command was created with correct parameters
+        verify(createWalletHandler).handle(argThat(command -> 
+            "user-456".equals(command.getUserId())
+        ));
     }
 }

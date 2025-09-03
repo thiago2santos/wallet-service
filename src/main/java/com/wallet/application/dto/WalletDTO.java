@@ -7,17 +7,16 @@ import java.time.LocalDateTime;
 public class WalletDTO {
     private final String id;
     private final String userId;
-    private final String currency;
+
     private final BigDecimal balance;
     private final WalletStatus status;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
-    public WalletDTO(String id, String userId, String currency, BigDecimal balance,
+    public WalletDTO(String id, String userId, BigDecimal balance,
                      WalletStatus status, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.userId = userId;
-        this.currency = currency;
         this.balance = balance;
         this.status = status;
         this.createdAt = createdAt;
@@ -33,9 +32,7 @@ public class WalletDTO {
         return userId;
     }
 
-    public String getCurrency() {
-        return currency;
-    }
+
 
     public BigDecimal getBalance() {
         return balance;

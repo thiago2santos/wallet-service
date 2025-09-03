@@ -139,7 +139,7 @@ class WalletRepositoryIT {
         var wallet = new Wallet();
         wallet.setId("test-wallet");
         wallet.setUserId("user-123");
-        wallet.setCurrency("USD");
+        wallet.setCurrency("BRL");
         wallet.setBalance(BigDecimal.ZERO);
 
         // When
@@ -149,7 +149,7 @@ class WalletRepositoryIT {
         // Then
         assertThat(retrieved).isNotNull();
         assertThat(retrieved.getUserId()).isEqualTo("user-123");
-        assertThat(retrieved.getCurrency()).isEqualTo("USD");
+        assertThat(retrieved.getCurrency()).isEqualTo("BRL");
     }
 }
 ```
@@ -167,7 +167,7 @@ class WalletResourceIT {
             .body("""
                 {
                     "userId": "user-123",
-                    "currency": "USD"
+                    "// Single currency system": "BRL"
                 }
                 """)
         .when()
@@ -175,7 +175,7 @@ class WalletResourceIT {
         .then()
             .statusCode(201)
             .body("userId", equalTo("user-123"))
-            .body("currency", equalTo("USD"))
+            .body("// Single currency system", equalTo("BRL"))
             .body("balance", equalTo("0.00"))
             .body("status", equalTo("ACTIVE"));
     }
@@ -295,7 +295,7 @@ class WalletE2ETest {
         // 1. Create wallet
         var createResponse = given()
             .contentType(ContentType.JSON)
-            .body(createWalletRequest("user-123", "USD"))
+            .body(createWalletRequest("user-123", "BRL"))
         .when()
             .post("/api/v1/wallets")
         .then()
@@ -371,7 +371,7 @@ export default function() {
   let createResponse = http.post('http://localhost:8080/api/v1/wallets', 
     JSON.stringify({
       userId: `user-${__VU}-${__ITER}`,
-      currency: 'USD'
+      // Single currency system: 'BRL'
     }), 
     { headers: { 'Content-Type': 'application/json' } }
   );
@@ -510,14 +510,14 @@ class WalletServiceContractTest {
             .method("POST")
             .body(LambdaDsl.newJsonBody(o -> o
                 .stringType("userId", "user-123")
-                .stringType("currency", "USD")
+                .stringType("// Single currency system", "BRL")
             ).build())
             .willRespondWith()
             .status(201)
             .body(LambdaDsl.newJsonBody(o -> o
                 .stringType("walletId")
                 .stringType("userId", "user-123")
-                .stringType("currency", "USD")
+                .stringType("// Single currency system", "BRL")
                 .stringType("balance", "0.00")
                 .stringType("status", "ACTIVE")
             ).build())
@@ -543,7 +543,7 @@ public class TestDataBuilder {
         return Wallet.builder()
             .id(UUID.randomUUID().toString())
             .userId("test-user")
-            .currency("USD")
+            .// Single currency system("BRL")
             .balance(BigDecimal.ZERO)
             .status(WalletStatus.ACTIVE)
             .createdAt(LocalDateTime.now())
@@ -553,7 +553,7 @@ public class TestDataBuilder {
     public static CreateWalletCommand.Builder createWalletCommandBuilder() {
         return CreateWalletCommand.builder()
             .userId("test-user")
-            .currency("USD");
+            .// Single currency system("BRL");
     }
 }
 ```
@@ -562,9 +562,9 @@ public class TestDataBuilder {
 
 ```sql
 -- test-data.sql
-INSERT INTO wallets (id, user_id, currency, balance, status, created_at, updated_at)
+INSERT INTO wallets (id, user_id, // Single currency system, balance, status, created_at, updated_at)
 VALUES 
-    ('wallet-1', 'user-1', 'USD', 100.00, 'ACTIVE', NOW(), NOW()),
+    ('wallet-1', 'user-1', 'BRL', 100.00, 'ACTIVE', NOW(), NOW()),
     ('wallet-2', 'user-2', 'EUR', 50.00, 'ACTIVE', NOW(), NOW());
 
 INSERT INTO transactions (id, wallet_id, type, amount, status, reference_id, created_at)

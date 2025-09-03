@@ -91,7 +91,7 @@ This document provides a **truthful assessment** of what features are actually i
 **Reality**: Monitoring infrastructure runs but no custom metrics.
 
 ### **Advanced Features**
-- ❌ **Multi-Currency Support** - Only stores currency string
+- ✅ **Single Currency System** - BRL-only operations for simplicity
 - ❌ **Real-time Analytics** - Not implemented
 - ❌ **Webhooks** - Not implemented
 - ❌ **API Versioning** - Not implemented
@@ -114,7 +114,7 @@ This document provides a **truthful assessment** of what features are actually i
 # ✅ This works
 curl -X POST http://localhost:8080/api/v1/wallets \
   -H "Content-Type: application/json" \
-  -d '{"userId": "user123", "currency": "USD"}'
+  -d '{"userId": "user123"}'
 
 # ✅ This works  
 curl http://localhost:8080/api/v1/wallets/{walletId}

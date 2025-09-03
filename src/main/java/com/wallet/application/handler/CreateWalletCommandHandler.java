@@ -35,14 +35,13 @@ public class CreateWalletCommandHandler implements CommandHandler<CreateWalletCo
         // Create event for future use (currently not emitted)
         WalletCreatedEvent event = new WalletCreatedEvent(
             walletId,
-            command.getUserId(),
-            command.getCurrency()
+            command.getUserId()
         );
 
         Wallet wallet = new Wallet();
         wallet.setId(walletId);
         wallet.setUserId(command.getUserId());
-        wallet.setCurrency(command.getCurrency());
+
         wallet.setBalance(BigDecimal.ZERO);
         wallet.setStatus(WalletStatus.ACTIVE.name());
         wallet.setCreatedAt(java.time.Instant.now());

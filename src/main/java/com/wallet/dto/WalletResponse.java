@@ -8,7 +8,7 @@ public class WalletResponse {
     
     private String id;
     private String userId;
-    private String currency;
+
     private BigDecimal balance;
     private String status;
     private Instant createdAt;
@@ -18,7 +18,7 @@ public class WalletResponse {
         WalletResponse response = new WalletResponse();
         response.setId(wallet.getId());
         response.setUserId(wallet.getUserId());
-        response.setCurrency(wallet.getCurrency());
+
         response.setBalance(wallet.getBalance());
         response.setStatus(wallet.getStatus());
         response.setCreatedAt(wallet.getCreatedAt());
@@ -43,13 +43,7 @@ public class WalletResponse {
         this.userId = userId;
     }
 
-    public String getCurrency() {
-        return currency;
-    }
 
-    public void setCurrency(String currency) {
-        this.currency = currency;
-    }
 
     public BigDecimal getBalance() {
         return balance;

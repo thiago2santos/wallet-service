@@ -8,12 +8,10 @@ import java.util.UUID;
 public class CreateWalletCommand implements Command {
     private final String commandId;
     private final String userId;
-    private final String currency;
 
-    public CreateWalletCommand(String userId, String currency) {
+    public CreateWalletCommand(String userId) {
         this.commandId = UUID.randomUUID().toString();
         this.userId = userId;
-        this.currency = currency;
     }
 
     @Override
@@ -25,7 +23,5 @@ public class CreateWalletCommand implements Command {
         return userId;
     }
 
-    public String getCurrency() {
-        return currency;
-    }
+
 }

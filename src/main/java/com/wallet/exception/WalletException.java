@@ -29,9 +29,9 @@ public class WalletException extends RuntimeException {
         return new WalletException("Wallet is closed: " + walletId, "WALLET_CLOSED");
     }
 
-    public static WalletException duplicateWallet(String userId, String currency) {
+    public static WalletException duplicateWallet(String userId) {
         return new WalletException(
-            "Wallet already exists for user " + userId + " with currency " + currency,
+            "Wallet already exists for user " + userId,
             "DUPLICATE_WALLET"
         );
     }
@@ -43,10 +43,5 @@ public class WalletException extends RuntimeException {
         );
     }
 
-    public static WalletException invalidCurrency(String sourceCurrency, String targetCurrency) {
-        return new WalletException(
-            "Currency mismatch: cannot transfer between " + sourceCurrency + " and " + targetCurrency,
-            "INVALID_CURRENCY"
-        );
-    }
+
 }

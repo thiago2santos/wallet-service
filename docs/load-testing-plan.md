@@ -334,7 +334,7 @@ export function setup() {
   for (let i = 0; i < 100; i++) {
     const response = http.post(`${BASE_URL}/wallets`, JSON.stringify({
       userId: `user-${i}`,
-      currency: 'USD'
+      // Single currency: BRL
     }), {
       headers: { 'Content-Type': 'application/json' },
     });

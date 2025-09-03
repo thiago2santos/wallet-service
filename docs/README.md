@@ -8,7 +8,7 @@ Wallet Service is a **production-ready digital wallet platform** designed to han
 
 ### ✨ Key Features
 
-- **💰 Multi-Currency Support** - Handle multiple currencies with real-time conversion
+- **💰 Single Currency System** - Simplified BRL (Brazilian Real) operations
 - **⚡ High Performance** - Sub-100ms response times with reactive programming
 - **🔒 Enterprise Security** - Encryption at rest and in transit
 - **📊 Real-time Analytics** - Live transaction monitoring and reporting
@@ -133,7 +133,7 @@ open http://localhost:8080/q/dev/
 ```bash
 curl -X POST http://localhost:8080/api/v1/wallets \
   -H "Content-Type: application/json" \
-  -d '{"userId": "user123", "currency": "USD"}'
+  -d '{"userId": "user123"}'
 ```
 
 ### Deposit Funds

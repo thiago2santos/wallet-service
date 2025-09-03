@@ -9,7 +9,7 @@ public class WalletEvent {
     private String walletId;
     private String userId;
     private BigDecimal amount;
-    private String currency;
+
     private String destinationWalletId;
     private String transactionId;
     private Instant timestamp;
@@ -56,13 +56,7 @@ public class WalletEvent {
         this.amount = amount;
     }
 
-    public String getCurrency() {
-        return currency;
-    }
 
-    public void setCurrency(String currency) {
-        this.currency = currency;
-    }
 
     public String getDestinationWalletId() {
         return destinationWalletId;

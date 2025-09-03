@@ -5,7 +5,7 @@
 [![Mutation Score](https://img.shields.io/badge/mutation%20score-100%25-brightgreen)](https://pitest.org/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-> A high-performance, scalable digital wallet platform built with modern Java technologies
+> A high-performance, scalable digital wallet platform built with modern Java technologies. Designed for Brazilian Real (BRL) transactions.
 
 ## 🚀 Quick Start
 
@@ -80,7 +80,7 @@ graph TB
 ```bash
 curl -X POST http://localhost:8080/api/v1/wallets \
   -H "Content-Type: application/json" \
-  -d '{"userId": "user123", "currency": "USD"}'
+  -d '{"userId": "user123"}'
 ```
 
 ### Deposit Funds

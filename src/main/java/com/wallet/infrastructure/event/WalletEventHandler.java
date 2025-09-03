@@ -43,7 +43,7 @@ public class WalletEventHandler {
         wallet.setId(event.getWalletId());
         wallet.setUserId(event.getUserId());
         wallet.setBalance(BigDecimal.ZERO);
-        wallet.setCurrency(event.getCurrency());
+
         
         return walletRepository.persist(wallet)
                 .call(() -> walletCache.cacheWallet(wallet))

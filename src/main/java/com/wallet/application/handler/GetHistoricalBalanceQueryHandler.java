@@ -36,7 +36,7 @@ public class GetHistoricalBalanceQueryHandler implements QueryHandler<GetHistori
         return walletReadRepository.findById(query.getWalletId())
             .onItem().ifNull().failWith(() -> new IllegalArgumentException("Wallet not found: " + query.getWalletId()))
             .chain(wallet -> {
-                System.out.println("GetHistoricalBalanceQueryHandler: Found wallet with currency: " + wallet.getCurrency());
+                System.out.println("GetHistoricalBalanceQueryHandler: Found wallet");
                 
                 // Get all transactions up to the specified timestamp, ordered by creation time
                 return transactionRepository.find(
@@ -55,7 +55,6 @@ public class GetHistoricalBalanceQueryHandler implements QueryHandler<GetHistori
                     return new HistoricalBalanceResponse(
                         query.getWalletId(),
                         historicalBalance,
-                        wallet.getCurrency(),
                         query.getTimestamp()
                     );
                 });

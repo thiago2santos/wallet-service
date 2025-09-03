@@ -6,15 +6,14 @@ import java.time.LocalDateTime;
 public class HistoricalBalanceResponse {
     private String walletId;
     private BigDecimal balance;
-    private String currency;
+
     private LocalDateTime timestamp;
 
     public HistoricalBalanceResponse() {}
 
-    public HistoricalBalanceResponse(String walletId, BigDecimal balance, String currency, LocalDateTime timestamp) {
+    public HistoricalBalanceResponse(String walletId, BigDecimal balance, LocalDateTime timestamp) {
         this.walletId = walletId;
         this.balance = balance;
-        this.currency = currency;
         this.timestamp = timestamp;
     }
 
@@ -34,13 +33,7 @@ public class HistoricalBalanceResponse {
         this.balance = balance;
     }
 
-    public String getCurrency() {
-        return currency;
-    }
 
-    public void setCurrency(String currency) {
-        this.currency = currency;
-    }
 
     public LocalDateTime getTimestamp() {
         return timestamp;
@@ -55,7 +48,7 @@ public class HistoricalBalanceResponse {
         return "HistoricalBalanceResponse{" +
                 "walletId='" + walletId + '\'' +
                 ", balance=" + balance +
-                ", currency='" + currency + '\'' +
+
                 ", timestamp=" + timestamp +
                 '}';
     }

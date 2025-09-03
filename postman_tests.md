@@ -17,7 +17,7 @@ curl -X POST "${BASE_URL}/api/v1/wallets" \
   -H "Content-Type: application/json" \
   -d '{
     "userId": "test-user-1",
-    "currency": "EUR"
+
   }'
 
 # Create wallet for test-user-2
@@ -26,7 +26,7 @@ curl -X POST "${BASE_URL}/api/v1/wallets" \
   -H "Content-Type: application/json" \
   -d '{
     "userId": "test-user-2",
-    "currency": "EUR"
+
   }'
 
 # Try to create duplicate wallet (should fail)
@@ -35,7 +35,7 @@ curl -X POST "${BASE_URL}/api/v1/wallets" \
   -H "Content-Type: application/json" \
   -d '{
     "userId": "test-user-1",
-    "currency": "EUR"
+
   }'
 ```
 
@@ -251,7 +251,7 @@ For proper testing, follow this sequence:
 
 - Replace `${TOKEN}` with your actual JWT token
 - The test data uses UUIDs that match our database seed data
-- All amounts are in the wallet's currency
+- All amounts are in BRL (single currency system)
 - Reference IDs must be unique across all transactions
 - Timestamps should be in ISO-8601 format
 - Some tests are designed to fail to verify error handling

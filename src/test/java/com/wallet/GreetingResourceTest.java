@@ -1,20 +1,24 @@
 package com.wallet;
 
-import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@QuarkusTest
+@ExtendWith(MockitoExtension.class)
 class GreetingResourceTest {
+
+    @InjectMocks
+    GreetingResource greetingResource;
+
     @Test
     void testHelloEndpoint() {
-        given()
-          .when().get("/hello")
-          .then()
-             .statusCode(200)
-             .body(is("Hello from Quarkus REST"));
+        // When
+        String result = greetingResource.hello();
+        
+        // Then
+        assertEquals("Hello from Quarkus REST", result);
     }
-
 }

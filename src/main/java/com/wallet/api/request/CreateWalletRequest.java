@@ -7,17 +7,14 @@ public class CreateWalletRequest {
     @NotBlank(message = "User ID is required")
     private String userId;
 
-    @NotBlank(message = "Currency is required")
-    @Pattern(regexp = "^[A-Z]{3}$", message = "Currency must be a 3-letter ISO code")
-    private String currency;
+
 
     // Default constructor for JSON deserialization
     public CreateWalletRequest() {
     }
 
-    public CreateWalletRequest(String userId, String currency) {
+    public CreateWalletRequest(String userId) {
         this.userId = userId;
-        this.currency = currency;
     }
 
     public String getUserId() {
@@ -28,11 +25,5 @@ public class CreateWalletRequest {
         this.userId = userId;
     }
 
-    public String getCurrency() {
-        return currency;
-    }
 
-    public void setCurrency(String currency) {
-        this.currency = currency;
-    }
 }

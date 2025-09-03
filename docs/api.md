@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Wallet Service provides a RESTful API for managing digital wallets and transactions.
+The Wallet Service provides a RESTful API for managing digital wallets and transactions. All monetary values are in Brazilian Real (BRL).
 
 ## Base URL
 
@@ -25,8 +25,7 @@ POST /wallets
 #### Request Body
 ```json
 {
-  "userId": "string",
-  "currency": "string"
+  "userId": "string"
 }
 ```
 
@@ -35,7 +34,6 @@ POST /wallets
 {
   "walletId": "string",
   "userId": "string",
-  "currency": "string",
   "balance": "0.00",
   "status": "ACTIVE",
   "createdAt": "2024-03-21T10:30:00Z"
@@ -55,7 +53,6 @@ GET /wallets/{walletId}/balance
 {
   "walletId": "string",
   "balance": "100.50",
-  "currency": "USD",
   "timestamp": "2024-03-21T10:30:00Z"
 }
 ```
@@ -78,7 +75,6 @@ timestamp: ISO-8601 formatted datetime
 {
   "walletId": "string",
   "balance": "95.20",
-  "currency": "USD",
   "timestamp": "2024-03-20T15:45:00Z"
 }
 ```

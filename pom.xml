@@ -119,16 +119,7 @@
       <artifactId>quarkus-test-vertx</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-jdbc-h2</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-reactive-h2-client</artifactId>
-      <scope>test</scope>
-    </dependency>
+
 
 
     <dependency>

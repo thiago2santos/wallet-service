@@ -14,7 +14,7 @@ public class Wallet extends PanacheEntityBase {
     private String id;
     private String userId;
     private BigDecimal balance;
-    private String currency;
+
     private String status;
     private Instant createdAt;
     private Instant updatedAt;
@@ -43,13 +43,7 @@ public class Wallet extends PanacheEntityBase {
         this.balance = balance;
     }
 
-    public String getCurrency() {
-        return currency;
-    }
 
-    public void setCurrency(String currency) {
-        this.currency = currency;
-    }
 
     public String getStatus() {
         return status;
