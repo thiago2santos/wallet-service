@@ -147,10 +147,10 @@ public Uni<WalletResponse> createWallet(CreateWalletCommand command) {
 
 ## 🔧 Technology Stack Rationale
 
-### Java 17
-- **LTS Version**: Long-term support and stability
-- **Performance**: Improved garbage collection and JIT optimizations
-- **Modern Features**: Records, pattern matching, text blocks
+### Java 21
+- **Latest LTS Version**: Long-term support and stability with latest features
+- **Performance**: Enhanced garbage collection and JIT optimizations
+- **Modern Features**: Virtual threads, pattern matching, records, text blocks, and more
 
 ### MySQL 8.0
 - **ACID Compliance**: Required for financial transactions

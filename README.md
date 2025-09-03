@@ -59,7 +59,7 @@ curl -X POST http://localhost:8080/api/v1/wallets \
 
 ## 🏗️ Technology Stack
 
-- **Framework**: Quarkus 3.8.1 + Java 17
+- **Framework**: Quarkus 3.8.1 + Java 21
 - **Database**: MySQL 8.0 (Primary + Replica)
 - **Cache**: Redis 7.0
 - **Messaging**: Apache Kafka

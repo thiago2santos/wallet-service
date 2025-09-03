@@ -5,7 +5,7 @@
 ## 📋 Prerequisites
 
 ### Required Software
-- **Java 17+** (OpenJDK or Oracle JDK)
+- **Java 21+** (OpenJDK or Oracle JDK)
 - **Docker** (version 20.10+)
 - **Docker Compose** (version 2.0+)
 - **Maven** (version 3.8+)
@@ -15,7 +15,7 @@
 ```bash
 # Check Java version
 java -version
-# Should show Java 17 or higher
+# Should show Java 21 or higher
 
 # Check Docker
 docker --version
