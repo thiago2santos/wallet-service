@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -161,5 +162,64 @@ class CreateWalletCommandHandlerTest {
         
         Wallet capturedWallet = walletCaptor.getValue();
         assertEquals(WalletStatus.ACTIVE.name(), capturedWallet.getStatus());
+    }
+
+    @Test
+    void shouldRecordMetricsOnSuccessfulWalletCreation() {
+        // Given
+        when(walletRepository.persist(any(Wallet.class)))
+            .thenAnswer(invocation -> {
+                Wallet wallet = invocation.getArgument(0);
+                return Uni.createFrom().item(wallet);
+            });
+
+        // When
+        handler.handle(command).await().indefinitely();
+
+        // Then
+        verify(walletMetrics).incrementWalletsCreated();
+        verify(walletMetrics).recordWalletCreation(any(Timer.Sample.class));
+        verify(walletMetrics).recordEventPublished("WALLET_CREATED");
+    }
+
+    @Test
+    void shouldRecordMetricsOnFailure() {
+        // Given
+        RuntimeException repositoryException = new RuntimeException("Database connection failed");
+        when(walletRepository.persist(any(Wallet.class)))
+            .thenReturn(Uni.createFrom().failure(repositoryException));
+
+        // When & Then
+        try {
+            handler.handle(command).await().indefinitely();
+        } catch (RuntimeException e) {
+            // Expected exception
+        }
+        
+        // Verify failure metrics are recorded
+        verify(walletMetrics).incrementFailedOperations("wallet_creation");
+        verify(walletMetrics).recordWalletCreation(any(Timer.Sample.class));
+    }
+
+    @Test
+    void shouldNotCallMetricsWhenRepositoryFails() {
+        // Given
+        RuntimeException repositoryException = new RuntimeException("Database connection failed");
+        when(walletRepository.persist(any(Wallet.class)))
+            .thenReturn(Uni.createFrom().failure(repositoryException));
+
+        // When & Then
+        try {
+            handler.handle(command).await().indefinitely();
+        } catch (RuntimeException e) {
+            // Expected exception
+        }
+        
+        // Verify success metrics are NOT called when there's a failure
+        verify(walletMetrics, never()).incrementWalletsCreated();
+        verify(walletMetrics, never()).recordEventPublished(anyString());
+        
+        // But failure metrics should be called
+        verify(walletMetrics).incrementFailedOperations("wallet_creation");
     }
 }

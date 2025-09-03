@@ -282,47 +282,100 @@
           </dependency>
         </dependencies>
         <configuration>
-          <!-- Target classes for mutation testing - focus on tested classes -->
+          <!-- Target classes for mutation testing - expanded scope -->
           <targetClasses>
-            <param>com.wallet.application.command.CreateWalletCommand</param>
-            <param>com.wallet.application.handler.CreateWalletCommandHandler</param>
+            <!-- Commands -->
+            <param>com.wallet.application.command.*</param>
+            <!-- Command Handlers -->
+            <param>com.wallet.application.handler.*</param>
+            <!-- Domain Models -->
+            <param>com.wallet.domain.model.*</param>
+            <!-- Infrastructure Services -->
+            <param>com.wallet.infrastructure.outbox.OutboxEventService</param>
+            <param>com.wallet.infrastructure.bus.CommandBusImpl</param>
+            <param>com.wallet.infrastructure.health.WalletServiceHealthCheck</param>
+            <!-- API Layer -->
+            <param>com.wallet.api.WalletResource</param>
           </targetClasses>
-          <!-- Test classes to run - focus on unit tests that work -->
+          <!-- Test classes to run - expanded to include all unit tests -->
           <targetTests>
-            <param>com.wallet.application.command.CreateWalletCommandTest</param>
-            <param>com.wallet.application.handler.CreateWalletCommandHandlerTest</param>
+            <param>com.wallet.application.command.*Test</param>
+            <param>com.wallet.application.handler.*Test</param>
+            <param>com.wallet.api.*Test</param>
+            <!-- Exclude integration tests for faster mutation testing -->
+            <!-- <param>com.wallet.integration.*Test</param> -->
           </targetTests>
-          <!-- Mutation operators to use -->
+          <!-- Enhanced mutation operators -->
           <mutators>
-            <mutator>DEFAULTS</mutator>
+            <!-- Default mutators -->
+            <mutator>CONDITIONALS_BOUNDARY</mutator>
+            <mutator>INCREMENTS</mutator>
+            <mutator>INVERT_NEGS</mutator>
+            <mutator>MATH</mutator>
+            <mutator>NEGATE_CONDITIONALS</mutator>
+            <mutator>VOID_METHOD_CALLS</mutator>
+            <mutator>EMPTY_RETURNS</mutator>
+            <mutator>FALSE_RETURNS</mutator>
+            <mutator>TRUE_RETURNS</mutator>
+            <mutator>NULL_RETURNS</mutator>
+            <mutator>PRIMITIVE_RETURNS</mutator>
+            <!-- Additional experimental mutators for more thorough testing -->
+            <mutator>REMOVE_CONDITIONALS_EQUAL_IF</mutator>
+            <mutator>REMOVE_CONDITIONALS_EQUAL_ELSE</mutator>
+            <mutator>REMOVE_CONDITIONALS_ORDER_IF</mutator>
+            <mutator>REMOVE_CONDITIONALS_ORDER_ELSE</mutator>
+            <mutator>NON_VOID_METHOD_CALLS</mutator>
+            <mutator>CONSTRUCTOR_CALLS</mutator>
+            <mutator>INLINE_CONSTS</mutator>
+            <!-- Experimental mutators for advanced scenarios -->
+            <mutator>EXPERIMENTAL_MEMBER_VARIABLE</mutator>
+            <mutator>EXPERIMENTAL_SWITCH</mutator>
+            <mutator>EXPERIMENTAL_BIG_DECIMAL</mutator>
           </mutators>
           <!-- Output formats -->
           <outputFormats>
             <outputFormat>HTML</outputFormat>
             <outputFormat>XML</outputFormat>
+            <outputFormat>CSV</outputFormat>
           </outputFormats>
-          <!-- Coverage threshold -->
-          <mutationThreshold>75</mutationThreshold>
-          <coverageThreshold>80</coverageThreshold>
-          <!-- Timeout settings -->
-          <timeoutConstant>4000</timeoutConstant>
-          <timeoutFactor>1.25</timeoutFactor>
+          <!-- Strict coverage thresholds for high quality -->
+          <mutationThreshold>95</mutationThreshold>
+          <coverageThreshold>90</coverageThreshold>
+          <!-- Timeout settings - increased for more complex mutations -->
+          <timeoutConstant>6000</timeoutConstant>
+          <timeoutFactor>1.5</timeoutFactor>
           <!-- Exclude classes that shouldn't be mutated -->
           <excludedClasses>
             <param>com.wallet.GreetingResource</param>
             <param>com.wallet.dto.*</param>
             <param>com.wallet.api.request.*</param>
+            <param>com.wallet.api.response.*</param>
             <param>com.wallet.core.*</param>
+            <!-- Exclude generated classes -->
+            <param>*.*_Bean</param>
+            <param>*.*_ClientProxy</param>
+            <param>*.*_Subclass</param>
+            <!-- Exclude configuration classes -->
+            <param>com.wallet.config.*</param>
+            <!-- Exclude event classes (mostly data holders) -->
+            <param>com.wallet.domain.event.*</param>
           </excludedClasses>
           <!-- JVM arguments -->
           <jvmArgs>
-            <value>-Xmx1024m</value>
+            <value>-Xmx2048m</value>
             <value>-Dquarkus.test.profile=test</value>
+            <value>-XX:+EnableDynamicAgentLoading</value>
           </jvmArgs>
-          <!-- Enable incremental analysis -->
+          <!-- Enable incremental analysis for performance -->
           <withHistory>true</withHistory>
-          <!-- Verbose output -->
+          <!-- Verbose output for detailed analysis -->
           <verbose>true</verbose>
+          <!-- Enable full mutation matrix for comprehensive analysis -->
+          <fullMutationMatrix>false</fullMutationMatrix>
+          <!-- Detect inlined code -->
+          <detectInlinedCode>true</detectInlinedCode>
+          <!-- Export line coverage -->
+          <exportLineCoverage>true</exportLineCoverage>
         </configuration>
       </plugin>
     </plugins>
