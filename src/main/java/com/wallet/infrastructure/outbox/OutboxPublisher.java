@@ -9,6 +9,7 @@ import jakarta.inject.Inject;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import com.wallet.infrastructure.metrics.WalletMetrics;
 import io.micrometer.core.instrument.Timer;
+import io.quarkus.hibernate.reactive.panache.common.WithSession;
 
 import java.util.List;
 
@@ -38,6 +39,7 @@ public class OutboxPublisher {
      * Runs every 5 seconds to ensure timely event publishing.
      */
     @Scheduled(every = "5s")
+    @WithSession
     public Uni<Void> publishPendingEvents() {
         Timer.Sample sample = metrics.startOutboxPublishingTimer();
         
@@ -102,6 +104,7 @@ public class OutboxPublisher {
     /**
      * Manual trigger for publishing events (useful for testing or manual operations)
      */
+    @WithSession
     public Uni<Integer> publishAllPendingEvents() {
         Timer.Sample sample = metrics.startOutboxPublishingTimer();
         
