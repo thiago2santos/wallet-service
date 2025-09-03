@@ -13,7 +13,7 @@
 
 - **API Documentation**
   - [REST API](api.md)
-  - [Authentication](authentication.md)
+
   - [Error Handling](error-handling.md)
   - [Rate Limiting](rate-limiting.md)
 
@@ -28,7 +28,7 @@
 - **Operations**
   - [Deployment](deployment.md)
   - [Monitoring](monitoring.md)
-  - [Security](security.md)
+
   - [Performance](performance.md)
 
 - **Infrastructure**

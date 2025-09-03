@@ -5,15 +5,7 @@
 BASE_URL=http://localhost:8080
 ```
 
-## Authentication
-First, let's create a JWT token for testing (this is a development token, not for production use):
 
-```bash
-# Generate JWT token
-TOKEN=$(curl -X POST "${BASE_URL}/auth/token" \
-  -H "Content-Type: application/json" \
-  -d '{"userId": "test-user-1"}')
-```
 
 ## Wallet Operations
 
@@ -21,7 +13,7 @@ TOKEN=$(curl -X POST "${BASE_URL}/auth/token" \
 ```bash
 # Create wallet for test-user-1
 curl -X POST "${BASE_URL}/api/v1/wallets" \
-  -H "Authorization: Bearer ${TOKEN}" \
+
   -H "Content-Type: application/json" \
   -d '{
     "userId": "test-user-1",
@@ -30,7 +22,7 @@ curl -X POST "${BASE_URL}/api/v1/wallets" \
 
 # Create wallet for test-user-2
 curl -X POST "${BASE_URL}/api/v1/wallets" \
-  -H "Authorization: Bearer ${TOKEN}" \
+
   -H "Content-Type: application/json" \
   -d '{
     "userId": "test-user-2",
@@ -39,7 +31,7 @@ curl -X POST "${BASE_URL}/api/v1/wallets" \
 
 # Try to create duplicate wallet (should fail)
 curl -X POST "${BASE_URL}/api/v1/wallets" \
-  -H "Authorization: Bearer ${TOKEN}" \
+
   -H "Content-Type: application/json" \
   -d '{
     "userId": "test-user-1",
@@ -51,11 +43,11 @@ curl -X POST "${BASE_URL}/api/v1/wallets" \
 ```bash
 # Get existing wallet
 curl -X GET "${BASE_URL}/api/v1/wallets/550e8400-e29b-41d4-a716-446655440000" \
-  -H "Authorization: Bearer ${TOKEN}"
+
 
 # Get non-existent wallet (should fail)
 curl -X GET "${BASE_URL}/api/v1/wallets/non-existent-id" \
-  -H "Authorization: Bearer ${TOKEN}"
+
 
 # Get wallet without authorization (should fail)
 curl -X GET "${BASE_URL}/api/v1/wallets/550e8400-e29b-41d4-a716-446655440000"
@@ -65,18 +57,18 @@ curl -X GET "${BASE_URL}/api/v1/wallets/550e8400-e29b-41d4-a716-446655440000"
 ```bash
 # Get all wallets for user
 curl -X GET "${BASE_URL}/api/v1/wallets?userId=test-user-1" \
-  -H "Authorization: Bearer ${TOKEN}"
+
 
 # Get wallets with invalid user ID
 curl -X GET "${BASE_URL}/api/v1/wallets?userId=non-existent-user" \
-  -H "Authorization: Bearer ${TOKEN}"
+
 ```
 
 ### Deposit Funds
 ```bash
 # Deposit valid amount
 curl -X POST "${BASE_URL}/api/v1/wallets/550e8400-e29b-41d4-a716-446655440000/deposit" \
-  -H "Authorization: Bearer ${TOKEN}" \
+
   -H "Content-Type: application/json" \
   -d '{
     "amount": 100.00,
@@ -86,7 +78,7 @@ curl -X POST "${BASE_URL}/api/v1/wallets/550e8400-e29b-41d4-a716-446655440000/de
 
 # Deposit with duplicate reference ID (should fail)
 curl -X POST "${BASE_URL}/api/v1/wallets/550e8400-e29b-41d4-a716-446655440000/deposit" \
-  -H "Authorization: Bearer ${TOKEN}" \
+
   -H "Content-Type: application/json" \
   -d '{
     "amount": 100.00,
@@ -96,7 +88,7 @@ curl -X POST "${BASE_URL}/api/v1/wallets/550e8400-e29b-41d4-a716-446655440000/de
 
 # Deposit negative amount (should fail)
 curl -X POST "${BASE_URL}/api/v1/wallets/550e8400-e29b-41d4-a716-446655440000/deposit" \
-  -H "Authorization: Bearer ${TOKEN}" \
+
   -H "Content-Type: application/json" \
   -d '{
     "amount": -100.00,
@@ -109,7 +101,7 @@ curl -X POST "${BASE_URL}/api/v1/wallets/550e8400-e29b-41d4-a716-446655440000/de
 ```bash
 # Withdraw valid amount
 curl -X POST "${BASE_URL}/api/v1/wallets/550e8400-e29b-41d4-a716-446655440000/withdraw" \
-  -H "Authorization: Bearer ${TOKEN}" \
+
   -H "Content-Type: application/json" \
   -d '{
     "amount": 50.00,
@@ -119,7 +111,7 @@ curl -X POST "${BASE_URL}/api/v1/wallets/550e8400-e29b-41d4-a716-446655440000/wi
 
 # Withdraw more than balance (should fail)
 curl -X POST "${BASE_URL}/api/v1/wallets/550e8400-e29b-41d4-a716-446655440000/withdraw" \
-  -H "Authorization: Bearer ${TOKEN}" \
+
   -H "Content-Type: application/json" \
   -d '{
     "amount": 100000.00,
@@ -129,7 +121,7 @@ curl -X POST "${BASE_URL}/api/v1/wallets/550e8400-e29b-41d4-a716-446655440000/wi
 
 # Withdraw negative amount (should fail)
 curl -X POST "${BASE_URL}/api/v1/wallets/550e8400-e29b-41d4-a716-446655440000/withdraw" \
-  -H "Authorization: Bearer ${TOKEN}" \
+
   -H "Content-Type: application/json" \
   -d '{
     "amount": -50.00,
@@ -142,7 +134,7 @@ curl -X POST "${BASE_URL}/api/v1/wallets/550e8400-e29b-41d4-a716-446655440000/wi
 ```bash
 # Transfer valid amount
 curl -X POST "${BASE_URL}/api/v1/wallets/550e8400-e29b-41d4-a716-446655440000/transfer" \
-  -H "Authorization: Bearer ${TOKEN}" \
+
   -H "Content-Type: application/json" \
   -d '{
     "amount": 25.00,
@@ -153,7 +145,7 @@ curl -X POST "${BASE_URL}/api/v1/wallets/550e8400-e29b-41d4-a716-446655440000/tr
 
 # Transfer to non-existent wallet (should fail)
 curl -X POST "${BASE_URL}/api/v1/wallets/550e8400-e29b-41d4-a716-446655440000/transfer" \
-  -H "Authorization: Bearer ${TOKEN}" \
+
   -H "Content-Type: application/json" \
   -d '{
     "amount": 25.00,
@@ -164,7 +156,7 @@ curl -X POST "${BASE_URL}/api/v1/wallets/550e8400-e29b-41d4-a716-446655440000/tr
 
 # Transfer more than balance (should fail)
 curl -X POST "${BASE_URL}/api/v1/wallets/550e8400-e29b-41d4-a716-446655440000/transfer" \
-  -H "Authorization: Bearer ${TOKEN}" \
+
   -H "Content-Type: application/json" \
   -d '{
     "amount": 100000.00,
@@ -178,26 +170,26 @@ curl -X POST "${BASE_URL}/api/v1/wallets/550e8400-e29b-41d4-a716-446655440000/tr
 ```bash
 # Get all transactions for wallet
 curl -X GET "${BASE_URL}/api/v1/wallets/550e8400-e29b-41d4-a716-446655440000/transactions" \
-  -H "Authorization: Bearer ${TOKEN}"
+
 
 # Get transactions with date range
 curl -X GET "${BASE_URL}/api/v1/wallets/550e8400-e29b-41d4-a716-446655440000/transactions?fromDate=2024-01-01T00:00:00Z&toDate=2024-12-31T23:59:59Z" \
-  -H "Authorization: Bearer ${TOKEN}"
+
 
 # Get transactions with invalid date range (should fail)
 curl -X GET "${BASE_URL}/api/v1/wallets/550e8400-e29b-41d4-a716-446655440000/transactions?fromDate=2024-12-31T23:59:59Z&toDate=2024-01-01T00:00:00Z" \
-  -H "Authorization: Bearer ${TOKEN}"
+
 ```
 
 ### Get Historical Balance
 ```bash
 # Get balance at specific point in time
 curl -X GET "${BASE_URL}/api/v1/wallets/550e8400-e29b-41d4-a716-446655440000/balance/historical?timestamp=2024-01-01T00:00:00Z" \
-  -H "Authorization: Bearer ${TOKEN}"
+
 
 # Get balance with invalid timestamp (should fail)
 curl -X GET "${BASE_URL}/api/v1/wallets/550e8400-e29b-41d4-a716-446655440000/balance/historical?timestamp=invalid-date" \
-  -H "Authorization: Bearer ${TOKEN}"
+
 ```
 
 ### Health Check

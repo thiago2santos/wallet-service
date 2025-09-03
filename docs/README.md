@@ -10,7 +10,7 @@ Wallet Service is a **production-ready digital wallet platform** designed to han
 
 - **💰 Multi-Currency Support** - Handle multiple currencies with real-time conversion
 - **⚡ High Performance** - Sub-100ms response times with reactive programming
-- **🔒 Enterprise Security** - JWT authentication, encryption at rest and in transit
+- **🔒 Enterprise Security** - Encryption at rest and in transit
 - **📊 Real-time Analytics** - Live transaction monitoring and reporting
 - **🔄 Event Sourcing** - Complete audit trail with historical balance queries
 - **🌐 Cloud Native** - Designed for Kubernetes and AWS deployment
@@ -28,7 +28,6 @@ graph TB
 
     subgraph "API Layer"
         GATEWAY[API Gateway]
-        AUTH[Authentication]
     end
 
     subgraph "Application Layer"
@@ -51,8 +50,7 @@ graph TB
     MOBILE --> GATEWAY
     API_CLIENT --> GATEWAY
     
-    GATEWAY --> AUTH
-    AUTH --> WALLET_SVC
+    GATEWAY --> WALLET_SVC
     
     WALLET_SVC --> CACHE
     WALLET_SVC --> MYSQL_PRIMARY

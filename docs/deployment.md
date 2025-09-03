@@ -117,7 +117,7 @@ type: Opaque
 data:
   mysql-password: <base64-encoded-password>
   redis-password: <base64-encoded-password>
-  jwt-secret: <base64-encoded-jwt-secret>
+
 ```
 
 #### Deployment

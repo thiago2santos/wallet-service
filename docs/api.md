@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Wallet Service provides a RESTful API for managing digital wallets and transactions. All endpoints are secured and require authentication.
+The Wallet Service provides a RESTful API for managing digital wallets and transactions.
 
 ## Base URL
 
@@ -10,13 +10,7 @@ The Wallet Service provides a RESTful API for managing digital wallets and trans
 https://api.wallet-service.com/v1
 ```
 
-## Authentication
 
-All requests must include a valid JWT token in the Authorization header:
-
-```
-Authorization: Bearer <jwt_token>
-```
 
 ## Endpoints
 
@@ -200,8 +194,7 @@ All error responses follow this format:
 - `WALLET_NOT_FOUND`: Specified wallet doesn't exist
 - `INVALID_AMOUNT`: Amount is invalid or negative
 - `DUPLICATE_REFERENCE`: Reference ID already used
-- `UNAUTHORIZED`: Invalid or missing authentication
-- `FORBIDDEN`: Insufficient permissions
+
 - `VALIDATION_ERROR`: Invalid request parameters
 
 ## Rate Limiting

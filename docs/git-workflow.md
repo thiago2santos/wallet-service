@@ -16,7 +16,7 @@
 
 ```bash
 # Feature branches - be realistic about scope
-feat/basic-jwt-authentication          # Not "enterprise-security"
+feat/basic-input-validation           # Not "enterprise-security"
 feat/simple-kafka-events              # Not "advanced-event-sourcing"
 feat/basic-prometheus-metrics         # Not "comprehensive-observability"
 
@@ -295,8 +295,7 @@ feat/enable-kafka-events
 feat/fix-database-replication
 
 # Priority 2: Security
-feat/jwt-authentication
-feat/api-authorization
+feat/api-rate-limiting
 feat/input-validation
 
 # Priority 3: Production readiness

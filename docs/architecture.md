@@ -12,7 +12,7 @@ The Wallet Service is designed as a **cloud-native, event-driven microservice** 
 - **📝 Event Sourcing** - Complete audit trail with event-driven state changes  
 - **⚡ Reactive Programming** - Non-blocking, high-concurrency operations
 - **🌐 Cloud Native** - Designed for containerized, distributed environments
-- **🔒 Security First** - Enterprise-grade security at every layer
+
 - **📊 Observability** - Comprehensive monitoring and tracing
 
 ## System Architecture
@@ -99,7 +99,6 @@ sequenceDiagram
   - RESTful API endpoints
   - Request/response validation
   - Rate limiting
-  - Authentication integration
 
 ### Application Layer
 - **Quarkus Application**

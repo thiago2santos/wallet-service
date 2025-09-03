@@ -23,7 +23,7 @@ graph TB
     subgraph "Quality Gates"
         MUTATION["🧬 Mutation Testing<br/>PIT • 100% mutation score"]
         PERFORMANCE["🚀 Performance Tests<br/>Load & stress testing"]
-        SECURITY["🔒 Security Tests<br/>OWASP compliance"]
+        SECURITY["🔒 Security Tests<br/>Input validation & OWASP compliance"]
         CONTRACT["📋 Contract Tests<br/>API compatibility"]
     end
     
@@ -460,14 +460,7 @@ zap-full-scan.py -t http://localhost:8080 -J zap-full-report.json
 @QuarkusTest
 class SecurityTest {
 
-    @Test
-    void shouldRejectUnauthorizedRequests() {
-        given()
-        .when()
-            .get("/api/v1/wallets/test-wallet/balance")
-        .then()
-            .statusCode(401);
-    }
+
 
     @Test
     void shouldValidateInputParameters() {
