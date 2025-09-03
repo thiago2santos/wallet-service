@@ -12,6 +12,9 @@ import com.wallet.infrastructure.cache.WalletStateCache;
 import com.wallet.infrastructure.persistence.TransactionRepository;
 import com.wallet.infrastructure.persistence.WalletReadRepository;
 import com.wallet.infrastructure.persistence.WalletRepository;
+import com.wallet.exception.WalletNotFoundException;
+import com.wallet.exception.InsufficientFundsException;
+import com.wallet.exception.InvalidTransferException;
 
 import io.quarkus.reactive.datasource.ReactiveDataSource;
 import io.smallrye.mutiny.Uni;
@@ -45,14 +48,14 @@ public class TransferFundsCommandHandler implements CommandHandler<TransferFunds
         // Validate amount is positive
         if (command.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
             return Uni.createFrom().failure(
-                new IllegalArgumentException("Transfer amount must be positive")
+                InvalidTransferException.invalidAmount()
             );
         }
 
         // Validate source and destination are different
         if (command.getSourceWalletId().equals(command.getDestinationWalletId())) {
             return Uni.createFrom().failure(
-                new IllegalArgumentException("Source and destination wallets cannot be the same")
+                InvalidTransferException.sameWallet()
             );
         }
 
@@ -61,7 +64,7 @@ public class TransferFundsCommandHandler implements CommandHandler<TransferFunds
             .chain(sourceWallet -> {
                 if (sourceWallet == null) {
                     return Uni.createFrom().failure(
-                        new IllegalArgumentException("Source wallet not found: " + command.getSourceWalletId())
+                        new WalletNotFoundException(command.getSourceWalletId())
                     );
                 }
 
@@ -70,7 +73,7 @@ public class TransferFundsCommandHandler implements CommandHandler<TransferFunds
                     .chain(destinationWallet -> {
                         if (destinationWallet == null) {
                             return Uni.createFrom().failure(
-                                new IllegalArgumentException("Destination wallet not found: " + command.getDestinationWalletId())
+                                new WalletNotFoundException(command.getDestinationWalletId())
                             );
                         }
 
@@ -80,7 +83,7 @@ public class TransferFundsCommandHandler implements CommandHandler<TransferFunds
                 // Check if sufficient funds are available in source wallet
                 if (sourceWallet.getBalance().compareTo(command.getAmount()) < 0) {
                     return Uni.createFrom().failure(
-                        new IllegalArgumentException("Insufficient funds in source wallet. Available: " + sourceWallet.getBalance() + ", Requested: " + command.getAmount())
+                        new InsufficientFundsException(sourceWallet.getBalance(), command.getAmount())
                     );
                 }
 

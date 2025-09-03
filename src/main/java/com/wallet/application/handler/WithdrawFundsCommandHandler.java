@@ -12,6 +12,9 @@ import com.wallet.infrastructure.cache.WalletStateCache;
 import com.wallet.infrastructure.persistence.TransactionRepository;
 import com.wallet.infrastructure.persistence.WalletReadRepository;
 import com.wallet.infrastructure.persistence.WalletRepository;
+import com.wallet.exception.WalletNotFoundException;
+import com.wallet.exception.InsufficientFundsException;
+import com.wallet.exception.InvalidTransferException;
 
 import io.quarkus.reactive.datasource.ReactiveDataSource;
 import io.smallrye.mutiny.Uni;
@@ -45,20 +48,20 @@ public class WithdrawFundsCommandHandler implements CommandHandler<WithdrawFunds
         // Validate amount is positive
         if (command.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
             return Uni.createFrom().failure(
-                new IllegalArgumentException("Withdrawal amount must be positive")
+                InvalidTransferException.invalidAmount()
             );
         }
 
         // First, check if wallet exists and get current balance
         return walletReadRepository.findById(command.getWalletId())
-            .onItem().ifNull().failWith(() -> new IllegalArgumentException("Wallet not found: " + command.getWalletId()))
+            .onItem().ifNull().failWith(() -> new WalletNotFoundException(command.getWalletId()))
             .chain(wallet -> {
                 System.out.println("WithdrawFundsCommandHandler: Found wallet with balance: " + wallet.getBalance());
                 
                 // Check if sufficient funds are available
                 if (wallet.getBalance().compareTo(command.getAmount()) < 0) {
                     return Uni.createFrom().failure(
-                        new IllegalArgumentException("Insufficient funds. Available: " + wallet.getBalance() + ", Requested: " + command.getAmount())
+                        new InsufficientFundsException(wallet.getBalance(), command.getAmount())
                     );
                 }
                 
