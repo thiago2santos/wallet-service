@@ -160,7 +160,7 @@ public class CQRSIntegrationTest extends BaseIntegrationTest {
         Response insufficientFundsResponse = withdrawFunds(walletId, new BigDecimal("100.00"), 
                                                          generateReferenceId("failure-withdraw"), "Should fail");
         insufficientFundsResponse.then()
-            .statusCode(anyOf(equalTo(400), equalTo(500))); // Should be 400 but might be 500
+            .statusCode(400); // Business logic errors should return 400
             
         // Verify wallet state is unchanged after failed operation
         Response walletResponse = getWallet(walletId);

@@ -132,7 +132,7 @@ public class WalletOperationsIntegrationTest extends BaseIntegrationTest {
         
         // Then
         withdrawResponse.then()
-            .statusCode(500) // Should be 400 but current implementation returns 500
+            .statusCode(400) // Business logic errors should return 400
             .body("error", notNullValue());
             
         // Verify balance unchanged
@@ -244,13 +244,13 @@ public class WalletOperationsIntegrationTest extends BaseIntegrationTest {
         Response negativeDepositResponse = depositFunds(walletId, new BigDecimal("-10.00"), 
                                                       generateReferenceId("negative"), "Negative deposit");
         negativeDepositResponse.then()
-            .statusCode(anyOf(equalTo(400), equalTo(500))); // Should be 400
+            .statusCode(400); // Business logic errors should return 400
             
         // Test zero withdrawal amount
         Response zeroWithdrawResponse = withdrawFunds(walletId, BigDecimal.ZERO, 
                                                     generateReferenceId("zero"), "Zero withdrawal");
         zeroWithdrawResponse.then()
-            .statusCode(anyOf(equalTo(400), equalTo(500))); // Should be 400
+            .statusCode(400); // Business logic errors should return 400
             
         // Test missing timestamp for historical balance
         Response missingTimestampResponse = getHistoricalBalance(walletId, null);

@@ -23,6 +23,11 @@ public class WalletMetrics {
     private final Counter queriesCounter;
     private final Counter failedOperationsCounter;
     
+    // Money amount counters
+    private final Counter moneyDepositedCounter;
+    private final Counter moneyWithdrawnCounter;
+    private final Counter moneyTransferredCounter;
+    
     // Timers for operation performance
     private final Timer walletCreationTimer;
     private final Timer depositTimer;
@@ -62,6 +67,19 @@ public class WalletMetrics {
         this.failedOperationsCounter = Counter.builder("wallet_operations_failed_total")
                 .description("Total number of failed operations")
                 .tag("type", "all")
+                .register(meterRegistry);
+        
+        // Initialize money amount counters
+        this.moneyDepositedCounter = Counter.builder("wallet_money_deposited_total")
+                .description("Total amount of money deposited")
+                .register(meterRegistry);
+                
+        this.moneyWithdrawnCounter = Counter.builder("wallet_money_withdrawn_total")
+                .description("Total amount of money withdrawn")
+                .register(meterRegistry);
+                
+        this.moneyTransferredCounter = Counter.builder("wallet_money_transferred_total")
+                .description("Total amount of money transferred")
                 .register(meterRegistry);
         
         // Initialize timers
@@ -171,18 +189,15 @@ public class WalletMetrics {
     
     // Amount tracking
     public void recordDepositAmount(BigDecimal amount) {
-        meterRegistry.counter("wallet.amounts.deposited", "currency", "BRL")
-                .increment(amount.doubleValue());
+        moneyDepositedCounter.increment(amount.doubleValue());
     }
     
     public void recordWithdrawalAmount(BigDecimal amount) {
-        meterRegistry.counter("wallet.amounts.withdrawn", "currency", "BRL")
-                .increment(amount.doubleValue());
+        moneyWithdrawnCounter.increment(amount.doubleValue());
     }
     
     public void recordTransferAmount(BigDecimal amount) {
-        meterRegistry.counter("wallet.amounts.transferred", "currency", "BRL")
-                .increment(amount.doubleValue());
+        moneyTransferredCounter.increment(amount.doubleValue());
     }
     
     // Gauge getters

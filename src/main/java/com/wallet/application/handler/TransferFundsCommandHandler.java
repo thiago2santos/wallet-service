@@ -15,6 +15,7 @@ import com.wallet.infrastructure.persistence.WalletRepository;
 import com.wallet.exception.WalletNotFoundException;
 import com.wallet.exception.InsufficientFundsException;
 import com.wallet.exception.InvalidTransferException;
+import com.wallet.infrastructure.metrics.WalletMetrics;
 
 import io.quarkus.reactive.datasource.ReactiveDataSource;
 import io.smallrye.mutiny.Uni;
@@ -40,9 +41,13 @@ public class TransferFundsCommandHandler implements CommandHandler<TransferFunds
     @Inject
     WalletStateCache walletCache;
 
+    @Inject
+    WalletMetrics walletMetrics;
+
     @Override
     @Transactional
     public Uni<String> handle(TransferFundsCommand command) {
+        var timer = walletMetrics.startTransferTimer();
         String transactionId = UUID.randomUUID().toString();
 
         // Validate amount is positive
@@ -128,7 +133,14 @@ public class TransferFundsCommandHandler implements CommandHandler<TransferFunds
                     })
                     .map(v -> {
                         System.out.println("TransferFundsCommandHandler: Caches invalidated, returning ID: " + transactionId);
+                        walletMetrics.incrementTransfers();
+                        walletMetrics.recordTransferAmount(command.getAmount());
+                        walletMetrics.recordTransfer(timer);
                         return transactionId;
+                    })
+                    .onFailure().invoke(throwable -> {
+                        walletMetrics.incrementFailedOperations("transfer");
+                        walletMetrics.recordTransfer(timer);
                     });
                     });
             });

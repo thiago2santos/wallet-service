@@ -208,7 +208,7 @@ public class MetricsIntegrationTest extends BaseIntegrationTest {
                                                       generateReferenceId("metrics-error-withdraw"), 
                                                       "Should fail withdrawal");
         failedWithdrawResponse.then()
-            .statusCode(anyOf(equalTo(400), equalTo(500))); // Should fail
+            .statusCode(400); // Business logic errors should return 400
         
         // Then - Check that error metrics are tracked
         Response metrics = getMetrics();
