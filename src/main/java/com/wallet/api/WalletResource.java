@@ -38,6 +38,8 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
 
 @Path("/api/v1/wallets")
 @Produces(MediaType.APPLICATION_JSON)
@@ -71,7 +73,7 @@ public class WalletResource {
     @POST
     @WithTransaction
 
-    public Uni<Response> createWallet(CreateWalletRequest request) {
+    public Uni<Response> createWallet(@Valid CreateWalletRequest request) {
         CreateWalletCommand command = new CreateWalletCommand(
             request.getUserId()
         );
@@ -88,7 +90,11 @@ public class WalletResource {
     @Path("/{walletId}")
     @WithTransaction
 
-    public Uni<Response> getWallet(@PathParam("walletId") String walletId) {
+    public Uni<Response> getWallet(
+            @PathParam("walletId") 
+            @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", 
+                     message = "Wallet ID must be a valid UUID") 
+            String walletId) {
         GetWalletQuery query = new GetWalletQuery(walletId);
 
         // Using QueryBus for proper CQRS architecture
@@ -103,8 +109,11 @@ public class WalletResource {
     @WithTransaction
 
     public Uni<Response> depositFunds(
-            @PathParam("walletId") String walletId,
-            DepositFundsRequest request) {
+            @PathParam("walletId") 
+            @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", 
+                     message = "Wallet ID must be a valid UUID") 
+            String walletId,
+            @Valid DepositFundsRequest request) {
         DepositFundsCommand command = new DepositFundsCommand(
             walletId,
             request.getAmount(),
@@ -124,8 +133,11 @@ public class WalletResource {
     @WithTransaction
 
     public Uni<Response> withdrawFunds(
-            @PathParam("walletId") String walletId,
-            WithdrawFundsRequest request) {
+            @PathParam("walletId") 
+            @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", 
+                     message = "Wallet ID must be a valid UUID") 
+            String walletId,
+            @Valid WithdrawFundsRequest request) {
         WithdrawFundsCommand command = new WithdrawFundsCommand(
             walletId,
             request.getAmount(),
@@ -145,8 +157,11 @@ public class WalletResource {
     @WithTransaction
 
     public Uni<Response> transferFunds(
-            @PathParam("sourceWalletId") String sourceWalletId,
-            TransferFundsRequest request) {
+            @PathParam("sourceWalletId") 
+            @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", 
+                     message = "Source wallet ID must be a valid UUID") 
+            String sourceWalletId,
+            @Valid TransferFundsRequest request) {
         TransferFundsCommand command = new TransferFundsCommand(
             sourceWalletId,
             request.getDestinationWalletId(),
@@ -167,8 +182,14 @@ public class WalletResource {
     @WithTransaction
 
     public Uni<Response> getHistoricalBalance(
-            @PathParam("walletId") String walletId,
-            @QueryParam("timestamp") String timestampStr) {
+            @PathParam("walletId") 
+            @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", 
+                     message = "Wallet ID must be a valid UUID") 
+            String walletId,
+            @QueryParam("timestamp") 
+            @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}$", 
+                     message = "Timestamp must be in format YYYY-MM-DDTHH:mm:ss") 
+            String timestampStr) {
         
         if (timestampStr == null || timestampStr.trim().isEmpty()) {
             return Uni.createFrom().item(
