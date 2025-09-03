@@ -105,7 +105,7 @@ graph TB
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/wallet-service
+git clone https://github.com/thiago2santos/wallet-service
 cd wallet-service
 
 # Start all services
@@ -231,8 +231,8 @@ This project is licensed under the MIT License - see the [LICENSE](../LICENSE) f
 ## 🆘 Support
 
 - **Documentation**: You're reading it! 📖
-- **Issues**: [GitHub Issues](https://github.com/your-org/wallet-service/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/your-org/wallet-service/discussions)
+- **Issues**: [GitHub Issues](https://github.com/thiago2santos/wallet-service/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/thiago2santos/wallet-service/discussions)
 - **Email**: support@wallet-service.com
 
 ---

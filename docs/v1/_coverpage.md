@@ -13,7 +13,7 @@
 - 🌐 **Cloud native** design for Kubernetes
 - 📊 **Real-time monitoring** with Prometheus & Grafana
 
-[GitHub](https://github.com/your-org/wallet-service)
+[GitHub](https://github.com/thiago2santos/wallet-service)
 [Get Started](README.md)
 
 <!-- background image -->

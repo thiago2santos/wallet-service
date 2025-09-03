@@ -10,6 +10,6 @@
   * [Testing Guide](testing.md)
 
 * Resources
-  * [GitHub](https://github.com/your-org/wallet-service)
-  * [Issues](https://github.com/your-org/wallet-service/issues)
-  * [Discussions](https://github.com/your-org/wallet-service/discussions)
+  * [GitHub](https://github.com/thiago2santos/wallet-service)
+  * [Issues](https://github.com/thiago2santos/wallet-service/issues)
+  * [Discussions](https://github.com/thiago2santos/wallet-service/discussions)

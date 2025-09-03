@@ -16,7 +16,7 @@
 
 ```bash
 # Clone and start everything
-git clone https://github.com/your-org/wallet-service
+git clone https://github.com/thiago2santos/wallet-service
 cd wallet-service
 docker-compose up -d
 ./mvnw quarkus:dev
