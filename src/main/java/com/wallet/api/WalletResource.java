@@ -76,8 +76,8 @@ public class WalletResource {
             request.getUserId()
         );
 
-        // Temporary direct call for debugging
-        return createWalletHandler.handle(command)
+        // Using CommandBus for proper CQRS architecture
+        return commandBus.dispatch(command)
             .map(walletId -> Response
                 .created(URI.create("/api/v1/wallets/" + walletId))
                 .build()
@@ -91,8 +91,8 @@ public class WalletResource {
     public Uni<Response> getWallet(@PathParam("walletId") String walletId) {
         GetWalletQuery query = new GetWalletQuery(walletId);
 
-        // Temporary direct call to test the handler
-        return getWalletQueryHandler.handle(query)
+        // Using QueryBus for proper CQRS architecture
+        return queryBus.dispatch(query)
             .map(wallet -> Response.ok(wallet).build())
             .onFailure(NotFoundException.class)
             .recoverWithItem(e -> Response.status(Status.NOT_FOUND).build());
