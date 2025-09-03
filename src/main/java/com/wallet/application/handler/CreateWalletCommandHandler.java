@@ -12,6 +12,8 @@ import com.wallet.infrastructure.persistence.WalletRepository;
 
 import io.quarkus.reactive.datasource.ReactiveDataSource;
 import io.smallrye.mutiny.Uni;
+import io.smallrye.reactive.messaging.MutinyEmitter;
+import org.eclipse.microprofile.reactive.messaging.Channel;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -22,10 +24,10 @@ public class CreateWalletCommandHandler implements CommandHandler<CreateWalletCo
     @ReactiveDataSource("write")
     WalletRepository writeRepository;
 
-    // Temporarily disabled for create wallet focus
-    // @Inject
-    // @Channel("wallet-events")
-    // MutinyEmitter<WalletCreatedEvent> eventEmitter;
+    // Event emitter for publishing wallet events to Kafka
+    @Inject
+    @Channel("wallet-events")
+    MutinyEmitter<WalletCreatedEvent> eventEmitter;
 
     @Override
     @Transactional
@@ -48,7 +50,7 @@ public class CreateWalletCommandHandler implements CommandHandler<CreateWalletCo
         wallet.setUpdatedAt(java.time.Instant.now());
 
         return writeRepository.persist(wallet)
-            // .chain(() -> eventEmitter.send(event)) // Disabled for now
+            .chain(() -> eventEmitter.send(event)) // ENABLED: Publish event to Kafka
             .map(v -> wallet.getId());
     }
 }
