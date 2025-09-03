@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter xmlns="https://github.com/spotbugs/filter/3.0.0"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="https://github.com/spotbugs/filter/3.0.0 https://raw.githubusercontent.com/spotbugs/spotbugs/3.1.0/spotbugs/etc/findbugsfilter.xsd">
+
+    <!-- Exclude generated classes -->
+    <Match>
+        <Class name="~.*\._.*"/>
+    </Match>
+    
+    <!-- Exclude Quarkus generated classes -->
+    <Match>
+        <Class name="~.*_Bean"/>
+    </Match>
+    
+    <Match>
+        <Class name="~.*_ClientProxy"/>
+    </Match>
+    
+    <Match>
+        <Class name="~.*_Subclass"/>
+    </Match>
+    
+    <!-- Exclude test classes from certain checks -->
+    <Match>
+        <Class name="~.*Test"/>
+        <Bug pattern="DM_EXIT"/>
+    </Match>
+    
+    <!-- Exclude DTOs from serialization warnings -->
+    <Match>
+        <Package name="~com\.wallet\.dto\..*"/>
+        <Bug pattern="SE_NO_SERIALVERSIONID"/>
+    </Match>
+    
+    <!-- Exclude event classes from serialization warnings -->
+    <Match>
+        <Package name="~com\.wallet\.domain\.event\..*"/>
+        <Bug pattern="SE_NO_SERIALVERSIONID"/>
+    </Match>
+    
+    <!-- Exclude command classes from serialization warnings -->
+    <Match>
+        <Package name="~com\.wallet\.application\.command\..*"/>
+        <Bug pattern="SE_NO_SERIALVERSIONID"/>
+    </Match>
+    
+    <!-- Exclude specific false positives -->
+    <Match>
+        <Bug pattern="EI_EXPOSE_REP"/>
+        <Method name="getCreatedAt"/>
+    </Match>
+    
+    <Match>
+        <Bug pattern="EI_EXPOSE_REP"/>
+        <Method name="getUpdatedAt"/>
+    </Match>
+    
+    <!-- Exclude BigDecimal comparison warnings where we use compareTo -->
+    <Match>
+        <Bug pattern="BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS"/>
+        <Class name="~.*Command"/>
+    </Match>
+    
+</FindBugsFilter>
