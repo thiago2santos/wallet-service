@@ -19,22 +19,17 @@ public class QueryBusImpl implements QueryBus {
 
     @Inject
     public QueryBusImpl(Instance<QueryHandler<?, ?>> handlerInstances) {
-        System.out.println("QueryBusImpl: Initializing with handlers...");
         for (QueryHandler<?, ?> handler : handlerInstances) {
             Class<?> queryType = getQueryType(handler.getClass());
-            System.out.println("QueryBusImpl: Found handler " + handler.getClass().getSimpleName() + " for query type: " + queryType);
             if (queryType != null) {
                 handlers.put(queryType, handler);
             }
         }
-        System.out.println("QueryBusImpl: Total handlers registered: " + handlers.size());
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public <T extends Query<R>, R> Uni<R> dispatch(T query) {
-        System.out.println("QueryBusImpl: Dispatching query: " + query.getClass().getSimpleName());
-        System.out.println("QueryBusImpl: Available handlers: " + handlers.keySet());
         QueryHandler<T, R> handler = (QueryHandler<T, R>) handlers.get(query.getClass());
         if (handler == null) {
             return Uni.createFrom().failure(
@@ -51,7 +46,6 @@ public class QueryBusImpl implements QueryBus {
             actualClass = handlerClass.getSuperclass();
         }
         
-        System.out.println("QueryBusImpl: Analyzing class: " + actualClass.getName());
         
         // Check direct interfaces first
         Type[] genericInterfaces = actualClass.getGenericInterfaces();
@@ -62,7 +56,6 @@ public class QueryBusImpl implements QueryBus {
                     Type[] typeArguments = parameterizedType.getActualTypeArguments();
                     if (typeArguments.length > 0 && typeArguments[0] instanceof Class) {
                         Class<?> queryType = (Class<?>) typeArguments[0];
-                        System.out.println("QueryBusImpl: Found query type: " + queryType.getSimpleName());
                         return queryType;
                     }
                 }
@@ -80,7 +73,6 @@ public class QueryBusImpl implements QueryBus {
                         Type[] typeArguments = parameterizedType.getActualTypeArguments();
                         if (typeArguments.length > 0 && typeArguments[0] instanceof Class) {
                             Class<?> queryType = (Class<?>) typeArguments[0];
-                            System.out.println("QueryBusImpl: Found query type in superclass: " + queryType.getSimpleName());
                             return queryType;
                         }
                     }
@@ -88,7 +80,6 @@ public class QueryBusImpl implements QueryBus {
             }
         }
         
-        System.out.println("QueryBusImpl: No query type found for: " + handlerClass.getName());
         return null;
     }
 }

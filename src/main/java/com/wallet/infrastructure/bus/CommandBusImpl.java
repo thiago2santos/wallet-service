@@ -35,8 +35,6 @@ public class CommandBusImpl implements CommandBus {
     @Override
     @SuppressWarnings("unchecked")
     public <T extends Command, R> Uni<R> dispatch(T command) {
-        System.out.println("CommandBusImpl: Dispatching command: " + command.getClass().getSimpleName());
-        System.out.println("CommandBusImpl: Available handlers: " + handlers.keySet());
         CommandHandler<T, R> handler = (CommandHandler<T, R>) handlers.get(command.getClass());
         if (handler == null) {
             return Uni.createFrom().failure(
@@ -53,7 +51,6 @@ public class CommandBusImpl implements CommandBus {
             actualClass = handlerClass.getSuperclass();
         }
         
-        System.out.println("CommandBusImpl: Analyzing class: " + actualClass.getName());
         
         // Check direct interfaces first
         Type[] genericInterfaces = actualClass.getGenericInterfaces();
@@ -64,7 +61,6 @@ public class CommandBusImpl implements CommandBus {
                     Type[] typeArguments = parameterizedType.getActualTypeArguments();
                     if (typeArguments.length > 0 && typeArguments[0] instanceof Class) {
                         Class<?> commandType = (Class<?>) typeArguments[0];
-                        System.out.println("CommandBusImpl: Found command type: " + commandType.getSimpleName());
                         return commandType;
                     }
                 }
@@ -82,7 +78,6 @@ public class CommandBusImpl implements CommandBus {
                         Type[] typeArguments = parameterizedType.getActualTypeArguments();
                         if (typeArguments.length > 0 && typeArguments[0] instanceof Class) {
                             Class<?> commandType = (Class<?>) typeArguments[0];
-                            System.out.println("CommandBusImpl: Found command type in superclass: " + commandType.getSimpleName());
                             return commandType;
                         }
                     }
@@ -90,7 +85,6 @@ public class CommandBusImpl implements CommandBus {
             }
         }
         
-        System.out.println("CommandBusImpl: No command type found for: " + handlerClass.getName());
         return null;
     }
 }
