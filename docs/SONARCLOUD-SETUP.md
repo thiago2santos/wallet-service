@@ -29,7 +29,7 @@
 6. Click "Add secret"
 
 ### Step 5: Update Project Configuration
-Your project is already configured! The workflow will use:
+Your project can be configured to use:
 - **Project Key:** `thiago2santos_wallet-service`
 - **Organization:** `thiago2santos`
 

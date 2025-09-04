@@ -27,7 +27,7 @@
 #### What you get:
 - ✅ Automated dependency PRs
 - ✅ Security vulnerability alerts
-- ✅ Weekly updates for Maven, Docker, GitHub Actions
+- ✅ Weekly updates for Maven, Docker
 
 ## 💳 **Paid Tools (Optional)**
 
