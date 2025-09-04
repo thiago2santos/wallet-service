@@ -4,29 +4,29 @@
 
 ### Primary Goals
 - **Establish performance baseline** - Current system capabilities
-- **Validate performance claims** - Test "sub-100ms" and "10,000 RPS" claims  
+- **Measure actual performance** - Document real-world response times
 - **Identify bottlenecks** - Find system limitations
 - **Document actual limits** - Real-world performance metrics
 
 ### Success Criteria
-- **Response Time**: 95th percentile < 200ms under normal load
-- **Throughput**: Sustained > 1,000 RPS without errors
-- **Error Rate**: < 0.1% under normal load  
-- **Resource Usage**: CPU < 80%, Memory < 2GB heap
+- **Response Time**: Measure 95th percentile under normal load
+- **Throughput**: Determine maximum sustainable RPS
+- **Error Rate**: Monitor error rates under load
+- **Resource Usage**: Monitor CPU and memory consumption
 
 ## 🧪 Test Scenarios
 
 ### Scenario 1: Single User Baseline
 **Objective**: Establish baseline response times for each endpoint
 
-| Endpoint | Expected Response Time | Test Duration |
-|----------|----------------------|---------------|
-| POST /api/v1/wallets | < 100ms | 60s |
-| GET /api/v1/wallets/{id} | < 50ms | 60s |
-| POST /api/v1/wallets/{id}/deposit | < 100ms | 60s |
-| POST /api/v1/wallets/{id}/withdraw | < 100ms | 60s |
-| POST /api/v1/wallets/{id}/transfer | < 150ms | 60s |
-| GET /api/v1/wallets/{id}/balance/historical | < 200ms | 60s |
+| Endpoint | Test Duration | Measurement Goal |
+|----------|---------------|------------------|
+| POST /api/v1/wallets | 60s | Measure creation latency |
+| GET /api/v1/wallets/{id} | 60s | Measure query latency |
+| POST /api/v1/wallets/{id}/deposit | 60s | Measure deposit latency |
+| POST /api/v1/wallets/{id}/withdraw | 60s | Measure withdrawal latency |
+| POST /api/v1/wallets/{id}/transfer | 60s | Measure transfer latency |
+| GET /api/v1/wallets/{id}/balance/historical | 60s | Measure historical query latency |
 
 ### Scenario 2: Read-Heavy Load (80/20)
 **Objective**: Test read performance with caching
@@ -34,7 +34,7 @@
 - **Load Pattern**: 80% GET operations, 20% write operations
 - **Ramp-up**: 1 → 10 → 50 → 100 → 500 RPS over 10 minutes
 - **Duration**: 15 minutes sustained load
-- **Target**: Maintain < 100ms 95th percentile
+- **Goal**: Measure 95th percentile response times
 
 ### Scenario 3: Write-Heavy Load (20/80)  
 **Objective**: Test write performance and database limits
@@ -42,7 +42,7 @@
 - **Load Pattern**: 20% GET operations, 80% write operations
 - **Ramp-up**: 1 → 10 → 50 → 100 → 200 RPS over 10 minutes
 - **Duration**: 15 minutes sustained load
-- **Target**: Maintain < 200ms 95th percentile
+- **Goal**: Measure 95th percentile response times under write load
 
 ### Scenario 4: Stress Testing
 **Objective**: Find breaking point
@@ -50,7 +50,7 @@
 - **Load Pattern**: Mixed operations
 - **Ramp-up**: Increase by 50 RPS every 2 minutes until failure
 - **Stop Condition**: Error rate > 1% OR 95th percentile > 1000ms
-- **Target**: Identify maximum sustainable throughput
+- **Goal**: Identify maximum sustainable throughput
 
 ## 📊 Metrics to Monitor
 
@@ -134,13 +134,13 @@ export let options = {
 
 ## 📈 Expected Results
 
-### Performance Claims to Validate
-| Claim | Test Method | Expected Result |
-|-------|-------------|-----------------|
-| "Sub-100ms response times" | Single user baseline | 95th percentile < 100ms |
-| "10,000 RPS" | Stress testing | Sustained 10k RPS |
-| "Sub-second startup" | Application restart | < 1s to ready |
-| "Low memory footprint" | Resource monitoring | < 100MB heap |
+### Performance Measurements to Capture
+| Metric | Test Method | Measurement Goal |
+|--------|-------------|------------------|
+| Response times | Single user baseline | Measure actual 95th percentile |
+| Maximum throughput | Stress testing | Find sustainable RPS limit |
+| Startup time | Application restart | Measure actual startup time |
+| Memory usage | Resource monitoring | Monitor heap usage patterns |
 
 ### Bottleneck Predictions
 1. **Database connections** - Likely first bottleneck

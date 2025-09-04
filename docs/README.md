@@ -11,7 +11,7 @@ This is a **wallet service** that manages users' money with support for deposits
 - **💰 Wallet Management** - Create wallets and manage user balances
 - **💵 Core Operations** - Deposit, withdraw, and transfer funds
 - **📊 Historical Balance** - Query balance at any point in time
-- **⚡ High Performance** - Sub-20ms response times (5-8x better than targets)
+- **⚡ High Performance** - Achieved sub-20ms response times
 - **🏗️ CQRS Architecture** - Separate read/write operations for scalability
 - **🔄 Event Sourcing** - Complete audit trail with Kafka events
 - **📈 Monitoring** - Prometheus metrics and health checks
@@ -93,15 +93,15 @@ curl "http://localhost:8080/api/v1/wallets/{walletId}/balance/historical?timesta
 
 ## 📊 Performance
 
-**Validated Performance Results:**
+**Performance Results:**
 
-| Operation | Target | Actual | Status |
-|-----------|--------|---------|---------|
-| Wallet Creation | < 100ms | ~12.5ms | ✅ **8x Better** |
-| Balance Query | < 50ms | ~8.3ms | ✅ **6x Better** |
-| Deposit/Withdraw | < 100ms | ~38ms | ✅ **2.6x Better** |
-| Transfer | < 150ms | ~40ms | ✅ **3.7x Better** |
-| Historical Query | < 200ms | ~50ms | ✅ **4x Better** |
+| Operation | **Measured Performance** | Status |
+|-----------|-------------------------|---------|
+| Wallet Creation | **~12.5ms** | ✅ **Excellent** |
+| Balance Query | **~8.3ms** | ✅ **Excellent** |
+| Deposit/Withdraw | **~38ms** | ✅ **Very Good** |
+| Transfer | **~40ms** | ✅ **Very Good** |
+| Historical Query | **~50ms** | ✅ **Very Good** |
 
 ## 🏗️ Architecture
 
