@@ -12,7 +12,7 @@ This is a **wallet service** that manages users' money with support for deposits
 - **📊 Historical Balance** - Query balance at any point in time  
 - **⚡ High Performance** - Achieved sub-20ms response times
 - **🏗️ CQRS + Event Sourcing** - Scalable architecture with audit trail
-- **📈 Comprehensive Monitoring** - Prometheus metrics and health checks
+- **📈 Comprehensive Monitoring** - Prometheus metrics, Grafana dashboards, and health checks
 
 ## 🚀 Quick Start
 
@@ -102,10 +102,26 @@ curl -X POST http://localhost:8080/api/v1/wallets/{sourceId}/transfer \
 
 ## 📈 Monitoring
 
+### 🎛️ **Application Monitoring**
 - **Health**: http://localhost:8080/q/health
-- **Metrics**: http://localhost:8080/metrics
+- **Metrics**: http://localhost:8080/metrics  
 - **API Docs**: http://localhost:8080/q/swagger-ui/
 - **Dev UI**: http://localhost:8080/q/dev/
+
+### 📊 **Grafana Dashboards** (Auto-provisioned)
+- **Grafana**: http://localhost:3000 (admin/admin)
+- **Prometheus**: http://localhost:9090
+
+**Available Dashboards:**
+- 📈 **Overview** - Service health and performance summary
+- 💰 **Business Metrics** - Money flow and operations tracking  
+- ⚙️ **Technical Metrics** - CQRS, outbox pattern, performance
+- 🖥️ **Infrastructure** - JVM, memory, GC, database connections
+- ⭐ **Golden Metrics (SRE)** - Four Golden Signals with SLI/SLO monitoring
+
+> 🚀 **Zero Setup Required**: Dashboards are automatically loaded when you run `docker-compose up -d`
+
+**Verify Setup**: `./scripts/verify-grafana-setup.sh`
 
 ## 🎯 Assessment Deliverables
 
