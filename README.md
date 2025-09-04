@@ -97,7 +97,7 @@ curl -X POST http://localhost:8080/api/v1/wallets/{sourceId}/transfer \
 ./mvnw test -Dtest="*IntegrationTest"
 
 # Performance testing
-./scripts/setup-load-test.sh
+./performance/scripts/shell/setup-load-test.sh
 ```
 
 ## 📈 Monitoring
@@ -122,6 +122,12 @@ curl -X POST http://localhost:8080/api/v1/wallets/{sourceId}/transfer \
 > 🚀 **Zero Setup Required**: Dashboards are automatically loaded when you run `docker-compose up -d`
 
 **Verify Setup**: `./scripts/verify-grafana-setup.sh`
+
+### 🚀 **Performance Testing**
+- **Framework**: [Performance Testing Guide](performance/README.md)
+- **Quick Test**: `k6 run performance/scripts/k6/load-test-basic.js`
+- **Stress Test**: `./performance/scripts/shell/find-breaking-point.sh`
+- **Monitoring**: `./performance/monitoring/quick-monitor.sh`
 
 ## 🎯 Assessment Deliverables
 
