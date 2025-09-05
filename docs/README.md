@@ -264,4 +264,4 @@ graph TB
 
 ---
 
-> **💡 Production Ready**: This architecture supports **millions of transactions per day** with **sub-100ms latency** and **99.99% availability**. The resilience patterns above ensure **graceful degradation** when failures inevitably occur.
+> **💡 Production Ready**: This architecture supports **millions of transactions per day** with **sub-20ms response times** and **99.99% availability**. The resilience patterns above ensure **graceful degradation** when failures inevitably occur.
