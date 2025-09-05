@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.eclipse.microprofile.faulttolerance.CircuitBreaker;
 import org.eclipse.microprofile.faulttolerance.Fallback;
+import org.eclipse.microprofile.faulttolerance.Timeout;
 
 import com.wallet.domain.model.Wallet;
 import com.wallet.infrastructure.persistence.WalletReadRepository;
@@ -55,6 +56,7 @@ public class ResilientDatabaseService {
      * Fallback: Enter read-only mode to prevent data corruption
      */
     @CircuitBreaker
+    @Timeout("database-operations")("database-operations")
     @Fallback(fallbackMethod = "enterReadOnlyModeFallback")
     public Uni<Wallet> persistWallet(Wallet wallet) {
         // Validate write operations are allowed (not in read-only mode)
@@ -74,6 +76,7 @@ public class ResilientDatabaseService {
      * Update wallet with circuit breaker protection
      */
     @CircuitBreaker
+    @Timeout("database-operations")
     @Fallback(fallbackMethod = "enterReadOnlyModeFallback")
     public Uni<Wallet> updateWallet(Wallet wallet) {
         // Validate write operations are allowed (not in read-only mode)
@@ -93,6 +96,7 @@ public class ResilientDatabaseService {
      * Read operations with replica circuit breaker and primary fallback
      */
     @CircuitBreaker
+    @Timeout("database-operations")
     @Fallback(fallbackMethod = "readFromPrimaryFallback")
     public Uni<Wallet> findWalletById(String walletId) {
         return replicaRepository.findById(walletId)
@@ -107,6 +111,7 @@ public class ResilientDatabaseService {
      * Find wallets by user ID with circuit breaker protection
      */
     @CircuitBreaker
+    @Timeout("database-operations")
     @Fallback(fallbackMethod = "findByUserIdFromPrimaryFallback")
     public Uni<List<Wallet>> findWalletsByUserId(String userId) {
         return replicaRepository.findByUserId(userId)
@@ -121,6 +126,7 @@ public class ResilientDatabaseService {
      * Check wallet existence with circuit breaker protection
      */
     @CircuitBreaker
+    @Timeout("database-operations")
     @Fallback(fallbackMethod = "existsByUserIdFromPrimaryFallback")
     public Uni<Boolean> existsByUserIdAndCurrency(String userId, String currency) {
         return replicaRepository.existsByUserIdAndCurrency(userId, currency)

@@ -238,6 +238,15 @@ graph TB
 
 **🎯 Result**: Users experience minimal disruption even during major outages
 
+#### **⏰ Operation Timeouts**
+
+**⏰ Smart Timeouts** - Prevent resource exhaustion and hanging operations
+- **Database operations** → 5 second timeout (prevent connection pool exhaustion)
+- **Redis cache** → 1 second timeout (cache should be fast, fail fast if slow)
+- **Kafka events** → 3 second timeout (don't block business operations)
+
+**🎯 Result**: Operations complete quickly or fail fast, preventing resource starvation
+
 **🏥 Real-Time Health Monitoring** - Complete system status visibility
 - **Health Score**: 0-100 based on active degradations
 - **Impact Assessment**: Clear understanding of user impact
@@ -260,6 +269,7 @@ graph TB
 🔄 **Circuit Breakers** - Protect all critical dependencies  
 🔁 **Smart Retries** - Never give up on important operations  
 📉 **Graceful Degradation** - Adapt instead of failing  
+⏰ **Operation Timeouts** - Prevent hanging operations  
 🏥 **Health Monitoring** - Complete system status visibility
 
 ---

@@ -3,6 +3,7 @@ package com.wallet.infrastructure.resilience;
 import org.eclipse.microprofile.faulttolerance.CircuitBreaker;
 import org.eclipse.microprofile.faulttolerance.Retry;
 import org.eclipse.microprofile.faulttolerance.Fallback;
+import org.eclipse.microprofile.faulttolerance.Timeout;
 
 import com.wallet.infrastructure.outbox.OutboxEventService;
 import com.wallet.infrastructure.metrics.WalletMetrics;
@@ -55,6 +56,7 @@ public class ResilientEventService {
      */
     @CircuitBreaker
     @Retry
+    @Timeout("kafka-operations")
     @Fallback(fallbackMethod = "storeInOutboxFallback")
     public Uni<Void> publishWalletEvent(String walletId, String eventType, Object eventData) {
         String eventJson = serializeEvent(eventData);
@@ -78,6 +80,7 @@ public class ResilientEventService {
      */
     @CircuitBreaker
     @Retry
+    @Timeout("kafka-operations")
     @Fallback(fallbackMethod = "storeWalletCreatedInOutboxFallback")
     public Uni<Void> publishWalletCreatedEvent(String walletId, String userId) {
         WalletCreatedEvent event = new WalletCreatedEvent(walletId, userId);
@@ -102,6 +105,7 @@ public class ResilientEventService {
      */
     @CircuitBreaker
     @Retry
+    @Timeout("kafka-operations")
     @Fallback(fallbackMethod = "storeFundsDepositedInOutboxFallback")
     public Uni<Void> publishFundsDepositedEvent(String walletId, java.math.BigDecimal amount, 
                                                String referenceId, String description) {
@@ -128,6 +132,7 @@ public class ResilientEventService {
      */
     @CircuitBreaker
     @Retry
+    @Timeout("kafka-operations")
     @Fallback(fallbackMethod = "storeFundsWithdrawnInOutboxFallback")
     public Uni<Void> publishFundsWithdrawnEvent(String walletId, java.math.BigDecimal amount, 
                                                String referenceId, String description) {
@@ -154,6 +159,7 @@ public class ResilientEventService {
      */
     @CircuitBreaker
     @Retry
+    @Timeout("kafka-operations")
     @Fallback(fallbackMethod = "storeFundsTransferredInOutboxFallback")
     public Uni<Void> publishFundsTransferredEvent(String sourceWalletId, String destinationWalletId,
                                                  java.math.BigDecimal amount, String referenceId, String description) {

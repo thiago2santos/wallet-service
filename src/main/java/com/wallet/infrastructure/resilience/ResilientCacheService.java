@@ -2,6 +2,7 @@ package com.wallet.infrastructure.resilience;
 
 import org.eclipse.microprofile.faulttolerance.CircuitBreaker;
 import org.eclipse.microprofile.faulttolerance.Fallback;
+import org.eclipse.microprofile.faulttolerance.Timeout;
 
 import com.wallet.domain.model.Wallet;
 import com.wallet.infrastructure.cache.WalletStateCache;
@@ -53,6 +54,7 @@ public class ResilientCacheService {
      * Fallback: Direct database query
      */
     @CircuitBreaker
+    @Timeout("redis-operations")
     @Fallback(fallbackMethod = "getWalletFromDatabaseFallback")
     public Uni<Wallet> getWallet(String walletId) {
         return walletCache.getWallet(walletId)
@@ -74,6 +76,7 @@ public class ResilientCacheService {
      * Fallback: Continue without caching (operation succeeds)
      */
     @CircuitBreaker
+    @Timeout("redis-operations")
     @Fallback(fallbackMethod = "skipCachingFallback")
     public Uni<Void> cacheWallet(Wallet wallet) {
         return walletCache.cacheWallet(wallet)
@@ -89,6 +92,7 @@ public class ResilientCacheService {
      * Fallback: Continue without invalidation (eventual consistency)
      */
     @CircuitBreaker
+    @Timeout("redis-operations")
     @Fallback(fallbackMethod = "skipCacheInvalidationFallback")
     public Uni<Void> invalidateWallet(String walletId) {
         return walletCache.invalidateWallet(walletId)
@@ -104,6 +108,7 @@ public class ResilientCacheService {
      * This is a high-frequency operation that benefits most from caching
      */
     @CircuitBreaker
+    @Timeout("redis-operations")
     @Fallback(fallbackMethod = "getBalanceFromDatabaseFallback")
     public Uni<java.math.BigDecimal> getWalletBalance(String walletId) {
         return walletCache.getWallet(walletId)
