@@ -1,7 +1,7 @@
 # THIAGO DOS SANTOS
 **Senior Software Engineer | Tech Lead**
 
-📍 Jundiaí, SP | 📧 thisanti@hotmail.com | 📱 +55 11 97516-6679  
+📍 Greater São Paulo, Brazil  
 🔗 [LinkedIn](https://www.linkedin.com/in/thiagodsantos921) | 💻 [GitHub](https://www.github.com/thiago2santos)
 
 ## PROFESSIONAL SUMMARY

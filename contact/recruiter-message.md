@@ -4,7 +4,7 @@
 
 ---
 
-Dear [Recruiter Name],
+Dear ....,
 
 I hope this message finds you well. I'm reaching out to express my interest in senior software engineering opportunities and would like to share my professional background with you in an innovative way.
 
@@ -12,6 +12,12 @@ As a Senior Software Engineer with 13+ years of experience specializing in cloud
 
 **You can access my complete resume and professional portfolio in the `contact/` folder of this repository:**
 👉 **[Repository Link: github.com/thiago2santos/wallet-service](https://github.com/thiago2santos/wallet-service)**
+
+**Quick Overview:**
+- 📍 **Location:** Greater São Paulo, Brazil
+- ☕ **Java Experience:** 5+ years (Java 8, 11, 17, 21)
+- 🏦 **Banking/Financial:** 3+ years at major institutions
+- 💼 **Availability & Compensation:** Please contact directly for detailed discussion
 
 I'm presenting my resume this way as an **experimental approach** to showcase not just my professional experience, but also my commitment to:
 - **Innovation in professional presentation**
