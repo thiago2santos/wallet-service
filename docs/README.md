@@ -106,7 +106,7 @@ curl http://localhost:8080/api/v1/users/user123/wallets
 
 - **API Health**: http://localhost:8080/q/health
 - **Metrics**: http://localhost:9090 (Prometheus)
-- **Dashboards**: http://localhost:3001 (Grafana)
+- **Grafana Dashboards**: [Overview](http://localhost:3001/d/wallet-service-overview) | [Business Metrics](http://localhost:3001/d/wallet-business-metrics) | [Golden Metrics](http://localhost:3001/d/wallet-golden-metrics) | [Technical Metrics](http://localhost:3001/d/wallet-technical-metrics) | [Infrastructure](http://localhost:3001/d/wallet-infrastructure-metrics)
 
 ## 📚 Documentation
 
