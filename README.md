@@ -78,7 +78,7 @@ curl -X POST http://localhost:8080/api/v1/wallets \
 | **🌐 Edge** | CloudFront + WAF | Global CDN, DDoS protection |
 | **🛡️ Security** | API Gateway | Authentication, rate limiting |
 | **🚀 Compute** | EKS (Kubernetes) | Auto-scaling, multi-AZ deployment |
-| **💾 Database** | RDS MySQL | Multi-AZ, read replicas |
+| **💾 Database** | Aurora MySQL | Serverless v2, Global Database |
 | **⚡ Cache** | ElastiCache Redis | High-performance caching |
 | **📨 Events** | MSK (Managed Kafka) | Event sourcing, audit trail |
 | **📊 Monitoring** | CloudWatch + X-Ray | Observability, tracing |

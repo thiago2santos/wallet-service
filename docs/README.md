@@ -145,9 +145,9 @@ This service was **designed from the ground up for AWS deployment** with enterpr
 │  └─────────────────────────────────────────────────────┘       │
 │       │                        │                               │
 │  ┌────▼────┐              ┌────▼────┐                          │
-│  │ ElastiCache           │   RDS    │                          │
-│  │  (Redis)              │ (MySQL)  │                          │
-│  │ Multi-AZ              │ Multi-AZ │                          │
+│  │ ElastiCache           │ Aurora   │                          │
+│  │  (Redis)              │ MySQL    │                          │
+│  │ Multi-AZ              │Serverless│                          │
 │  └─────────┘              └─────────┘                          │
 │       │                                                         │
 │  ┌────▼────────────────────────────────────────────────┐       │
@@ -165,7 +165,7 @@ This service was **designed from the ground up for AWS deployment** with enterpr
 | **🛡️ API Management** | API Gateway | Rate limiting, caching | Request management & security |
 | **🔒 Security** | WAF + Shield | DDoS protection, filtering | Application security |
 | **🚀 Container Platform** | EKS (Kubernetes) | Multi-AZ, auto-scaling | Container orchestration |
-| **💾 Primary Database** | RDS MySQL | Multi-AZ, read replicas | ACID transactions |
+| **💾 Primary Database** | Aurora MySQL | Serverless v2, Global Database | ACID transactions |
 | **⚡ Cache Layer** | ElastiCache Redis | Multi-AZ, clustering | High-speed caching |
 | **📨 Event Streaming** | MSK (Managed Kafka) | Multi-AZ, auto-scaling | Event sourcing & audit |
 | **📊 Monitoring** | CloudWatch + Prometheus | Custom metrics, alerting | Observability |
@@ -189,7 +189,8 @@ This service was **designed from the ground up for AWS deployment** with enterpr
 #### **⚡ Performance & Scalability**
 - **Auto-Scaling**: Scale from 3 to 100+ pods based on demand
 - **Global CDN**: CloudFront for static assets and API caching
-- **Database Scaling**: Read replicas + connection pooling
+- **Aurora Serverless v2**: Automatic scaling from 0.5 to 128 ACUs based on demand
+- **Aurora Global Database**: Cross-region replication with <1 second lag
 - **Cache Strategy**: Multi-layer caching (Redis + API Gateway)
 
 ### 🔒 Security Architecture
@@ -219,10 +220,22 @@ Internet ──▶ CloudFront ──▶ WAF ──▶ API Gateway ──▶ ALB 
 - **🔍 X-Ray**: Distributed tracing
 - **📝 CloudWatch Logs**: Centralized log aggregation
 
+### 💾 Aurora MySQL Benefits
+
+**Why Aurora over RDS for Financial Services**:
+- **🚀 Performance**: Up to 5x faster than standard MySQL
+- **💰 Cost-Effective**: Serverless v2 scales automatically, pay only for what you use
+- **🔄 High Availability**: 99.99% availability with 6 copies across 3 AZs
+- **📊 Global Scale**: Aurora Global Database for worldwide deployment
+- **🔒 Security**: Encryption at rest and in transit, VPC isolation
+- **⚡ Instant Scaling**: Scale compute in seconds, storage automatically
+- **🔄 Continuous Backup**: Point-in-time recovery up to 35 days
+- **📈 Read Scaling**: Up to 15 read replicas with <10ms replica lag
+
 ### 💰 Cost Optimization
 
 **Smart resource management**:
-- **🕐 Scheduled Scaling**: Scale down during off-hours
+- **🕐 Aurora Serverless**: Automatic scaling based on demand, pause when idle
 - **💾 Storage Tiering**: S3 lifecycle policies for event archives
 - **⚡ Spot Instances**: Use spot instances for non-critical workloads
 - **📊 Cost Monitoring**: AWS Cost Explorer integration
