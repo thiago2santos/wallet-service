@@ -89,7 +89,7 @@ curl -X POST http://localhost:8080/api/v1/wallets \
 - **⚡ High Performance**: Auto-scaling from 3 to 100+ pods based on demand  
 - **🔒 Enterprise Security**: Multi-layer security (WAF, API Gateway, VPC)
 - **📊 Full Observability**: CloudWatch + Prometheus + custom business metrics
-- **🛡️ Fault Tolerance**: Circuit breakers, retries, graceful degradation
+- **🛡️ Fault Tolerance**: Circuit breakers for Aurora/Redis/Kafka with fallbacks
 - **💰 Cost Optimized**: Scheduled scaling, spot instances, storage tiering
 
 > **💡 Scalability**: Architecture supports **millions of transactions per day** with **sub-100ms latency**
