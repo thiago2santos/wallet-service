@@ -56,7 +56,7 @@ public class ResilientEventService {
      */
     @CircuitBreaker
     @Retry
-    @Timeout("kafka-operations")
+    @Timeout(3000)
     @Fallback(fallbackMethod = "storeInOutboxFallback")
     public Uni<Void> publishWalletEvent(String walletId, String eventType, Object eventData) {
         String eventJson = serializeEvent(eventData);
@@ -80,7 +80,7 @@ public class ResilientEventService {
      */
     @CircuitBreaker
     @Retry
-    @Timeout("kafka-operations")
+    @Timeout(3000)
     @Fallback(fallbackMethod = "storeWalletCreatedInOutboxFallback")
     public Uni<Void> publishWalletCreatedEvent(String walletId, String userId) {
         WalletCreatedEvent event = new WalletCreatedEvent(walletId, userId);
@@ -105,7 +105,7 @@ public class ResilientEventService {
      */
     @CircuitBreaker
     @Retry
-    @Timeout("kafka-operations")
+    @Timeout(3000)
     @Fallback(fallbackMethod = "storeFundsDepositedInOutboxFallback")
     public Uni<Void> publishFundsDepositedEvent(String walletId, java.math.BigDecimal amount, 
                                                String referenceId, String description) {
@@ -132,7 +132,7 @@ public class ResilientEventService {
      */
     @CircuitBreaker
     @Retry
-    @Timeout("kafka-operations")
+    @Timeout(3000)
     @Fallback(fallbackMethod = "storeFundsWithdrawnInOutboxFallback")
     public Uni<Void> publishFundsWithdrawnEvent(String walletId, java.math.BigDecimal amount, 
                                                String referenceId, String description) {
@@ -159,7 +159,7 @@ public class ResilientEventService {
      */
     @CircuitBreaker
     @Retry
-    @Timeout("kafka-operations")
+    @Timeout(3000)
     @Fallback(fallbackMethod = "storeFundsTransferredInOutboxFallback")
     public Uni<Void> publishFundsTransferredEvent(String sourceWalletId, String destinationWalletId,
                                                  java.math.BigDecimal amount, String referenceId, String description) {

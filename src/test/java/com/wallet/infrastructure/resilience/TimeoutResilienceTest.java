@@ -117,7 +117,6 @@ class TimeoutResilienceTest {
         Wallet wallet = new Wallet();
         wallet.setId("wallet-123");
         wallet.setUserId("user-123");
-        wallet.setCurrency("USD");
         wallet.setBalance(java.math.BigDecimal.valueOf(100.00));
         wallet.setStatus("ACTIVE");
         return wallet;
