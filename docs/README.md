@@ -137,114 +137,26 @@ This service was **designed from the ground up for AWS deployment** with enterpr
 
 ```mermaid
 graph TB
-    subgraph "🌐 Internet"
-        Users["👥 Users"]
-        CDN["☁️ CloudFront CDN<br/>Global Edge Locations"]
-    end
+    Users["👥 Users"] --> CDN["☁️ CloudFront"]
+    CDN --> WAF["🛡️ WAF + API Gateway"]
+    WAF --> ALB["⚖️ Load Balancer"]
+    ALB --> EKS["🏗️ EKS Cluster<br/>Wallet Service Pods"]
     
-    subgraph "🛡️ Security Layer"
-        WAF["🛡️ AWS WAF<br/>DDoS Protection<br/>Rate Limiting"]
-        Gateway["🚪 API Gateway<br/>Authentication<br/>Throttling"]
-    end
+    EKS --> Aurora["🗄️ Aurora MySQL<br/>Primary + Replicas"]
+    EKS --> Redis["⚡ ElastiCache Redis<br/>Multi-AZ Cache"]
+    EKS --> Kafka["📨 MSK Kafka<br/>Event Streaming"]
     
-    subgraph "🔀 Load Balancing"
-        ALB["⚖️ Application Load Balancer<br/>Multi-AZ<br/>SSL Termination"]
-    end
+    EKS --> Monitor["📊 CloudWatch + X-Ray<br/>Monitoring & Tracing"]
     
-    subgraph "🏗️ AWS EKS Cluster (Multi-AZ)"
-        subgraph "AZ-A"
-            Pod1["🏃 Wallet Service Pod<br/>Circuit Breakers<br/>Retry Logic"]
-        end
-        subgraph "AZ-B"
-            Pod2["🏃 Wallet Service Pod<br/>Circuit Breakers<br/>Retry Logic"]
-        end
-        subgraph "AZ-C"
-            Pod3["🏃 Wallet Service Pod<br/>Circuit Breakers<br/>Retry Logic"]
-        end
-    end
-    
-    subgraph "💾 Data Layer"
-        subgraph "🗄️ Aurora MySQL Serverless v2"
-            Primary["📝 Primary<br/>Read/Write"]
-            Replica1["📖 Read Replica 1"]
-            Replica2["📖 Read Replica 2"]
-        end
-        
-        subgraph "⚡ ElastiCache Redis"
-            Redis1["🔄 Redis Primary<br/>Multi-AZ"]
-            Redis2["🔄 Redis Replica<br/>Failover Ready"]
-        end
-        
-        subgraph "📨 MSK (Managed Kafka)"
-            Kafka1["📬 Kafka Broker 1<br/>Multi-AZ"]
-            Kafka2["📬 Kafka Broker 2<br/>Multi-AZ"]
-            Kafka3["📬 Kafka Broker 3<br/>Multi-AZ"]
-        end
-    end
-    
-    subgraph "📊 Monitoring & Security"
-        CloudWatch["📈 CloudWatch<br/>Metrics & Logs"]
-        XRay["🔍 X-Ray<br/>Distributed Tracing"]
-        Secrets["🔐 Secrets Manager<br/>Credentials"]
-    end
-    
-    %% User Flow
-    Users --> CDN
-    CDN --> WAF
-    WAF --> Gateway
-    Gateway --> ALB
-    ALB --> Pod1
-    ALB --> Pod2
-    ALB --> Pod3
-    
-    %% Database Connections
-    Pod1 --> Primary
-    Pod2 --> Primary
-    Pod3 --> Primary
-    
-    Pod1 --> Replica1
-    Pod2 --> Replica2
-    Pod3 --> Replica1
-    
-    Primary --> Replica1
-    Primary --> Replica2
-    
-    %% Cache Connections
-    Pod1 --> Redis1
-    Pod2 --> Redis1
-    Pod3 --> Redis1
-    Redis1 --> Redis2
-    
-    %% Event Streaming
-    Pod1 --> Kafka1
-    Pod2 --> Kafka2
-    Pod3 --> Kafka3
-    
-    %% Monitoring
-    Pod1 --> CloudWatch
-    Pod2 --> CloudWatch
-    Pod3 --> CloudWatch
-    
-    Pod1 --> XRay
-    Pod2 --> XRay
-    Pod3 --> XRay
-    
-    Pod1 --> Secrets
-    Pod2 --> Secrets
-    Pod3 --> Secrets
-    
-    %% Styling
     classDef userClass fill:#e1f5fe,stroke:#01579b,stroke-width:2px
     classDef securityClass fill:#fff3e0,stroke:#e65100,stroke-width:2px
     classDef computeClass fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
     classDef dataClass fill:#fce4ec,stroke:#c2185b,stroke-width:2px
-    classDef monitorClass fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
     
     class Users,CDN userClass
-    class WAF,Gateway,ALB securityClass
-    class Pod1,Pod2,Pod3 computeClass
-    class Primary,Replica1,Replica2,Redis1,Redis2,Kafka1,Kafka2,Kafka3 dataClass
-    class CloudWatch,XRay,Secrets monitorClass
+    class WAF,ALB securityClass
+    class EKS computeClass
+    class Aurora,Redis,Kafka,Monitor dataClass
 ```
 
 ### 🔧 AWS Services Integration
