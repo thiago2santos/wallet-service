@@ -1,0 +1,101 @@
+# =============================================================================
+# STAGING ENVIRONMENT CONFIGURATION
+# =============================================================================
+# Copy this file to terraform.tfvars and customize for your deployment
+# COST OPTIMIZED - Minimal resources with full functionality
+# =============================================================================
+
+# =============================================================================
+# GENERAL CONFIGURATION
+# =============================================================================
+
+aws_region  = "sa-east-1"  # São Paulo, Brazil
+domain_name = "staging-wallet.yourcompany.com"
+
+# =============================================================================
+# SCALING CONFIGURATION (MINIMAL)
+# =============================================================================
+
+target_tps      = 100   # Low TPS for staging
+expected_users  = 1000  # Limited users for testing
+
+# =============================================================================
+# COMPUTE CONFIGURATION (COST OPTIMIZED)
+# =============================================================================
+
+eks_node_instance_types = ["t3.large"]  # 2 vCPU, 8 GB RAM - cost optimized
+min_nodes              = 2             # Minimal HA
+max_nodes              = 4             # Limited scaling
+
+# =============================================================================
+# DATABASE CONFIGURATION (MINIMAL)
+# =============================================================================
+
+aurora_min_capacity           = 0.5  # 1 GB RAM - smallest possible
+aurora_max_capacity           = 2    # 4 GB RAM - limited scaling
+aurora_backup_retention_days  = 7    # Minimum retention
+
+# =============================================================================
+# CACHE CONFIGURATION (MINIMAL)
+# =============================================================================
+
+redis_node_type        = "t3.micro"  # 2 vCPU, 1 GB RAM - smallest
+redis_num_cache_nodes  = 1           # Single node for cost
+
+# =============================================================================
+# MESSAGING CONFIGURATION (MINIMAL)
+# =============================================================================
+
+kafka_instance_type           = "t3.small"  # 2 vCPU, 2 GB RAM - cost optimized
+kafka_number_of_broker_nodes  = 2           # Minimal for 2 AZs
+kafka_ebs_volume_size         = 100         # 100 GB per broker
+
+# =============================================================================
+# MONITORING CONFIGURATION (BASIC)
+# =============================================================================
+
+log_retention_days           = 7      # Short retention for cost
+enable_performance_insights  = false  # Disabled for cost
+enable_enhanced_monitoring   = false  # Disabled for cost
+
+# =============================================================================
+# SECURITY CONFIGURATION
+# =============================================================================
+
+enable_encryption_at_rest    = true  # Keep security consistent
+enable_encryption_in_transit = true  # Keep security consistent
+
+# =============================================================================
+# COST OPTIMIZATION (AGGRESSIVE)
+# =============================================================================
+
+enable_spot_instances      = true   # Use spot instances for cost savings
+enable_scheduled_scaling   = true   # Scale down outside business hours
+
+# =============================================================================
+# ADDITIONAL TAGS
+# =============================================================================
+
+additional_tags = {
+  Owner         = "development-team"
+  CostCenter    = "engineering"
+  Environment   = "staging"
+  AutoShutdown  = "enabled"
+  CostOptimized = "true"
+}
+
+# =============================================================================
+# ESTIMATED COSTS (Monthly USD) - STAGING
+# =============================================================================
+# 
+# EKS Nodes (2 x t3.large):        ~$120
+# Aurora Serverless v2 (1 ACU):    ~$50
+# ElastiCache (1 x t3.micro):      ~$15
+# MSK Kafka (2 x t3.small):        ~$180
+# Networking & Storage:             ~$50
+# 
+# TOTAL ESTIMATED:                  ~$415/month
+# 
+# Cost Savings vs Production:       ~95% savings
+# 
+# =============================================================================
