@@ -106,6 +106,52 @@ graph TB
 - **📊 Full observability** - CloudWatch, X-Ray, custom metrics
 - **💰 Cost optimized** - Serverless Aurora, spot instances
 
+## 🏗️ Architecture Decisions
+
+### **💡 Why These Choices?**
+
+#### **🔄 CQRS (Command Query Responsibility Segregation)**
+**Decision**: Separate read and write operations  
+**Rationale**: Financial systems need optimized reads (balance queries) and writes (transactions). CQRS allows independent scaling and different data models for each.
+
+#### **📝 Event Sourcing with Kafka**
+**Decision**: Store all changes as immutable events  
+**Rationale**: Financial regulations require complete audit trails. Event sourcing provides natural auditing, time-travel queries, and system rebuilding capabilities.
+
+#### **🗄️ Aurora MySQL over RDS**
+**Decision**: Aurora Serverless v2 with Global Database  
+**Rationale**: Financial services need 99.99% availability. Aurora provides automatic failover, cross-region replication, and scales from 0.5 to 128 ACUs based on demand.
+
+#### **⚡ Redis Caching Strategy**
+**Decision**: ElastiCache Redis for wallet state caching  
+**Rationale**: Balance queries are frequent and latency-sensitive. Redis reduces database load and provides sub-10ms response times for cached data.
+
+#### **🏗️ Quarkus over Spring Boot**
+**Decision**: Quarkus framework with native compilation  
+**Rationale**: Lower memory footprint (50MB vs 200MB+), faster startup (0.5s vs 3s+), and better Kubernetes resource utilization for cost optimization.
+
+#### **🔄 Reactive Programming (Mutiny)**
+**Decision**: Non-blocking I/O throughout the stack  
+**Rationale**: Financial systems handle high concurrency. Reactive programming maximizes throughput with fewer threads, reducing resource consumption.
+
+#### **🛡️ Resilience Patterns**
+**Decision**: Circuit breakers, retries, and graceful degradation  
+**Rationale**: Financial systems cannot afford downtime. Multiple layers of protection ensure service availability even during partial system failures.
+
+### **⚖️ Trade-offs Made**
+
+#### **Complexity vs Reliability**
+- **Trade-off**: Increased system complexity for higher reliability
+- **Justification**: Financial services prioritize availability and data consistency over simplicity
+
+#### **Consistency vs Performance**  
+- **Trade-off**: Eventual consistency for events vs immediate consistency for balances
+- **Justification**: Balance operations need strong consistency, but audit events can be eventually consistent
+
+#### **Cost vs Performance**
+- **Trade-off**: Higher infrastructure costs for better performance and availability
+- **Justification**: Financial services require enterprise-grade SLAs, justifying premium AWS services
+
 ## 🛡️ Enterprise-Grade Resilience
 
 > **Built for the real world** - When systems fail (and they will), our wallet service keeps running.
