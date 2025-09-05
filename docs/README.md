@@ -203,7 +203,7 @@ graph TB
 
 ## 🛡️ Enterprise-Grade Resilience
 
-> **Built for the real world** - When systems fail (and they will), our wallet service keeps running.
+> **Built for the real world** - When systems fail (and they will), the wallet service keeps running.
 
 **Zero downtime. Zero data loss. Maximum availability.**
 
@@ -227,9 +227,9 @@ graph TB
 
 #### **🎯 Graceful Degradation**
 
-**📉 Smart Fallbacks** - When things go wrong, we adapt instead of failing
+**📉 Smart Fallbacks** - When things go wrong, the system adapts instead of failing
 
-| **When This Fails** | **We Do This** | **User Sees** |
+| **When This Fails** | **System Response** | **User Sees** |
 |---------------------|----------------|---------------|
 | **🔴 Database** | Switch to read-only mode | Balance queries work, transactions paused |
 | **🔴 Cache** | Direct database queries | Slightly slower responses |
@@ -238,7 +238,7 @@ graph TB
 
 **🎯 Result**: Users experience minimal disruption even during major outages
 
-**🏥 Real-Time Health Monitoring** - Always know your system status
+**🏥 Real-Time Health Monitoring** - Complete system status visibility
 - **Health Score**: 0-100 based on active degradations
 - **Impact Assessment**: Clear understanding of user impact
 - **Automatic Recovery**: System returns to normal when issues resolve
@@ -247,7 +247,7 @@ graph TB
 
 ### 🏆 **The Bottom Line**
 
-**Your wallet service is built like a fortress:**
+**The wallet service is built like a fortress:**
 - **🛡️ Triple-layer protection** against failures
 - **⚡ Automatic recovery** from outages  
 - **📊 Real-time monitoring** of system health
@@ -260,7 +260,7 @@ graph TB
 🔄 **Circuit Breakers** - Protect all critical dependencies  
 🔁 **Smart Retries** - Never give up on important operations  
 📉 **Graceful Degradation** - Adapt instead of failing  
-🏥 **Health Monitoring** - Always know your system status
+🏥 **Health Monitoring** - Complete system status visibility
 
 ---
 
