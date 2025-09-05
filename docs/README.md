@@ -36,21 +36,70 @@ docker-compose up -d
 curl http://localhost:8080/q/health
 ```
 
-### 🧪 Test the API
+### 🧪 Test All Features
 
+#### **1. Create a Wallet**
 ```bash
-# Create a wallet
 curl -X POST http://localhost:8080/api/v1/wallets \
   -H "Content-Type: application/json" \
   -d '{"userId": "user123", "currency": "USD"}'
 
-# Deposit funds
-curl -X POST http://localhost:8080/api/v1/wallets/{walletId}/deposit \
-  -H "Content-Type: application/json" \
-  -d '{"amount": 100.00, "referenceId": "dep123"}'
+# Response: {"walletId": "wallet-abc123", "userId": "user123", "currency": "USD", "balance": 0.00}
+```
 
-# Check balance
-curl http://localhost:8080/api/v1/wallets/{walletId}/balance
+#### **2. Deposit Funds**
+```bash
+curl -X POST http://localhost:8080/api/v1/wallets/wallet-abc123/deposit \
+  -H "Content-Type: application/json" \
+  -d '{"amount": 100.00, "referenceId": "deposit-001"}'
+
+# Response: {"walletId": "wallet-abc123", "newBalance": 100.00, "transactionId": "txn-xyz789"}
+```
+
+#### **3. Check Current Balance**
+```bash
+curl http://localhost:8080/api/v1/wallets/wallet-abc123/balance
+
+# Response: {"walletId": "wallet-abc123", "balance": 100.00, "currency": "USD"}
+```
+
+#### **4. Withdraw Funds**
+```bash
+curl -X POST http://localhost:8080/api/v1/wallets/wallet-abc123/withdraw \
+  -H "Content-Type: application/json" \
+  -d '{"amount": 25.00, "referenceId": "withdraw-001"}'
+
+# Response: {"walletId": "wallet-abc123", "newBalance": 75.00, "transactionId": "txn-def456"}
+```
+
+#### **5. Transfer Between Wallets**
+```bash
+# First create a second wallet
+curl -X POST http://localhost:8080/api/v1/wallets \
+  -H "Content-Type: application/json" \
+  -d '{"userId": "user456", "currency": "USD"}'
+
+# Transfer funds
+curl -X POST http://localhost:8080/api/v1/wallets/wallet-abc123/transfer \
+  -H "Content-Type: application/json" \
+  -d '{"toWalletId": "wallet-def456", "amount": 30.00, "referenceId": "transfer-001"}'
+
+# Response: {"fromWalletId": "wallet-abc123", "toWalletId": "wallet-def456", "amount": 30.00, "transactionId": "txn-ghi789"}
+```
+
+#### **6. Get Historical Balance**
+```bash
+# Balance at specific date/time
+curl "http://localhost:8080/api/v1/wallets/wallet-abc123/balance/history?timestamp=2024-01-15T10:30:00Z"
+
+# Response: {"walletId": "wallet-abc123", "balance": 45.00, "timestamp": "2024-01-15T10:30:00Z"}
+```
+
+#### **7. List User's Wallets**
+```bash
+curl http://localhost:8080/api/v1/users/user123/wallets
+
+# Response: [{"walletId": "wallet-abc123", "currency": "USD", "balance": 45.00}]
 ```
 
 ### 📊 Access Monitoring
