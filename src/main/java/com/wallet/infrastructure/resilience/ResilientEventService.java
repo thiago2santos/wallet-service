@@ -46,6 +46,9 @@ public class ResilientEventService {
     @Inject
     DegradationManager degradationManager;
 
+    @Inject
+    GracefulDegradationService gracefulDegradationService;
+
     /**
      * Publish wallet event with circuit breaker protection
      * Fallback: Store in outbox table for guaranteed delivery
@@ -186,7 +189,7 @@ public class ResilientEventService {
         walletMetrics.recordFallbackExecution("storeInOutbox", "kafka_circuit_breaker");
         
         // Enter event processing degradation mode
-        degradationManager.setEventProcessingDegraded("Kafka circuit breaker activated");
+        gracefulDegradationService.enterEventProcessingDegradation("Kafka circuit breaker activated");
         
         return outboxEventService.storeWalletEvent(walletId, eventType, eventData)
             .replaceWithVoid()

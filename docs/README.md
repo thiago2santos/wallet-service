@@ -391,13 +391,44 @@ public Uni<Wallet> updateWalletBalance(String walletId, BigDecimal amount) {
 
 #### **📉 Graceful Degradation Strategies**
 
-| **Failure Scenario** | **Degradation Strategy** | **User Impact** |
-|---------------------|-------------------------|-----------------|
-| **🔴 Aurora Primary Down** | Switch to read replicas (read-only mode) | ⚠️ Deposits/withdrawals disabled, balance queries work |
-| **🔴 Redis Cache Down** | Direct database queries | 🐌 Slower response times (50ms → 200ms) |
-| **🔴 Kafka Down** | Store events in outbox table | ✅ Operations continue, events replayed later |
-| **🔴 External Payment API** | Queue transactions for retry | ⏳ Async processing, user notified of delay |
-| **🔴 High Database Load** | Rate limiting + queue | 🚦 Controlled throughput, prevent cascade failure |
+**🎯 Implementation Status: ✅ FULLY IMPLEMENTED**
+
+Our graceful degradation system provides **enterprise-grade resilience** with automatic failure detection, intelligent fallbacks, and seamless recovery:
+
+| **Failure Scenario** | **Degradation Strategy** | **User Impact** | **Health Score Impact** |
+|---------------------|-------------------------|-----------------|------------------------|
+| **🔴 Aurora Primary Down** | **Read-Only Mode**: Switch to read replicas | ⚠️ Deposits/withdrawals disabled, balance queries work | -40 points |
+| **🔴 Redis Cache Down** | **Cache Bypass Mode**: Direct database queries | 🐌 Slower response times (50ms → 200ms) | -20 points |
+| **🔴 Kafka Down** | **Event Processing Degradation**: Store events in outbox table | 📝 Audit trail delayed but preserved | -10 points |
+| **🔴 High Response Times** | **Performance Degradation**: Automatic monitoring and alerts | 🐌 General performance warnings | -15 points |
+| **🔴 Multiple Failures** | **Coordinated Degradation**: Intelligent priority-based fallbacks | 🚨 Limited functionality, core features work | Cumulative |
+
+**🏥 Health Check Integration**
+
+```bash
+# Check degradation status
+curl http://localhost:8080/q/health | jq '.checks[] | select(.name | contains("Graceful"))'
+
+# Example response during Redis failure:
+{
+  "name": "Graceful Degradation Status",
+  "status": "UP",
+  "data": {
+    "healthScore": 80,
+    "statusMessage": "System degraded - slower response times due to cache bypass",
+    "overallStatus": "DEGRADED_MINOR",
+    "cacheBypassMode": true,
+    "impactAssessment": "LOW_IMPACT - Slower response times due to cache bypass"
+  }
+}
+```
+
+**🎛️ Degradation Modes**
+
+1. **🟢 HEALTHY (90-100)**: All systems operational
+2. **🟡 DEGRADED_MINOR (70-89)**: Minor performance impact  
+3. **🟠 DEGRADED_MAJOR (50-69)**: Significant functionality reduction
+4. **🔴 CRITICAL (<50)**: Essential operations only
 
 #### **🚨 Failure Detection & Response**
 
@@ -424,6 +455,7 @@ Failure Thresholds:
 - ✅ **Health Checks** - Kubernetes readiness/liveness probes
 - ✅ **Circuit Breakers** - Prevent cascade failures (Aurora/Redis/Kafka)
 - ✅ **Retry Policies** - Handle transient failures with exponential backoff
+- ✅ **Graceful Degradation** - Intelligent fallbacks with health scoring
 
 **Missing (Time Constraints)**:
 - ❌ **Rate Limiting** - Protect against traffic spikes
@@ -446,7 +478,15 @@ Failure Thresholds:
 - ✅ Financial-grade retry configurations with jitter
 - ✅ Retry exhaustion tracking and alerting
 
-**Phase 2: Advanced Patterns (Week 2)**
+**✅ Phase 3: Graceful Degradation (COMPLETED)**
+- ✅ Read-only mode when primary database fails
+- ✅ Cache bypass mode with performance degradation warnings
+- ✅ Event processing degradation with outbox queuing
+- ✅ Performance monitoring and automatic recovery
+- ✅ Health score calculation and impact assessment
+- ✅ Comprehensive degradation status monitoring
+
+**Phase 4: Advanced Patterns (Future)**
 ```java
 // 2. Bulkhead Pattern - Separate thread pools
 @Async("walletOperationExecutor")

@@ -44,6 +44,12 @@ public class ResilientDatabaseService {
     @Inject
     DegradationManager degradationManager;
 
+    @Inject
+    ReadOnlyModeManager readOnlyModeManager;
+
+    @Inject
+    GracefulDegradationService gracefulDegradationService;
+
     /**
      * Write operations with circuit breaker protection
      * Fallback: Enter read-only mode to prevent data corruption
@@ -51,11 +57,16 @@ public class ResilientDatabaseService {
     @CircuitBreaker
     @Fallback(fallbackMethod = "enterReadOnlyModeFallback")
     public Uni<Wallet> persistWallet(Wallet wallet) {
+        // Validate write operations are allowed (not in read-only mode)
+        readOnlyModeManager.validateWriteOperation("persist wallet");
+        
         return primaryRepository.persist(wallet)
             .onItem().invoke(() -> walletMetrics.incrementDatabaseWrites())
             .onFailure().invoke(throwable -> {
                 walletMetrics.incrementFailedOperations("database_write");
                 walletMetrics.recordDatabaseError("primary", throwable);
+                // If primary database fails, enter read-only mode
+                readOnlyModeManager.enterReadOnlyMode("Primary database failure during persist: " + throwable.getMessage());
             });
     }
 
@@ -65,11 +76,16 @@ public class ResilientDatabaseService {
     @CircuitBreaker
     @Fallback(fallbackMethod = "enterReadOnlyModeFallback")
     public Uni<Wallet> updateWallet(Wallet wallet) {
+        // Validate write operations are allowed (not in read-only mode)
+        readOnlyModeManager.validateWriteOperation("update wallet");
+        
         return primaryRepository.persistAndFlush(wallet)
             .onItem().invoke(() -> walletMetrics.incrementDatabaseWrites())
             .onFailure().invoke(throwable -> {
                 walletMetrics.incrementFailedOperations("database_write");
                 walletMetrics.recordDatabaseError("primary", throwable);
+                // If primary database fails, enter read-only mode
+                readOnlyModeManager.enterReadOnlyMode("Primary database failure during update: " + throwable.getMessage());
             });
     }
 

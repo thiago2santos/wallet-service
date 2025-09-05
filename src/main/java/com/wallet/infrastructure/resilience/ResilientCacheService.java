@@ -45,6 +45,9 @@ public class ResilientCacheService {
     @Inject
     DegradationManager degradationManager;
 
+    @Inject
+    GracefulDegradationService gracefulDegradationService;
+
     /**
      * Get wallet from cache with circuit breaker protection
      * Fallback: Direct database query
@@ -132,7 +135,7 @@ public class ResilientCacheService {
         walletMetrics.recordDegradedPerformance("cache_bypass");
         
         // Enter cache bypass mode if not already active
-        degradationManager.enterCacheBypassMode("Redis circuit breaker activated");
+        gracefulDegradationService.enterCacheBypassMode("Redis circuit breaker activated during wallet retrieval");
         
         return walletRepository.findById(walletId)
             .onItem().invoke(() -> {
@@ -154,7 +157,7 @@ public class ResilientCacheService {
         walletMetrics.recordFallbackExecution("skipCaching", "redis_circuit_breaker");
         
         // Enter cache bypass mode if not already active
-        degradationManager.enterCacheBypassMode("Redis circuit breaker activated during cache write");
+        gracefulDegradationService.enterCacheBypassMode("Redis circuit breaker activated during cache write");
         
         // Operation continues successfully without caching
         return Uni.createFrom().voidItem();
