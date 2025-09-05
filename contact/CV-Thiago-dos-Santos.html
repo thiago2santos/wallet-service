@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thiago dos Santos - Senior Software Engineer | Tech Lead</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header .title {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            font-size: 0.95em;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .contact-item a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .contact-item a:hover {
+            text-decoration: underline;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section h2 {
+            color: #667eea;
+            font-size: 1.4em;
+            margin-bottom: 20px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #667eea;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .summary {
+            font-size: 1.1em;
+            line-height: 1.7;
+            text-align: justify;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .skill-category {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+        }
+
+        .skill-category strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .experience-item {
+            margin-bottom: 35px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .job-header {
+            margin-bottom: 15px;
+        }
+
+        .job-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .company {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .duration {
+            color: #666;
+            font-style: italic;
+        }
+
+        .company-description {
+            font-style: italic;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .achievements {
+            list-style: none;
+        }
+
+        .achievements li {
+            margin-bottom: 10px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .achievements li:before {
+            content: "▶";
+            color: #667eea;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .education-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .education-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+        }
+
+        .degree {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .institution {
+            color: #667eea;
+            font-weight: 500;
+        }
+
+        .year {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .certifications {
+            list-style: none;
+        }
+
+        .certifications li {
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .certifications li:before {
+            content: "✓";
+            color: #28a745;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .languages {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .language-item {
+            background: #e9ecef;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        .achievements-list {
+            list-style: none;
+        }
+
+        .achievements-list li {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+        }
+
+        .achievement-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .achievement-description {
+            color: #666;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .container {
+                box-shadow: none;
+                border-radius: 0;
+            }
+            
+            .header {
+                background: #667eea !important;
+                -webkit-print-color-adjust: exact;
+            }
+            
+            .section {
+                page-break-inside: avoid;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .contact-info {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>THIAGO DOS SANTOS</h1>
+            <div class="title">Senior Software Engineer | Tech Lead</div>
+            <div class="contact-info">
+                <div class="contact-item">
+                    📍 Jundiaí, SP
+                </div>
+                <div class="contact-item">
+                    📧 <a href="mailto:thisanti@hotmail.com">thisanti@hotmail.com</a>
+                </div>
+                <div class="contact-item">
+                    📱 +55 11 97516-6679
+                </div>
+                <div class="contact-item">
+                    🔗 <a href="https://www.linkedin.com/in/thiagodsantos921" target="_blank">LinkedIn</a>
+                </div>
+                <div class="contact-item">
+                    💻 <a href="https://www.github.com/thiago2santos" target="_blank">GitHub</a>
+                </div>
+            </div>
+        </header>
+
+        <div class="content">
+            <section class="section">
+                <h2>Professional Summary</h2>
+                <div class="summary">
+                    Senior Software Engineer with <strong>13+ years of experience</strong> and <strong>5+ years in cloud-native development</strong>, specializing in microservices architecture, REST APIs, and scalable backend systems. Proven track record at top-tier companies (Mercado Livre, Itaú Unibanco) with expertise in Java/Kotlin/Go, AWS cloud infrastructure, and technical leadership. Successfully led international projects resulting in measurable business impact and cost reductions.
+                </div>
+            </section>
+
+            <section class="section">
+                <h2>Technical Skills</h2>
+                <div class="skills-grid">
+                    <div class="skill-category">
+                        <strong>Languages:</strong>
+                        Java 21, Kotlin, Go, JavaScript, SQL
+                    </div>
+                    <div class="skill-category">
+                        <strong>Frameworks:</strong>
+                        Quarkus, Spring Boot, Micronaut, JEE, MicroProfile
+                    </div>
+                    <div class="skill-category">
+                        <strong>Cloud & DevOps:</strong>
+                        AWS (ECS/EKS, Lambda, API Gateway, CloudWatch), Terraform, CloudFormation, Docker, CI/CD
+                    </div>
+                    <div class="skill-category">
+                        <strong>Databases:</strong>
+                        MySQL, SQL Server, MongoDB, Redis, Oracle, H2
+                    </div>
+                    <div class="skill-category">
+                        <strong>Event Streaming:</strong>
+                        Apache Kafka, Avro, Confluent Schema Registry
+                    </div>
+                    <div class="skill-category">
+                        <strong>Monitoring:</strong>
+                        DataDog, New Relic, Grafana, Prometheus, Splunk, Micrometer
+                    </div>
+                    <div class="skill-category">
+                        <strong>Testing:</strong>
+                        JUnit 5, Cucumber, Mockito, PIT Mutation Testing, REST Assured, K6 Load Testing
+                    </div>
+                    <div class="skill-category">
+                        <strong>Architecture:</strong>
+                        CQRS, Event Sourcing, Microservices, REST APIs, Event-Driven Architecture, SOA
+                    </div>
+                    <div class="skill-category">
+                        <strong>Quality Tools:</strong>
+                        Checkstyle, PMD, SpotBugs, OWASP Dependency Check, SonarQube, JaCoCo
+                    </div>
+                    <div class="skill-category">
+                        <strong>Resilience:</strong>
+                        Circuit Breakers, Retry Patterns, Bulkhead, Timeout, Fault Tolerance
+                    </div>
+                    <div class="skill-category">
+                        <strong>Tools:</strong>
+                        Git, Maven, Gradle, Jenkins, GitHub Actions
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2>Professional Experience</h2>
+                
+                <div class="experience-item">
+                    <div class="job-header">
+                        <div class="job-title">
+                            <span class="company">Mercado Livre</span> | Software Engineer | <span class="duration">Jul 2024 - Present</span>
+                        </div>
+                        <div class="company-description">Leading e-commerce platform in Latin America</div>
+                    </div>
+                    <ul class="achievements">
+                        <li><strong>Architected production-ready digital wallet microservice</strong> using Java 21, Quarkus, and CQRS architecture, achieving sub-20ms response times for financial transactions</li>
+                        <li><strong>Implemented event-driven architecture</strong> with Apache Kafka and Avro schemas, enabling real-time event streaming and complete audit trail for financial operations</li>
+                        <li><strong>Designed high-performance database architecture</strong> with MySQL primary-replica setup and Redis caching, supporting 1000+ RPS with 99.95% uptime</li>
+                        <li><strong>Built comprehensive resilience patterns</strong> including circuit breakers, retry mechanisms, and graceful degradation using MicroProfile Fault Tolerance</li>
+                        <li><strong>Established enterprise-grade monitoring</strong> with Prometheus metrics, Grafana dashboards, and comprehensive health checks, reducing MTTR by 60%</li>
+                        <li><strong>Achieved 95% mutation test coverage</strong> using PIT testing and implemented comprehensive quality gates with Checkstyle, PMD, SpotBugs, and OWASP dependency scanning</li>
+                    </ul>
+                </div>
+
+                <div class="experience-item">
+                    <div class="job-header">
+                        <div class="job-title">
+                            <span class="company">Itaú Unibanco</span> | Software Engineer | <span class="duration">Mar 2021 - May 2024</span>
+                        </div>
+                        <div class="company-description">Brazil's largest private bank with 60M+ customers</div>
+                    </div>
+                    <ul class="achievements">
+                        <li><strong>Developed critical banking APIs</strong> processing 2M+ daily financial transactions using Kotlin/Java with Spring Boot and Micronaut</li>
+                        <li><strong>Orchestrated legacy system integration</strong> connecting mainframe systems with modern cloud infrastructure, reducing processing time by 50%</li>
+                        <li><strong>Managed containerized microservices</strong> on AWS ECS/EKS clusters serving 10M+ active users with 99.95% uptime</li>
+                        <li><strong>Implemented Infrastructure as Code</strong> using Terraform and CloudFormation, reducing deployment time from hours to minutes</li>
+                        <li><strong>Established monitoring practices</strong> with CloudWatch, Splunk, and Prometheus, improving incident detection by 60%</li>
+                    </ul>
+                </div>
+
+                <div class="experience-item">
+                    <div class="job-header">
+                        <div class="job-title">
+                            <span class="company">Telefônica Brasil (Vivo)</span> | Systems Development Analyst | <span class="duration">May 2019 - Feb 2021</span>
+                        </div>
+                        <div class="company-description">Major telecommunications provider with 100M+ subscribers</div>
+                    </div>
+                    <ul class="achievements">
+                        <li><strong>Enhanced monitoring systems</strong> implementing proactive error detection and treatment, reducing system downtime by 25%</li>
+                        <li><strong>Managed incident response</strong> for critical telecom infrastructure, achieving 99.5% service availability through root cause analysis</li>
+                        <li><strong>Developed Java enterprise solutions</strong> using JEE, SOA, WebLogic, and Oracle technologies for high-traffic telecom operations</li>
+                    </ul>
+                </div>
+
+                <div class="experience-item">
+                    <div class="job-header">
+                        <div class="job-title">
+                            <span class="company">Takata Brasil S.A.</span> | Systems Analyst & Tech Lead | <span class="duration">Mar 2012 - Oct 2014</span>
+                        </div>
+                        <div class="company-description">Global automotive safety systems manufacturer</div>
+                    </div>
+                    <ul class="achievements">
+                        <li><strong>Led international project implementation</strong> of production control and traceability systems across Brazil and Uruguay operations</li>
+                        <li><strong>Managed cross-border technology team</strong> coordinating daily activities with Uruguay plant, ensuring seamless system integration</li>
+                        <li><strong>Achieved 5% production cost reduction</strong> through system standardization and process optimization across multiple manufacturing plants</li>
+                        <li><strong>Developed automotive ERP solutions</strong> using Visual Basic and IBM Informix for safety-critical components (airbags, seatbelts, steering wheels)</li>
+                        <li><strong>Established L3 support processes</strong> training analyst teams and maintaining SQL Server databases for production systems</li>
+                    </ul>
+                </div>
+
+                <div class="experience-item">
+                    <div class="job-header">
+                        <div class="job-title">
+                            <span class="company">Scope Systems</span> | Senior Developer & Support Analyst | <span class="duration">Jun 2008 - Feb 2012</span>
+                        </div>
+                        <div class="company-description">Corporate systems development (Outsourced at Takata)</div>
+                    </div>
+                    <ul class="achievements">
+                        <li><strong>Served as technical point of contact</strong> for complex system issues, providing solutions and specifications for development teams</li>
+                        <li><strong>Led night shift operations</strong> for 2 years, managing infrastructure issues and implementing critical ERP system enhancements</li>
+                        <li><strong>Delivered 24/7 system reliability</strong> ensuring continuous operation of mission-critical manufacturing systems</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2>Education & Certifications</h2>
+                <div class="education-grid">
+                    <div class="education-item">
+                        <div class="degree">Master's Degree</div>
+                        <div class="institution">Business Administration | FGV</div>
+                        <div class="year">2015</div>
+                    </div>
+                    <div class="education-item">
+                        <div class="degree">Bachelor's Degree</div>
+                        <div class="institution">Information Systems | UniAnchieta</div>
+                        <div class="year">2011</div>
+                    </div>
+                    <div class="education-item">
+                        <div class="degree">Currently Pursuing</div>
+                        <div class="institution">Information Technology Management | Fatec Jundiaí</div>
+                        <div class="year">2025</div>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 30px; margin-bottom: 15px; color: #667eea;">Certifications:</h3>
+                <ul class="certifications">
+                    <li>Cisco Certified Entry Networking Technician (CCENT)</li>
+                    <li>Certified Associate in Project Management (CAPM)</li>
+                    <li>ITIL Foundation Certificate in IT Service Management</li>
+                </ul>
+
+                <h3 style="margin-top: 30px; margin-bottom: 15px; color: #667eea;">Languages:</h3>
+                <div class="languages">
+                    <div class="language-item">Portuguese (Native)</div>
+                    <div class="language-item">English (Fluent)</div>
+                    <div class="language-item">Spanish (Intermediate)</div>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2>Key Achievements</h2>
+                <ul class="achievements-list">
+                    <li>
+                        <div class="achievement-title">🏆 High-Performance Financial Systems</div>
+                        <div class="achievement-description">Architected production-ready digital wallet microservice achieving sub-20ms response times and supporting 1000+ RPS with 99.95% uptime</div>
+                    </li>
+                    <li>
+                        <div class="achievement-title">🏆 Advanced Architecture Implementation</div>
+                        <div class="achievement-description">Successfully implemented CQRS, Event Sourcing, and Event-Driven Architecture using Apache Kafka, demonstrating expertise in modern distributed systems patterns</div>
+                    </li>
+                    <li>
+                        <div class="achievement-title">🏆 Quality Engineering Excellence</div>
+                        <div class="achievement-description">Achieved 95% mutation test coverage and implemented comprehensive quality gates including static analysis, security scanning, and performance testing with K6</div>
+                    </li>
+                    <li>
+                        <div class="achievement-title">🏆 International Leadership</div>
+                        <div class="achievement-description">Successfully managed cross-border technology implementation in Uruguay, coordinating daily operations with international teams</div>
+                    </li>
+                    <li>
+                        <div class="achievement-title">🏆 Cost Optimization</div>
+                        <div class="achievement-description">Achieved 5% production cost reduction through system standardization and process improvements</div>
+                    </li>
+                    <li>
+                        <div class="achievement-title">🏆 Performance Improvements</div>
+                        <div class="achievement-description">Consistently delivered 25-60% improvements in system performance, response times, and incident detection across multiple organizations</div>
+                    </li>
+                </ul>
+            </section>
+        </div>
+    </div>
+</body>
+</html>
