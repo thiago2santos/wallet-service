@@ -1,6 +1,7 @@
 package com.wallet.infrastructure.resilience;
 
 import org.eclipse.microprofile.faulttolerance.CircuitBreaker;
+import org.eclipse.microprofile.faulttolerance.Retry;
 import org.eclipse.microprofile.faulttolerance.Fallback;
 
 import com.wallet.infrastructure.outbox.OutboxEventService;
@@ -50,6 +51,7 @@ public class ResilientEventService {
      * Fallback: Store in outbox table for guaranteed delivery
      */
     @CircuitBreaker
+    @Retry
     @Fallback(fallbackMethod = "storeInOutboxFallback")
     public Uni<Void> publishWalletEvent(String walletId, String eventType, Object eventData) {
         String eventJson = serializeEvent(eventData);
@@ -58,11 +60,13 @@ public class ResilientEventService {
             .onItem().invoke(() -> {
                 walletMetrics.recordEventPublished(eventType);
                 walletMetrics.recordEventPublished("KAFKA_DIRECT");
+                walletMetrics.recordSuccessfulRetryOperation("kafka_publish", "kafka_publish_retry");
             })
             .onFailure().invoke(throwable -> {
                 walletMetrics.incrementFailedOperations("kafka_publish");
                 walletMetrics.recordEventPublishFailure(eventType);
                 walletMetrics.recordDatabaseError("kafka", throwable);
+                walletMetrics.recordRetryAttempt("kafka_publish", "kafka_publish_retry", throwable.getClass().getSimpleName());
             });
     }
 
@@ -70,6 +74,7 @@ public class ResilientEventService {
      * Publish wallet created event
      */
     @CircuitBreaker
+    @Retry
     @Fallback(fallbackMethod = "storeWalletCreatedInOutboxFallback")
     public Uni<Void> publishWalletCreatedEvent(String walletId, String userId) {
         WalletCreatedEvent event = new WalletCreatedEvent(walletId, userId);
@@ -79,11 +84,13 @@ public class ResilientEventService {
             .onItem().invoke(() -> {
                 walletMetrics.recordEventPublished("WALLET_CREATED");
                 walletMetrics.recordEventPublished("KAFKA_DIRECT");
+                walletMetrics.recordSuccessfulRetryOperation("kafka_publish", "kafka_publish_retry");
             })
             .onFailure().invoke(throwable -> {
                 walletMetrics.incrementFailedOperations("kafka_publish_wallet_created");
                 walletMetrics.recordEventPublishFailure("WALLET_CREATED");
                 walletMetrics.recordDatabaseError("kafka", throwable);
+                walletMetrics.recordRetryAttempt("kafka_publish", "kafka_publish_retry", throwable.getClass().getSimpleName());
             });
     }
 
@@ -91,6 +98,7 @@ public class ResilientEventService {
      * Publish funds deposited event
      */
     @CircuitBreaker
+    @Retry
     @Fallback(fallbackMethod = "storeFundsDepositedInOutboxFallback")
     public Uni<Void> publishFundsDepositedEvent(String walletId, java.math.BigDecimal amount, 
                                                String referenceId, String description) {
@@ -102,11 +110,13 @@ public class ResilientEventService {
                 walletMetrics.recordEventPublished("FUNDS_DEPOSITED");
                 walletMetrics.recordEventPublished("KAFKA_DIRECT");
                 walletMetrics.recordDepositAmount(amount);
+                walletMetrics.recordSuccessfulRetryOperation("kafka_publish", "kafka_publish_retry");
             })
             .onFailure().invoke(throwable -> {
                 walletMetrics.incrementFailedOperations("kafka_publish_funds_deposited");
                 walletMetrics.recordEventPublishFailure("FUNDS_DEPOSITED");
                 walletMetrics.recordDatabaseError("kafka", throwable);
+                walletMetrics.recordRetryAttempt("kafka_publish", "kafka_publish_retry", throwable.getClass().getSimpleName());
             });
     }
 
@@ -114,6 +124,7 @@ public class ResilientEventService {
      * Publish funds withdrawn event
      */
     @CircuitBreaker
+    @Retry
     @Fallback(fallbackMethod = "storeFundsWithdrawnInOutboxFallback")
     public Uni<Void> publishFundsWithdrawnEvent(String walletId, java.math.BigDecimal amount, 
                                                String referenceId, String description) {
@@ -125,11 +136,13 @@ public class ResilientEventService {
                 walletMetrics.recordEventPublished("FUNDS_WITHDRAWN");
                 walletMetrics.recordEventPublished("KAFKA_DIRECT");
                 walletMetrics.recordWithdrawalAmount(amount);
+                walletMetrics.recordSuccessfulRetryOperation("kafka_publish", "kafka_publish_retry");
             })
             .onFailure().invoke(throwable -> {
                 walletMetrics.incrementFailedOperations("kafka_publish_funds_withdrawn");
                 walletMetrics.recordEventPublishFailure("FUNDS_WITHDRAWN");
                 walletMetrics.recordDatabaseError("kafka", throwable);
+                walletMetrics.recordRetryAttempt("kafka_publish", "kafka_publish_retry", throwable.getClass().getSimpleName());
             });
     }
 
@@ -137,6 +150,7 @@ public class ResilientEventService {
      * Publish funds transferred event
      */
     @CircuitBreaker
+    @Retry
     @Fallback(fallbackMethod = "storeFundsTransferredInOutboxFallback")
     public Uni<Void> publishFundsTransferredEvent(String sourceWalletId, String destinationWalletId,
                                                  java.math.BigDecimal amount, String referenceId, String description) {
@@ -149,11 +163,13 @@ public class ResilientEventService {
                 walletMetrics.recordEventPublished("FUNDS_TRANSFERRED");
                 walletMetrics.recordEventPublished("KAFKA_DIRECT");
                 walletMetrics.recordTransferAmount(amount);
+                walletMetrics.recordSuccessfulRetryOperation("kafka_publish", "kafka_publish_retry");
             })
             .onFailure().invoke(throwable -> {
                 walletMetrics.incrementFailedOperations("kafka_publish_funds_transferred");
                 walletMetrics.recordEventPublishFailure("FUNDS_TRANSFERRED");
                 walletMetrics.recordDatabaseError("kafka", throwable);
+                walletMetrics.recordRetryAttempt("kafka_publish", "kafka_publish_retry", throwable.getClass().getSimpleName());
             });
     }
 

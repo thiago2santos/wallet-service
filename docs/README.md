@@ -277,23 +277,117 @@ public Uni<Void> publishEvent(WalletEvent event) {
 ```
 
 #### **🔁 Retry Strategies**
-```java
-// Exponential Backoff for External Services
-@Retry(name = "external-service", 
-       maxAttempts = 3,
-       backoffStrategy = BackoffStrategy.EXPONENTIAL)
-public Uni<PaymentResponse> processPayment(PaymentRequest request) {
-    return paymentService.process(request);
-}
 
-// Database Optimistic Lock Retry
-@Retry(name = "optimistic-lock", 
-       retryOn = OptimisticLockException.class,
-       maxAttempts = 5)
-public Uni<Void> updateWalletBalance(String walletId, BigDecimal amount) {
-    return walletRepository.updateBalance(walletId, amount);
+**Financial services require zero data loss and maximum reliability. Our retry strategies are designed for mission-critical operations.**
+
+##### **🎯 Optimistic Lock Retries**
+```java
+// Handles concurrent balance updates with financial-grade safety
+@Retry // Configured: 5 retries, 100ms delay + jitter
+@Fallback(fallbackMethod = "depositFundsOptimisticLockFallback")
+public Uni<String> depositFundsWithRetry(String walletId, BigDecimal amount, String referenceId) {
+    DepositFundsCommand command = new DepositFundsCommand(walletId, amount, referenceId);
+    return depositFundsHandler.handle(command);
 }
 ```
+
+**Configuration:**
+- **Max Retries**: 5 attempts (financial operations need persistence)
+- **Delay**: 100ms base + 50ms jitter (prevents thundering herd)
+- **Max Duration**: 2 seconds (user experience boundary)
+- **Retry On**: `OptimisticLockException`, `StaleObjectStateException`, `LockAcquisitionException`
+
+##### **🌐 Transient Failure Retries**
+```java
+// Handles network timeouts and temporary database issues
+@Retry // Configured: 3 retries, 500ms delay + jitter
+@Fallback(fallbackMethod = "getWalletTransientFailureFallback")
+public Uni<Wallet> getWalletWithRetry(String walletId) {
+    GetWalletQuery query = new GetWalletQuery(walletId);
+    return getWalletHandler.handle(query);
+}
+```
+
+**Configuration:**
+- **Max Retries**: 3 attempts (balance between reliability and performance)
+- **Delay**: 500ms base + 200ms jitter
+- **Max Duration**: 5 seconds
+- **Retry On**: `SQLException`, `SQLTransientException`, `ConnectException`, `TimeoutException`
+
+##### **📨 Kafka Publishing Retries**
+```java
+// Ensures zero event loss with outbox fallback
+@CircuitBreaker // Combined with circuit breaker for maximum reliability
+@Retry // Configured: 3 retries, 1000ms delay + jitter
+@Fallback(fallbackMethod = "storeWalletCreatedInOutboxFallback")
+public Uni<Void> publishWalletCreatedEvent(String walletId, String userId) {
+    WalletCreatedEvent event = new WalletCreatedEvent(walletId, userId);
+    return kafkaEmitter.send(serializeEvent(event));
+}
+```
+
+**Configuration:**
+- **Max Retries**: 3 attempts (Kafka-specific optimized)
+- **Delay**: 1000ms base + 500ms jitter (network operations need more time)
+- **Max Duration**: 10 seconds
+- **Retry On**: `RetriableException`, `TimeoutException`, `NetworkException`
+
+##### **📊 Retry Monitoring & Metrics**
+
+**Key Metrics Tracked:**
+```java
+// Retry attempt tracking
+walletMetrics.recordRetryAttempt("deposit", "optimistic_lock", "OptimisticLockException");
+
+// Success after retry
+walletMetrics.recordSuccessfulRetryOperation("kafka_publish", "kafka_publish_retry");
+
+// Retry exhaustion (triggers alerts)
+walletMetrics.recordRetryExhaustion("withdrawal", "optimistic_lock");
+```
+
+**Prometheus Metrics:**
+- `wallet_retry_attempts_total{operation, retry_type, exception_type}`
+- `wallet_retry_successes_total{operation, retry_type}`
+- `wallet_retry_exhaustions_total{operation, retry_type}`
+- `wallet_retry_duration_seconds{operation, retry_type}`
+
+##### **🎛️ Retry Configuration**
+
+**Production-Optimized Settings:**
+```properties
+# Optimistic Lock Retry (most critical for financial operations)
+smallrye.faulttolerance."optimistic-lock-retry".retry.maxRetries=5
+smallrye.faulttolerance."optimistic-lock-retry".retry.delay=100
+smallrye.faulttolerance."optimistic-lock-retry".retry.jitter=50
+
+# Database Transient Failure Retry
+smallrye.faulttolerance."database-transient-retry".retry.maxRetries=3
+smallrye.faulttolerance."database-transient-retry".retry.delay=500
+smallrye.faulttolerance."database-transient-retry".retry.jitter=200
+
+# Kafka Publishing Retry
+smallrye.faulttolerance."kafka-publish-retry".retry.maxRetries=3
+smallrye.faulttolerance."kafka-publish-retry".retry.delay=1000
+smallrye.faulttolerance."kafka-publish-retry".retry.jitter=500
+```
+
+##### **🔄 Retry + Circuit Breaker Integration**
+
+**Layered Resilience:**
+```java
+@CircuitBreaker("aurora-primary")  // First line of defense
+@Retry("optimistic-lock-retry")    // Second line of defense  
+@Fallback(fallbackMethod = "readOnlyModeFallback") // Final fallback
+public Uni<Wallet> updateWalletBalance(String walletId, BigDecimal amount) {
+    // Implementation with triple protection
+}
+```
+
+**Benefits:**
+- **Circuit Breaker**: Prevents cascade failures, fast-fail when service is down
+- **Retry**: Handles transient issues, optimistic lock contention
+- **Fallback**: Graceful degradation when all else fails
 
 #### **📉 Graceful Degradation Strategies**
 
@@ -328,36 +422,29 @@ Failure Thresholds:
 - ✅ **Optimistic Locking** - Handle concurrent updates gracefully
 - ✅ **Transactional Outbox** - Ensure event consistency
 - ✅ **Health Checks** - Kubernetes readiness/liveness probes
+- ✅ **Circuit Breakers** - Prevent cascade failures (Aurora/Redis/Kafka)
+- ✅ **Retry Policies** - Handle transient failures with exponential backoff
 
 **Missing (Time Constraints)**:
-- ❌ **Circuit Breakers** - Prevent cascade failures
-- ❌ **Retry Policies** - Handle transient failures
 - ❌ **Rate Limiting** - Protect against traffic spikes
 - ❌ **Bulkhead Pattern** - Isolate critical resources
 - ❌ **Timeout Management** - Prevent hanging requests
 
 #### **🎯 Production Implementation Plan**
 
-**Phase 1: Critical Resilience (Week 1)**
-```java
-// 1. Circuit Breakers for all external dependencies
-@Component
-public class ResilienceConfiguration {
-    
-    @Bean
-    public CircuitBreaker databaseCircuitBreaker() {
-        return CircuitBreaker.ofDefaults("database");
-    }
-    
-    @Bean  
-    public RetryRegistry retryRegistry() {
-        return RetryRegistry.of(RetryConfig.custom()
-            .maxAttempts(3)
-            .waitDuration(Duration.ofMillis(500))
-            .build());
-    }
-}
-```
+**✅ Phase 1: Circuit Breakers (COMPLETED)**
+- ✅ Database circuit breakers (Aurora primary/replica)
+- ✅ Redis cache circuit breaker with database fallback
+- ✅ Kafka circuit breaker with outbox pattern
+- ✅ Comprehensive metrics and monitoring
+- ✅ Fallback strategies for all dependencies
+
+**✅ Phase 2: Retry Strategies (COMPLETED)**
+- ✅ Optimistic lock retries for concurrent operations
+- ✅ Transient failure retries for network/database issues
+- ✅ Kafka publishing retries with exponential backoff
+- ✅ Financial-grade retry configurations with jitter
+- ✅ Retry exhaustion tracking and alerting
 
 **Phase 2: Advanced Patterns (Week 2)**
 ```java

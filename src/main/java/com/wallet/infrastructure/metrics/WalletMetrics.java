@@ -439,4 +439,99 @@ public class WalletMetrics {
                 .register(meterRegistry)
                 .increment();
     }
+
+    // ============================================================================
+    // RETRY METRICS
+    // ============================================================================
+
+    /**
+     * Record retry attempt
+     */
+    public void recordRetryAttempt(String operation, String retryType, String exceptionType) {
+        Counter.builder("wallet.retry.attempts")
+                .description("Retry attempts by operation and type")
+                .tag("operation", operation)
+                .tag("retry_type", retryType)
+                .tag("exception_type", exceptionType)
+                .register(meterRegistry)
+                .increment();
+    }
+
+    /**
+     * Record successful retry operation
+     */
+    public void recordSuccessfulRetryOperation(String operation, String retryType) {
+        Counter.builder("wallet.retry.successes")
+                .description("Successful operations after retry")
+                .tag("operation", operation)
+                .tag("retry_type", retryType)
+                .register(meterRegistry)
+                .increment();
+    }
+
+    /**
+     * Record retry exhaustion (all retries failed)
+     */
+    public void recordRetryExhaustion(String operation, String retryType) {
+        Counter.builder("wallet.retry.exhaustions")
+                .description("Operations that exhausted all retries")
+                .tag("operation", operation)
+                .tag("retry_type", retryType)
+                .register(meterRegistry)
+                .increment();
+    }
+
+    /**
+     * Record retry duration
+     */
+    public void recordRetryDuration(String operation, String retryType, long durationMs) {
+        Timer.builder("wallet.retry.duration")
+                .description("Time spent in retry operations")
+                .tag("operation", operation)
+                .tag("retry_type", retryType)
+                .register(meterRegistry)
+                .record(durationMs, java.util.concurrent.TimeUnit.MILLISECONDS);
+    }
+
+    /**
+     * Get retry attempts count for monitoring
+     */
+    public long getRetryAttempts(String retryType) {
+        Counter counter = meterRegistry.find("wallet.retry.attempts")
+                .tag("retry_type", retryType)
+                .counter();
+        return counter != null ? (long) counter.count() : 0L;
+    }
+
+    /**
+     * Get retry exhaustions count for monitoring
+     */
+    public long getRetryExhaustions(String retryType) {
+        Counter counter = meterRegistry.find("wallet.retry.exhaustions")
+                .tag("retry_type", retryType)
+                .counter();
+        return counter != null ? (long) counter.count() : 0L;
+    }
+
+    /**
+     * Record optimistic lock contention metrics
+     */
+    public void recordOptimisticLockContention(String operation, String walletId) {
+        Counter.builder("wallet.optimistic_lock.contentions")
+                .description("Optimistic lock contentions by operation")
+                .tag("operation", operation)
+                .register(meterRegistry)
+                .increment();
+    }
+
+    /**
+     * Record transient failure pattern metrics
+     */
+    public void recordTransientFailurePattern(String operation) {
+        Counter.builder("wallet.transient_failure.patterns")
+                .description("Transient failure patterns by operation")
+                .tag("operation", operation)
+                .register(meterRegistry)
+                .increment();
+    }
 }

@@ -245,10 +245,95 @@ public class DegradationManager {
             isCacheBypassMode(),
             isEventProcessingDegraded(),
             isRateLimited(),
+            isOptimisticLockContentionHigh(),
+            isTransientFailurePatternDetected(),
             readOnlyModeStartTime.get(),
             cacheBypassStartTime.get(),
-            eventDegradationStartTime.get()
+            eventDegradationStartTime.get(),
+            optimisticLockContentionStartTime.get(),
+            transientFailurePatternStartTime.get()
         );
+    }
+
+    // ============================================================================
+    // RETRY-RELATED DEGRADATION TRACKING
+    // ============================================================================
+
+    private final AtomicBoolean optimisticLockContentionHigh = new AtomicBoolean(false);
+    private final AtomicBoolean transientFailurePatternDetected = new AtomicBoolean(false);
+    private final AtomicReference<Instant> optimisticLockContentionStartTime = new AtomicReference<>();
+    private final AtomicReference<Instant> transientFailurePatternStartTime = new AtomicReference<>();
+
+    /**
+     * Record optimistic lock contention for monitoring
+     */
+    public void recordOptimisticLockContention(String operation, String walletId) {
+        Log.warnf("Optimistic lock contention detected: operation=%s, walletId=%s", operation, walletId);
+        
+        if (optimisticLockContentionHigh.compareAndSet(false, true)) {
+            optimisticLockContentionStartTime.set(Instant.now());
+            walletMetrics.recordDegradationEvent("OPTIMISTIC_LOCK_CONTENTION", "DETECTED", 
+                "High contention on " + operation + " for wallet " + walletId);
+            walletMetrics.incrementDegradationActivations("optimistic_lock_contention");
+        }
+    }
+
+    /**
+     * Clear optimistic lock contention when resolved
+     */
+    public void clearOptimisticLockContention(String reason) {
+        if (optimisticLockContentionHigh.compareAndSet(true, false)) {
+            Instant startTime = optimisticLockContentionStartTime.getAndSet(null);
+            long durationMs = startTime != null ? 
+                Instant.now().toEpochMilli() - startTime.toEpochMilli() : 0;
+            
+            Log.infof("Optimistic lock contention cleared: %s (Duration: %d ms)", reason, durationMs);
+            walletMetrics.recordDegradationEvent("OPTIMISTIC_LOCK_CONTENTION", "CLEARED", reason);
+            walletMetrics.recordDegradationDuration("optimistic_lock_contention", durationMs);
+        }
+    }
+
+    /**
+     * Record transient failure pattern for monitoring
+     */
+    public void recordTransientFailurePattern(String operation) {
+        Log.warnf("Transient failure pattern detected: operation=%s", operation);
+        
+        if (transientFailurePatternDetected.compareAndSet(false, true)) {
+            transientFailurePatternStartTime.set(Instant.now());
+            walletMetrics.recordDegradationEvent("TRANSIENT_FAILURE_PATTERN", "DETECTED", 
+                "Pattern detected in " + operation);
+            walletMetrics.incrementDegradationActivations("transient_failure_pattern");
+        }
+    }
+
+    /**
+     * Clear transient failure pattern when resolved
+     */
+    public void clearTransientFailurePattern(String reason) {
+        if (transientFailurePatternDetected.compareAndSet(true, false)) {
+            Instant startTime = transientFailurePatternStartTime.getAndSet(null);
+            long durationMs = startTime != null ? 
+                Instant.now().toEpochMilli() - startTime.toEpochMilli() : 0;
+            
+            Log.infof("Transient failure pattern cleared: %s (Duration: %d ms)", reason, durationMs);
+            walletMetrics.recordDegradationEvent("TRANSIENT_FAILURE_PATTERN", "CLEARED", reason);
+            walletMetrics.recordDegradationDuration("transient_failure_pattern", durationMs);
+        }
+    }
+
+    /**
+     * Check if optimistic lock contention is high
+     */
+    public boolean isOptimisticLockContentionHigh() {
+        return optimisticLockContentionHigh.get();
+    }
+
+    /**
+     * Check if transient failure pattern is detected
+     */
+    public boolean isTransientFailurePatternDetected() {
+        return transientFailurePatternDetected.get();
     }
 
     // ============================================================================
@@ -266,8 +351,12 @@ public class DegradationManager {
         boolean cacheBypassMode,
         boolean eventProcessingDegraded,
         boolean rateLimited,
+        boolean optimisticLockContentionHigh,
+        boolean transientFailurePatternDetected,
         Instant readOnlyModeStartTime,
         Instant cacheBypassStartTime,
-        Instant eventDegradationStartTime
+        Instant eventDegradationStartTime,
+        Instant optimisticLockContentionStartTime,
+        Instant transientFailurePatternStartTime
     ) {}
 }
