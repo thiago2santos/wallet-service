@@ -440,13 +440,12 @@ spec:
 
 ## 🚀 CI/CD Pipeline
 
-### GitHub Actions
+### CI/CD Pipeline
 ```yaml
-# .github/workflows/deploy.yml
+# Example deployment configuration
 name: Deploy to Production
 
-on:
-  push:
+# Manual deployment trigger:
     branches: [main]
     tags: ['v*']
 

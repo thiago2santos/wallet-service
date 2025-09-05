@@ -28,8 +28,8 @@ graph TB
     GRAFANA --> PROM
     PROM --> POD1
     
-    DEVS[Developers] --> GHA[GitHub Actions]
-    GHA --> CB[CodeBuild]
+    DEVS[Developers] --> CI[CI/CD Pipeline]
+    CI --> CB[CodeBuild]
     CB --> ECR[Amazon ECR]
     ECR --> EKS
     
@@ -194,11 +194,11 @@ graph TB
   - Cross-region replication
 
 #### **CI/CD Pipeline**
-- **GitHub Actions**: Source code management and CI/CD
+- **CI/CD Pipeline**: Source code management and automated deployment
 - **AWS CodeBuild**: Docker image building
 - **Deployment Flow**:
   1. Code push to GitHub
-  2. GitHub Actions triggers build
+  2. CI/CD pipeline triggers build
   3. CodeBuild creates Docker image
   4. Push to ECR
   5. Deploy to EKS via kubectl/Helm

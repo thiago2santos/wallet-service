@@ -52,4 +52,14 @@ public class WalletStateCache {
         return redis.del(Collections.singletonList(WALLET_KEY_PREFIX + walletId))
                 .replaceWithVoid();
     }
+
+    /**
+     * Health check for Redis cache
+     * Used by circuit breaker to determine cache availability
+     */
+    public Uni<Boolean> ping() {
+        return redis.ping(Collections.emptyList())
+                .map(response -> response != null)
+                .onFailure().recoverWithItem(false);
+    }
 }

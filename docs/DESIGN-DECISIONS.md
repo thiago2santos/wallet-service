@@ -5,7 +5,7 @@
 ## 🎯 Core Design Philosophy
 
 The Wallet Service was designed as a **mission-critical financial service** with emphasis on:
-- **Performance** - Sub-100ms response times required
+- **Performance** - High-performance operations with low latency
 - **Traceability** - Full audit trail for financial operations
 - **Scalability** - Handle growing user base and transaction volume
 - **Reliability** - Minimize downtime and ensure data consistency

@@ -575,13 +575,13 @@ VALUES
 
 ## 🔄 Continuous Testing
 
-### GitHub Actions Workflow
+### CI/CD Testing Workflow
 
 ```yaml
-# .github/workflows/test.yml
+# Example test configuration
 name: Test Suite
 
-on: [push, pull_request]
+# Trigger configuration:
 
 jobs:
   test:
