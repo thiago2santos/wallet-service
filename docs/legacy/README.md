@@ -6,12 +6,12 @@
 
 ## 🚀 What is Wallet Service?
 
-Wallet Service is a **digital wallet platform** built with modern Java technologies. Currently implements core wallet operations with **sub-20ms response times** (5-8x better than targets). Features working **CQRS architecture** and **event-driven patterns** with comprehensive monitoring.
+Wallet Service is a **digital wallet platform** built with modern Java technologies. Currently implements core wallet operations with **high performance** achieving sub-20ms response times. Features working **CQRS architecture** and **event-driven patterns** with comprehensive monitoring.
 
 ### ✨ Key Features
 
 - **💰 Single Currency System** - Simplified BRL (Brazilian Real) operations ✅
-- **⚡ High Performance** - Sub-20ms response times (validated with load testing) ✅
+- **⚡ High Performance** - Achieved sub-20ms response times (validated with load testing) ✅
 - **🏗️ CQRS Architecture** - Working Command/Query separation with buses ✅
 - **🔄 Event Sourcing** - Kafka event publishing with audit trail ✅
 - **📊 Comprehensive Monitoring** - Prometheus metrics + health checks ✅
@@ -158,13 +158,13 @@ curl "http://localhost:8080/api/v1/wallets/{walletId}/balance/historical?timesta
 
 ## 📊 Performance Metrics (Validated)
 
-| Operation | Target | **Actual Performance** | Status |
-|-----------|--------|----------------------|---------|
-| Wallet Creation | < 100ms | **~12.5ms** | ✅ **8x Better** |
-| Balance Query | < 50ms | **~8.3ms** | ✅ **6x Better** |
-| Deposit/Withdraw | < 100ms | **~38ms** | ✅ **2.6x Better** |
-| Transfer | < 150ms | **~40ms** | ✅ **3.7x Better** |
-| Historical Query | < 200ms | **~50ms** | ✅ **4x Better** |
+| Operation | **Measured Performance** | Status |
+|-----------|-------------------------|---------|
+| Wallet Creation | **~12.5ms** | ✅ **Excellent** |
+| Balance Query | **~8.3ms** | ✅ **Excellent** |
+| Deposit/Withdraw | **~38ms** | ✅ **Very Good** |
+| Transfer | **~40ms** | ✅ **Very Good** |
+| Historical Query | **~50ms** | ✅ **Very Good** |
 
 > **Performance validated through comprehensive baseline testing**  
 > See [Performance Report](performance/results/baseline-performance-report.md) for detailed analysis

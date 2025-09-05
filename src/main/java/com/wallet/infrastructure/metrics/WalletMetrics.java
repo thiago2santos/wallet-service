@@ -326,4 +326,212 @@ public class WalletMetrics {
                 .register(meterRegistry)
                 .increment();
     }
+    
+    // ============================================================================
+    // RESILIENCE AND CIRCUIT BREAKER METRICS
+    // ============================================================================
+    
+    /**
+     * Record database operations by type (read/write) and source (primary/replica)
+     */
+    public void incrementDatabaseReads(String source) {
+        Counter.builder("wallet.database.reads")
+                .description("Database read operations")
+                .tag("source", source)
+                .register(meterRegistry)
+                .increment();
+    }
+    
+    public void incrementDatabaseWrites() {
+        Counter.builder("wallet.database.writes")
+                .description("Database write operations")
+                .register(meterRegistry)
+                .increment();
+    }
+    
+    /**
+     * Record database errors by source and type
+     */
+    public void recordDatabaseError(String source, Throwable throwable) {
+        Counter.builder("wallet.database.errors")
+                .description("Database operation errors")
+                .tag("source", source)
+                .tag("error_type", throwable.getClass().getSimpleName())
+                .register(meterRegistry)
+                .increment();
+    }
+    
+    /**
+     * Record circuit breaker activations
+     */
+    public void incrementCircuitBreakerActivations(String circuitBreakerName) {
+        Counter.builder("wallet.circuit_breaker.activations")
+                .description("Circuit breaker activations")
+                .tag("circuit_breaker", circuitBreakerName)
+                .register(meterRegistry)
+                .increment();
+    }
+    
+    /**
+     * Record degraded performance events
+     */
+    public void recordDegradedPerformance(String degradationType) {
+        Counter.builder("wallet.performance.degraded")
+                .description("Degraded performance events")
+                .tag("degradation_type", degradationType)
+                .register(meterRegistry)
+                .increment();
+    }
+    
+    /**
+     * Record service degradation events
+     */
+    public void recordDegradationEvent(String degradationType, String action, String reason) {
+        Counter.builder("wallet.degradation.events")
+                .description("Service degradation events")
+                .tag("degradation_type", degradationType)
+                .tag("action", action)
+                .tag("reason", reason)
+                .register(meterRegistry)
+                .increment();
+    }
+    
+    /**
+     * Record degradation activations
+     */
+    public void incrementDegradationActivations(String degradationType) {
+        Counter.builder("wallet.degradation.activations")
+                .description("Service degradation activations")
+                .tag("degradation_type", degradationType)
+                .register(meterRegistry)
+                .increment();
+    }
+    
+    /**
+     * Record degradation duration
+     */
+    public void recordDegradationDuration(String degradationType, long durationMs) {
+        Timer.builder("wallet.degradation.duration")
+                .description("Service degradation duration")
+                .tag("degradation_type", degradationType)
+                .register(meterRegistry)
+                .record(durationMs, java.util.concurrent.TimeUnit.MILLISECONDS);
+    }
+    
+    /**
+     * Record cache bypass events
+     */
+    public void incrementCacheBypass() {
+        Counter.builder("wallet.cache.bypass")
+                .description("Cache bypass events")
+                .register(meterRegistry)
+                .increment();
+    }
+    
+    /**
+     * Record fallback method executions
+     */
+    public void recordFallbackExecution(String fallbackMethod, String reason) {
+        Counter.builder("wallet.fallback.executions")
+                .description("Fallback method executions")
+                .tag("fallback_method", fallbackMethod)
+                .tag("reason", reason)
+                .register(meterRegistry)
+                .increment();
+    }
+
+    // ============================================================================
+    // RETRY METRICS
+    // ============================================================================
+
+    /**
+     * Record retry attempt
+     */
+    public void recordRetryAttempt(String operation, String retryType, String exceptionType) {
+        Counter.builder("wallet.retry.attempts")
+                .description("Retry attempts by operation and type")
+                .tag("operation", operation)
+                .tag("retry_type", retryType)
+                .tag("exception_type", exceptionType)
+                .register(meterRegistry)
+                .increment();
+    }
+
+    /**
+     * Record successful retry operation
+     */
+    public void recordSuccessfulRetryOperation(String operation, String retryType) {
+        Counter.builder("wallet.retry.successes")
+                .description("Successful operations after retry")
+                .tag("operation", operation)
+                .tag("retry_type", retryType)
+                .register(meterRegistry)
+                .increment();
+    }
+
+    /**
+     * Record retry exhaustion (all retries failed)
+     */
+    public void recordRetryExhaustion(String operation, String retryType) {
+        Counter.builder("wallet.retry.exhaustions")
+                .description("Operations that exhausted all retries")
+                .tag("operation", operation)
+                .tag("retry_type", retryType)
+                .register(meterRegistry)
+                .increment();
+    }
+
+    /**
+     * Record retry duration
+     */
+    public void recordRetryDuration(String operation, String retryType, long durationMs) {
+        Timer.builder("wallet.retry.duration")
+                .description("Time spent in retry operations")
+                .tag("operation", operation)
+                .tag("retry_type", retryType)
+                .register(meterRegistry)
+                .record(durationMs, java.util.concurrent.TimeUnit.MILLISECONDS);
+    }
+
+    /**
+     * Get retry attempts count for monitoring
+     */
+    public long getRetryAttempts(String retryType) {
+        Counter counter = meterRegistry.find("wallet.retry.attempts")
+                .tag("retry_type", retryType)
+                .counter();
+        return counter != null ? (long) counter.count() : 0L;
+    }
+
+    /**
+     * Get retry exhaustions count for monitoring
+     */
+    public long getRetryExhaustions(String retryType) {
+        Counter counter = meterRegistry.find("wallet.retry.exhaustions")
+                .tag("retry_type", retryType)
+                .counter();
+        return counter != null ? (long) counter.count() : 0L;
+    }
+
+    /**
+     * Record optimistic lock contention metrics
+     */
+    public void recordOptimisticLockContention(String operation, String walletId) {
+        Counter.builder("wallet.optimistic_lock.contentions")
+                .description("Optimistic lock contentions by operation")
+                .tag("operation", operation)
+                .register(meterRegistry)
+                .increment();
+    }
+
+    /**
+     * Record transient failure pattern metrics
+     */
+    public void recordTransientFailurePattern(String operation) {
+        Counter.builder("wallet.transient_failure.patterns")
+                .description("Transient failure patterns by operation")
+                .tag("operation", operation)
+                .register(meterRegistry)
+                .increment();
+    }
 }

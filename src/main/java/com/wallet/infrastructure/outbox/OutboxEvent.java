@@ -27,7 +27,7 @@ public class OutboxEvent extends PanacheEntityBase {
     @Column(name = "event_type", nullable = false, length = 100)
     public String eventType;
 
-    @Column(name = "event_data", nullable = false, columnDefinition = "JSON")
+    @Column(name = "event_data", nullable = false, columnDefinition = "TEXT")
     public String eventData;
 
     @Column(name = "created_at", nullable = false)
