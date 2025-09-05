@@ -85,23 +85,36 @@ public class Money {
 }
 ```
 
-### 4. Advanced Error Handling
+### 4. Advanced Error Handling & Resilience
 
 **What Was Simplified**:
-- ❌ No circuit breakers
+- ❌ No circuit breakers (planned for production)
 - ❌ No retry policies (basic reactive retry only)
-- ❌ No graceful degradation
-- ❌ No bulkhead patterns
+- ❌ No graceful degradation patterns
+- ❌ No bulkhead patterns for resource isolation
+- ❌ No rate limiting at application level
+- ❌ No timeout management for external calls
 
 **What Was Implemented**:
 - ✅ Comprehensive input validation
 - ✅ Structured error responses
 - ✅ Database transaction rollback
 - ✅ Proper HTTP status codes
+- ✅ Health checks for all dependencies
+- ✅ Transactional outbox pattern
+
+**Production Resilience Plan**:
+```java
+// Circuit breakers for all external dependencies
+@CircuitBreaker(name = "database", fallbackMethod = "fallbackToCache")
+@Retry(name = "optimistic-lock", maxAttempts = 5)
+@RateLimiter(name = "wallet-operations")
+```
 
 **Rationale**:
 - **Core First**: Focused on preventing errors rather than handling failures
-- **Time Investment**: Better error prevention than complex recovery mechanisms
+- **Time Investment**: Better solid foundation than rushed resilience patterns
+- **Production Ready**: Comprehensive resilience plan documented for implementation
 
 ### 5. Performance Optimization
 
