@@ -2,19 +2,18 @@
 
 > A high-performance digital wallet microservice built with Java and Quarkus
 
-## 🎯 Overview
+## 🎯 What It Does
 
-This is a **wallet service** that manages users' money with support for deposits, withdrawals, and transfers between users. Built as a production-ready microservice with CQRS architecture, event sourcing, and comprehensive monitoring.
+**Wallet service** that manages users' money with support for deposits, withdrawals, and transfers between users. Built as a production-ready microservice with enterprise-grade resilience patterns.
 
 ### ✨ Key Features
 
 - **💰 Wallet Management** - Create wallets and manage user balances
-- **💵 Core Operations** - Deposit, withdraw, and transfer funds
+- **💵 Core Operations** - Deposit, withdraw, and transfer funds  
 - **📊 Historical Balance** - Query balance at any point in time
-- **⚡ High Performance** - Achieved sub-20ms response times
-- **🏗️ CQRS Architecture** - Separate read/write operations for scalability
-- **🔄 Event Sourcing** - Complete audit trail with Kafka events
-- **📈 Monitoring** - Prometheus metrics and health checks
+- **🛡️ Enterprise Resilience** - Circuit breakers, retries, graceful degradation
+- **⚡ High Performance** - Sub-20ms response times
+- **📈 Production Ready** - Comprehensive monitoring and observability
 
 ## 🚀 Quick Start
 
@@ -23,117 +22,57 @@ This is a **wallet service** that manages users' money with support for deposits
 - Docker & Docker Compose
 - Maven 3.8+
 
-### 🐳 Local Development with Docker Compose
-
-> **📍 Note**: This is the **local development setup**. For production deployment, see [AWS Production Architecture](#☁️-aws-production-architecture) below.
+### 🐳 Run Locally
 
 ```bash
 # Clone the repository
 git clone https://github.com/thiago2santos/wallet-service
 cd wallet-service
 
-# Start all LOCAL services (MySQL, Redis, Kafka, etc.)
+# Start all services (MySQL, Redis, Kafka, etc.)
 docker-compose up -d
 
 # Verify services are running
-curl http://localhost:8080/health
+curl http://localhost:8080/q/health
 ```
 
-**Local Infrastructure Components:**
-- 🐘 **MySQL**: Primary/Replica setup (ports 3306/3307)
-- 🔴 **Redis**: Cache layer (port 6379)
-- 🔄 **Kafka**: Event streaming (port 9092)
-- 📊 **Prometheus**: Metrics collection (port 9090)
-- 📈 **Grafana**: Monitoring dashboards (port 3001)
-
-### 🛠️ Development Mode
+### 🧪 Test the API
 
 ```bash
-# Start infrastructure services
-docker-compose up -d mysql-primary mysql-replica redis kafka
-
-# Run application in dev mode
-./mvnw quarkus:dev
-
-# Access dev UI and API docs
-open http://localhost:8080/q/dev/
-open http://localhost:8080/q/swagger-ui/
-```
-
-## 🔧 API Operations
-
-### Create a Wallet
-```bash
+# Create a wallet
 curl -X POST http://localhost:8080/api/v1/wallets \
   -H "Content-Type: application/json" \
-  -d '{"userId": "user123"}'
-```
+  -d '{"userId": "user123", "currency": "USD"}'
 
-### Deposit Funds
-```bash
+# Deposit funds
 curl -X POST http://localhost:8080/api/v1/wallets/{walletId}/deposit \
   -H "Content-Type: application/json" \
-  -d '{"amount": "100.00", "referenceId": "dep123", "description": "Initial deposit"}'
-```
+  -d '{"amount": 100.00, "referenceId": "dep123"}'
 
-### Withdraw Funds
-```bash
-curl -X POST http://localhost:8080/api/v1/wallets/{walletId}/withdraw \
-  -H "Content-Type: application/json" \
-  -d '{"amount": "50.00", "referenceId": "wd123", "description": "Withdrawal"}'
-```
-
-### Transfer Funds
-```bash
-curl -X POST http://localhost:8080/api/v1/wallets/{sourceId}/transfer \
-  -H "Content-Type: application/json" \
-  -d '{"destinationWalletId": "{destId}", "amount": "25.00", "referenceId": "xfer123", "description": "Transfer"}'
-```
-
-### Check Current Balance
-```bash
+# Check balance
 curl http://localhost:8080/api/v1/wallets/{walletId}/balance
 ```
 
-### Historical Balance
+### 📊 Access Monitoring
+
+- **API Health**: http://localhost:8080/q/health
+- **Metrics**: http://localhost:9090 (Prometheus)
+- **Dashboards**: http://localhost:3001 (Grafana)
+
+## 📚 Documentation
+
+For complete documentation, architecture details, and production deployment:
+
 ```bash
-curl "http://localhost:8080/api/v1/wallets/{walletId}/balance/historical?timestamp=2024-01-01T10:30:00"
+# Serve documentation locally
+docsify serve ./docs
+
+# Access at: http://localhost:3000
 ```
-
-## 📊 Performance
-
-**Performance Results:**
-
-| Operation | **Measured Performance** | Status |
-|-----------|-------------------------|---------|
-| Wallet Creation | **~12.5ms** | ✅ **Excellent** |
-| Balance Query | **~8.3ms** | ✅ **Excellent** |
-| Deposit/Withdraw | **~38ms** | ✅ **Very Good** |
-| Transfer | **~40ms** | ✅ **Very Good** |
-| Historical Query | **~50ms** | ✅ **Very Good** |
-
-## 🏗️ Architecture
-
-### Technology Stack
-- **Framework**: Quarkus 3.8.1 with Java 21
-- **Database**: MySQL 8.0 (Primary + Replica)
-- **Cache**: Redis 7.0
-- **Messaging**: Apache Kafka
-- **Monitoring**: Prometheus + Custom Metrics
-
-### Key Patterns
-- **CQRS**: Command/Query separation with dedicated buses
-- **Event Sourcing**: Kafka events for audit trail and historical queries
-- **Database Replication**: Read/write separation for scalability
-- **Reactive Programming**: Non-blocking operations throughout
 
 ## ☁️ AWS Production Architecture
 
-This service was **designed from the ground up for AWS deployment** with enterprise-grade scalability, security, and reliability in mind.
-
-### 🏗️ AWS Production Infrastructure
-
-> **🚀 Production Deployment**: This section describes the **planned AWS production architecture**. For local development, see [Local Development](#🐳-local-development-with-docker-compose) above.
+This service was **designed from the ground up for AWS deployment** with enterprise-grade scalability, security, and reliability.
 
 ```mermaid
 graph TB
@@ -159,107 +98,15 @@ graph TB
     class Aurora,Redis,Kafka,Monitor dataClass
 ```
 
-### 🔧 AWS Services Integration
+### 🏆 Production Benefits
 
-| **Component** | **AWS Service** | **Configuration** | **Purpose** |
-|---------------|-----------------|-------------------|-------------|
-| **🌐 Load Balancer** | Application Load Balancer | Multi-AZ, SSL termination | Traffic distribution & SSL |
-| **🛡️ API Management** | API Gateway | Rate limiting, caching | Request management & security |
-| **🔒 Security** | WAF + Shield | DDoS protection, filtering | Application security |
-| **🚀 Container Platform** | EKS (Kubernetes) | Multi-AZ, auto-scaling | Container orchestration |
-| **💾 Primary Database** | Aurora MySQL | Serverless v2, Global Database | ACID transactions |
-| **⚡ Cache Layer** | ElastiCache Redis | Multi-AZ, clustering | High-speed caching |
-| **📨 Event Streaming** | MSK (Managed Kafka) | Multi-AZ, auto-scaling | Event sourcing & audit |
-| **📊 Monitoring** | CloudWatch + Prometheus | Custom metrics, alerting | Observability |
-| **🔐 Secrets** | Secrets Manager | Automatic rotation | Credential management |
-| **📝 Logging** | CloudWatch Logs | Centralized logging | Audit & debugging |
+- **🛡️ Triple-layer security** - WAF, API Gateway, EKS network policies
+- **⚡ Auto-scaling** - From 3 to 100+ pods based on demand
+- **🔄 High availability** - Multi-AZ deployment with 99.99% uptime
+- **📊 Full observability** - CloudWatch, X-Ray, custom metrics
+- **💰 Cost optimized** - Serverless Aurora, spot instances
 
-### 🎯 Production Benefits
-
-#### **🔴 Mission-Critical Requirements Met**
-- **99.99% Availability**: Multi-AZ deployment across 3 availability zones
-- **Auto-Scaling**: Kubernetes HPA based on CPU/memory and custom metrics
-- **Disaster Recovery**: Cross-region backup and replication strategy
-- **Zero-Downtime Deployments**: Rolling updates with health checks
-
-#### **🔍 Full Traceability & Compliance**
-- **Audit Trail**: All events stored in MSK with long-term retention
-- **Compliance**: AWS compliance certifications (SOC, PCI DSS ready)
-- **Monitoring**: CloudWatch + Prometheus with custom business metrics
-- **Alerting**: Real-time alerts for SLA violations and anomalies
-
-#### **⚡ Performance & Scalability**
-- **Auto-Scaling**: Scale from 3 to 100+ pods based on demand
-- **Global CDN**: CloudFront for static assets and API caching
-- **Aurora Serverless v2**: Automatic scaling from 0.5 to 128 ACUs based on demand
-- **Aurora Global Database**: Cross-region replication with <1 second lag
-- **Cache Strategy**: Multi-layer caching (Redis + API Gateway)
-
-### 🔒 Security Architecture
-
-```
-Internet ──▶ CloudFront ──▶ WAF ──▶ API Gateway ──▶ ALB ──▶ EKS
-             │              │        │              │       │
-             └─ DDoS        └─ App   └─ Auth        └─ SSL  └─ Network
-                Protection     Filter   & Rate         Term    Policies
-                                       Limiting
-```
-
-**Security Layers**:
-1. **🌐 CloudFront**: DDoS protection, geo-blocking
-2. **🛡️ WAF**: SQL injection, XSS protection, rate limiting
-3. **🔑 API Gateway**: Authentication (JWT), API key management
-4. **🔒 ALB**: SSL termination, security groups
-5. **🏰 EKS**: Network policies, RBAC, pod security standards
-
-### 📊 Monitoring & Observability
-
-**Comprehensive monitoring stack**:
-- **📈 CloudWatch**: AWS infrastructure metrics
-- **🎯 Prometheus**: Custom application metrics
-- **📊 Grafana**: Business dashboards (auto-provisioned)
-- **🚨 AlertManager**: SLA-based alerting
-- **🔍 X-Ray**: Distributed tracing
-- **📝 CloudWatch Logs**: Centralized log aggregation
-
-### 💾 Aurora MySQL Benefits
-
-**Why Aurora over RDS for Financial Services**:
-- **🚀 Performance**: Up to 5x faster than standard MySQL
-- **💰 Cost-Effective**: Serverless v2 scales automatically, pay only for what you use
-- **🔄 High Availability**: 99.99% availability with 6 copies across 3 AZs
-- **📊 Global Scale**: Aurora Global Database for worldwide deployment
-- **🔒 Security**: Encryption at rest and in transit, VPC isolation
-- **⚡ Instant Scaling**: Scale compute in seconds, storage automatically
-- **🔄 Continuous Backup**: Point-in-time recovery up to 35 days
-- **📈 Read Scaling**: Up to 15 read replicas with <10ms replica lag
-
-### 💰 Cost Optimization
-
-**Smart resource management**:
-- **🕐 Aurora Serverless**: Automatic scaling based on demand, pause when idle
-- **💾 Storage Tiering**: S3 lifecycle policies for event archives
-- **⚡ Spot Instances**: Use spot instances for non-critical workloads
-- **📊 Cost Monitoring**: AWS Cost Explorer integration
-
-### 🚀 Deployment Strategy
-
-**Production-ready CI/CD**:
-```yaml
-GitHub Actions ──▶ ECR ──▶ EKS Rolling Update
-     │              │         │
-     ├─ Tests       ├─ Scan   └─ Health Checks
-     ├─ Security    └─ Sign       │
-     └─ Build                     └─ Rollback Ready
-```
-
-**Deployment Features**:
-- ✅ **Blue-Green Deployments**: Zero-downtime updates
-- ✅ **Canary Releases**: Gradual rollout with monitoring
-- ✅ **Automatic Rollback**: Health check failures trigger rollback
-- ✅ **Infrastructure as Code**: Terraform for reproducible deployments
-
-### 🛡️ Enterprise-Grade Resilience
+## 🛡️ Enterprise-Grade Resilience
 
 > **Built for the real world** - When systems fail (and they will), our wallet service keeps running.
 
@@ -284,69 +131,6 @@ GitHub Actions ──▶ ECR ──▶ EKS Rolling Update
 - **Event publishing** → Guaranteed delivery with outbox pattern
 
 **🎯 Result**: Transient failures become invisible to users
-
-**Configuration:**
-- **Max Retries**: 3 attempts (Kafka-specific optimized)
-- **Delay**: 1000ms base + 500ms jitter (network operations need more time)
-- **Max Duration**: 10 seconds
-- **Retry On**: `RetriableException`, `TimeoutException`, `NetworkException`
-
-##### **📊 Retry Monitoring & Metrics**
-
-**Key Metrics Tracked:**
-```java
-// Retry attempt tracking
-walletMetrics.recordRetryAttempt("deposit", "optimistic_lock", "OptimisticLockException");
-
-// Success after retry
-walletMetrics.recordSuccessfulRetryOperation("kafka_publish", "kafka_publish_retry");
-
-// Retry exhaustion (triggers alerts)
-walletMetrics.recordRetryExhaustion("withdrawal", "optimistic_lock");
-```
-
-**Prometheus Metrics:**
-- `wallet_retry_attempts_total{operation, retry_type, exception_type}`
-- `wallet_retry_successes_total{operation, retry_type}`
-- `wallet_retry_exhaustions_total{operation, retry_type}`
-- `wallet_retry_duration_seconds{operation, retry_type}`
-
-##### **🎛️ Retry Configuration**
-
-**Production-Optimized Settings:**
-```properties
-# Optimistic Lock Retry (most critical for financial operations)
-smallrye.faulttolerance."optimistic-lock-retry".retry.maxRetries=5
-smallrye.faulttolerance."optimistic-lock-retry".retry.delay=100
-smallrye.faulttolerance."optimistic-lock-retry".retry.jitter=50
-
-# Database Transient Failure Retry
-smallrye.faulttolerance."database-transient-retry".retry.maxRetries=3
-smallrye.faulttolerance."database-transient-retry".retry.delay=500
-smallrye.faulttolerance."database-transient-retry".retry.jitter=200
-
-# Kafka Publishing Retry
-smallrye.faulttolerance."kafka-publish-retry".retry.maxRetries=3
-smallrye.faulttolerance."kafka-publish-retry".retry.delay=1000
-smallrye.faulttolerance."kafka-publish-retry".retry.jitter=500
-```
-
-##### **🔄 Retry + Circuit Breaker Integration**
-
-**Layered Resilience:**
-```java
-@CircuitBreaker("aurora-primary")  // First line of defense
-@Retry("optimistic-lock-retry")    // Second line of defense  
-@Fallback(fallbackMethod = "readOnlyModeFallback") // Final fallback
-public Uni<Wallet> updateWalletBalance(String walletId, BigDecimal amount) {
-    // Implementation with triple protection
-}
-```
-
-**Benefits:**
-- **Circuit Breaker**: Prevents cascade failures, fast-fail when service is down
-- **Retry**: Handles transient issues, optimistic lock contention
-- **Fallback**: Graceful degradation when all else fails
 
 #### **🎯 Graceful Degradation**
 
@@ -387,74 +171,6 @@ public Uni<Wallet> updateWalletBalance(String walletId, BigDecimal amount) {
 📉 **Graceful Degradation** - Adapt instead of failing  
 🏥 **Health Monitoring** - Always know your system status
 
-
 ---
 
 > **💡 Production Ready**: This architecture supports **millions of transactions per day** with **sub-100ms latency** and **99.99% availability**. The resilience patterns above ensure **graceful degradation** when failures inevitably occur.
-
-## 🧪 Testing
-
-```bash
-# Run all tests
-./mvnw test
-
-# Run integration tests
-./mvnw test -Dtest="*IntegrationTest"
-
-# Run mutation testing
-./mvnw org.pitest:pitest-maven:mutationCoverage
-
-# Performance testing
-./scripts/setup-load-test.sh
-```
-
-## 📈 Monitoring
-
-### Health Checks
-```bash
-curl http://localhost:8080/q/health
-```
-
-### Metrics
-```bash
-curl http://localhost:8080/metrics | grep wallet_operations
-```
-
-### Interactive API Documentation
-```bash
-open http://localhost:8080/q/swagger-ui/
-```
-
-## 🔒 Security
-
-- **Input Validation**: Comprehensive Jakarta Bean Validation
-- **Error Handling**: Structured exception responses
-- **Production Security**: Designed for AWS API Gateway + WAF
-
-## 📚 Documentation
-
-- **[Design Decisions](DESIGN-DECISIONS.md)** - Architectural choices and rationale
-- **[Trade-offs](TRADE-OFFS.md)** - Time constraints and compromises made
-- **[Setup Guide](SETUP-GUIDE.md)** - Detailed installation and testing instructions
-- **[Legacy Docs](legacy/README.md)** - Comprehensive documentation (archived)
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests
-5. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License.
-
-## 🆘 Support
-
-- **Issues**: [GitHub Issues](https://github.com/thiago2santos/wallet-service/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/thiago2santos/wallet-service/discussions)
-
----
-
-**Built with ❤️ for the Wallet Service Assessment**
