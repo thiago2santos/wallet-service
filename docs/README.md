@@ -23,19 +23,28 @@ This is a **wallet service** that manages users' money with support for deposits
 - Docker & Docker Compose
 - Maven 3.8+
 
-### 🐳 Run with Docker Compose
+### 🐳 Local Development with Docker Compose
+
+> **📍 Note**: This is the **local development setup**. For production deployment, see [AWS Production Architecture](#☁️-aws-production-architecture) below.
 
 ```bash
 # Clone the repository
 git clone https://github.com/thiago2santos/wallet-service
 cd wallet-service
 
-# Start all services
+# Start all LOCAL services (MySQL, Redis, Kafka, etc.)
 docker-compose up -d
 
 # Verify services are running
 curl http://localhost:8080/health
 ```
+
+**Local Infrastructure Components:**
+- 🐘 **MySQL**: Primary/Replica setup (ports 3306/3307)
+- 🔴 **Redis**: Cache layer (port 6379)
+- 🔄 **Kafka**: Event streaming (port 9092)
+- 📊 **Prometheus**: Metrics collection (port 9090)
+- 📈 **Grafana**: Monitoring dashboards (port 3001)
 
 ### 🛠️ Development Mode
 
@@ -122,7 +131,9 @@ curl "http://localhost:8080/api/v1/wallets/{walletId}/balance/historical?timesta
 
 This service was **designed from the ground up for AWS deployment** with enterprise-grade scalability, security, and reliability in mind.
 
-### 🏗️ Planned AWS Infrastructure
+### 🏗️ AWS Production Infrastructure
+
+> **🚀 Production Deployment**: This section describes the **planned AWS production architecture**. For local development, see [Local Development](#🐳-local-development-with-docker-compose) above.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -261,69 +272,151 @@ GitHub Actions ──▶ ECR ──▶ EKS Rolling Update
 
 > **"There's no silver bullet"** - Even with the most resilient architecture, **failures will happen**. The key is graceful degradation.
 
+**🎯 IMPLEMENTATION STATUS: ✅ ALL PATTERNS FULLY IMPLEMENTED**
+
+This section documents our **actual production-ready implementation** of enterprise-grade resilience patterns. All code examples below are from the real codebase, not theoretical examples.
+
 #### **🔄 Circuit Breaker Pattern**
+
+**🎯 Implementation Status: ✅ FULLY IMPLEMENTED**
+
+Our circuit breakers protect all critical dependencies with financial-service-optimized thresholds:
+
 ```java
-// Database Circuit Breaker
-@CircuitBreaker(name = "database", fallbackMethod = "fallbackToCache")
-public Uni<WalletResponse> getWallet(String walletId) {
-    return walletRepository.findById(walletId);
+// Actual implementation in ResilientDatabaseService.java
+@ApplicationScoped
+public class ResilientDatabaseService {
+    
+    @CircuitBreaker // Configured in application.properties
+    @Fallback(fallbackMethod = "enterReadOnlyModeFallback")
+    public Uni<Wallet> persistWallet(Wallet wallet) {
+        readOnlyModeManager.validateWriteOperation("persist wallet");
+        return primaryRepository.persist(wallet)
+            .onFailure().invoke(throwable -> {
+                readOnlyModeManager.enterReadOnlyMode("Primary database failure: " + throwable.getMessage());
+            });
+    }
 }
 
-// Kafka Circuit Breaker  
-@CircuitBreaker(name = "kafka", fallbackMethod = "storeInOutbox")
-public Uni<Void> publishEvent(WalletEvent event) {
-    return kafkaProducer.send(event);
+// Actual implementation in ResilientCacheService.java
+@CircuitBreaker
+@Fallback(fallbackMethod = "getWalletFromDatabaseFallback")
+public Uni<Wallet> getWallet(String walletId) {
+    return walletCache.getWallet(walletId);
 }
+
+// Actual implementation in ResilientEventService.java  
+@CircuitBreaker
+@Retry
+@Fallback(fallbackMethod = "storeWalletCreatedInOutboxFallback")
+public Uni<Void> publishWalletCreatedEvent(String walletId, String userId) {
+    WalletCreatedEvent event = new WalletCreatedEvent(walletId, userId);
+    return eventEmitter.send(createKafkaMessage(walletId, "WalletCreated", event));
+}
+```
+
+**Circuit Breaker Configuration (application.properties):**
+```properties
+# Aurora Primary Database Circuit Breaker
+smallrye.faulttolerance."aurora-primary".circuitbreaker.requestVolumeThreshold=10
+smallrye.faulttolerance."aurora-primary".circuitbreaker.failureRatio=0.5
+smallrye.faulttolerance."aurora-primary".circuitbreaker.delay=5000
+
+# Redis Cache Circuit Breaker  
+smallrye.faulttolerance."redis-cache".circuitbreaker.requestVolumeThreshold=5
+smallrye.faulttolerance."redis-cache".circuitbreaker.failureRatio=0.6
+smallrye.faulttolerance."redis-cache".circuitbreaker.delay=3000
+
+# Kafka Events Circuit Breaker
+smallrye.faulttolerance."kafka-events".circuitbreaker.requestVolumeThreshold=8
+smallrye.faulttolerance."kafka-events".circuitbreaker.failureRatio=0.4
+smallrye.faulttolerance."kafka-events".circuitbreaker.delay=10000
 ```
 
 #### **🔁 Retry Strategies**
 
 **Financial services require zero data loss and maximum reliability. Our retry strategies are designed for mission-critical operations.**
 
+**🎯 Implementation Status: ✅ FULLY IMPLEMENTED**
+
+Our retry strategies handle three critical scenarios with financial-grade configurations:
+
 ##### **🎯 Optimistic Lock Retries**
 ```java
-// Handles concurrent balance updates with financial-grade safety
-@Retry // Configured: 5 retries, 100ms delay + jitter
-@Fallback(fallbackMethod = "depositFundsOptimisticLockFallback")
-public Uni<String> depositFundsWithRetry(String walletId, BigDecimal amount, String referenceId) {
-    DepositFundsCommand command = new DepositFundsCommand(walletId, amount, referenceId);
-    return depositFundsHandler.handle(command);
+// Actual implementation in ResilientWalletService.java
+@ApplicationScoped
+public class ResilientWalletService {
+    
+    @Retry // Configured as "optimistic-lock-retry" in application.properties
+    @Fallback(fallbackMethod = "depositFundsOptimisticLockFallback")
+    public Uni<String> depositFundsWithRetry(String walletId, BigDecimal amount, String referenceId) {
+        DepositFundsCommand command = new DepositFundsCommand(walletId, amount, referenceId);
+        return depositFundsHandler.handle(command)
+            .onItem().invoke(walletIdResult -> {
+                walletMetrics.recordSuccessfulRetryOperation("deposit", "optimistic_lock");
+            })
+            .onFailure().invoke(throwable -> {
+                walletMetrics.recordRetryAttempt("deposit", "optimistic_lock", throwable.getClass().getSimpleName());
+            });
+    }
 }
 ```
 
-**Configuration:**
-- **Max Retries**: 5 attempts (financial operations need persistence)
-- **Delay**: 100ms base + 50ms jitter (prevents thundering herd)
-- **Max Duration**: 2 seconds (user experience boundary)
-- **Retry On**: `OptimisticLockException`, `StaleObjectStateException`, `LockAcquisitionException`
+**Actual Configuration (application.properties):**
+```properties
+# Optimistic Lock Retry Strategy - Financial Service Optimized
+smallrye.faulttolerance."optimistic-lock-retry".retry.maxRetries=5
+smallrye.faulttolerance."optimistic-lock-retry".retry.delay=100
+smallrye.faulttolerance."optimistic-lock-retry".retry.maxDuration=2000
+smallrye.faulttolerance."optimistic-lock-retry".retry.jitter=50
+smallrye.faulttolerance."optimistic-lock-retry".retry.retryOn=org.hibernate.StaleObjectStateException,jakarta.persistence.OptimisticLockException,org.hibernate.exception.LockAcquisitionException
+```
 
 ##### **🌐 Transient Failure Retries**
 ```java
-// Handles network timeouts and temporary database issues
-@Retry // Configured: 3 retries, 500ms delay + jitter
+// Actual implementation - handles network timeouts and temporary database issues
+@Retry // Configured as "database-transient-retry" in application.properties
 @Fallback(fallbackMethod = "getWalletTransientFailureFallback")
 public Uni<Wallet> getWalletWithRetry(String walletId) {
     GetWalletQuery query = new GetWalletQuery(walletId);
-    return getWalletHandler.handle(query);
+    return getWalletHandler.handle(query)
+        .onFailure().invoke(throwable -> {
+            walletMetrics.recordRetryAttempt("get_wallet", "database_transient", throwable.getClass().getSimpleName());
+        });
 }
 ```
 
-**Configuration:**
-- **Max Retries**: 3 attempts (balance between reliability and performance)
-- **Delay**: 500ms base + 200ms jitter
-- **Max Duration**: 5 seconds
-- **Retry On**: `SQLException`, `SQLTransientException`, `ConnectException`, `TimeoutException`
+**Actual Configuration:**
+```properties
+# Database Transient Failure Retry Strategy
+smallrye.faulttolerance."database-transient-retry".retry.maxRetries=3
+smallrye.faulttolerance."database-transient-retry".retry.delay=500
+smallrye.faulttolerance."database-transient-retry".retry.maxDuration=5000
+smallrye.faulttolerance."database-transient-retry".retry.jitter=200
+smallrye.faulttolerance."database-transient-retry".retry.retryOn=java.sql.SQLException,java.sql.SQLTransientException,java.net.ConnectException,java.util.concurrent.TimeoutException
+```
 
 ##### **📨 Kafka Publishing Retries**
 ```java
-// Ensures zero event loss with outbox fallback
+// Actual implementation - ensures zero event loss with outbox fallback
 @CircuitBreaker // Combined with circuit breaker for maximum reliability
-@Retry // Configured: 3 retries, 1000ms delay + jitter
+@Retry // Configured as "kafka-publish-retry" in application.properties
 @Fallback(fallbackMethod = "storeWalletCreatedInOutboxFallback")
 public Uni<Void> publishWalletCreatedEvent(String walletId, String userId) {
     WalletCreatedEvent event = new WalletCreatedEvent(walletId, userId);
-    return kafkaEmitter.send(serializeEvent(event));
+    return eventEmitter.send(createKafkaMessage(walletId, "WalletCreated", event))
+        .onItem().invoke(() -> walletMetrics.recordEventPublished("WALLET_CREATED"));
 }
+```
+
+**Actual Configuration:**
+```properties
+# Kafka Publishing Retry Strategy
+smallrye.faulttolerance."kafka-publish-retry".retry.maxRetries=3
+smallrye.faulttolerance."kafka-publish-retry".retry.delay=1000
+smallrye.faulttolerance."kafka-publish-retry".retry.maxDuration=10000
+smallrye.faulttolerance."kafka-publish-retry".retry.jitter=500
+smallrye.faulttolerance."kafka-publish-retry".retry.retryOn=org.apache.kafka.common.errors.RetriableException,java.util.concurrent.TimeoutException,org.apache.kafka.common.errors.NetworkException
 ```
 
 **Configuration:**
