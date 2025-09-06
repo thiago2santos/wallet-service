@@ -22,18 +22,10 @@ The Wallet Service was designed as a **mission-critical financial service** with
 - **Flexibility**: Different data models for different use cases
 - **Maintainability**: Clear separation of concerns
 
-**Implementation**:
-```java
-@ApplicationScoped
-public class CommandBus {
-    public <T> Uni<Void> send(Command<T> command) { ... }
-}
-
-@ApplicationScoped  
-public class QueryBus {
-    public <T> Uni<T> send(Query<T> query) { ... }
-}
-```
+**Key Benefits**:
+- Clear separation of concerns between commands and queries
+- Independent scaling of read and write operations
+- Optimized data models for different access patterns
 
 ### 2. Event Sourcing with Kafka
 
@@ -60,16 +52,10 @@ public class QueryBus {
 - **Consistency**: Strong consistency for writes, eventual consistency for reads
 - **Cost-Effective**: More economical than distributed databases for this scale
 
-**Implementation**:
-```java
-// Write operations use primary
-@WriteDataSource
-public class WalletRepository { ... }
-
-// Read operations use replica  
-@ReadDataSource
-public class WalletQueryRepository { ... }
-```
+**Key Benefits**:
+- Write operations isolated to primary database
+- Read operations distributed across replicas
+- Improved performance and availability
 
 ### 4. Redis Caching Strategy
 
@@ -108,13 +94,10 @@ public class WalletQueryRepository { ... }
 - **Backpressure**: Handle load spikes gracefully
 - **Integration**: Natural fit with Quarkus and reactive databases
 
-**Example**:
-```java
-public Uni<WalletResponse> createWallet(CreateWalletCommand command) {
-    return commandBus.send(command)
-        .chain(() -> queryBus.send(new GetWalletQuery(command.getWalletId())));
-}
-```
+**Key Benefits**:
+- Non-blocking operations improve throughput
+- Better resource utilization under load
+- Natural composition of asynchronous operations
 
 ## 💾 Data Design Decisions
 
@@ -169,11 +152,10 @@ public Uni<WalletResponse> createWallet(CreateWalletCommand command) {
 
 **Decision**: Aggressive connection pooling configuration.
 
-**Configuration**:
-```properties
-quarkus.datasource.reactive.max-size=20
-quarkus.redis.max-pool-size=20
-```
+**Key Benefits**:
+- Optimized connection usage for high concurrency
+- Reduced resource overhead
+- Better performance under load
 
 ### 2. Async Processing
 
@@ -199,16 +181,10 @@ quarkus.redis.max-pool-size=20
 
 **Decision**: Comprehensive validation using Jakarta Bean Validation.
 
-**Implementation**:
-```java
-public class DepositRequest {
-    @NotNull @DecimalMin("0.01")
-    private BigDecimal amount;
-    
-    @NotBlank @Size(max = 100)
-    private String referenceId;
-}
-```
+**Key Benefits**:
+- Comprehensive validation at API boundary
+- Prevents invalid data from entering the system
+- Clear error messages for client applications
 
 ### 2. Production Security Strategy
 
@@ -289,6 +265,78 @@ public class DepositRequest {
 - **Integration**: Easy to add new consumers
 - **Analytics**: Events can feed analytics systems
 - **Audit**: Complete audit trail from day one
+
+## ☁️ AWS Service Mapping
+
+> How our design decisions translate into concrete AWS service choices
+
+### 🏗️ **Architectural Patterns → AWS Services**
+
+| **Design Decision** | **AWS Service** | **Rationale** |
+|-------------------|-----------------|---------------|
+| **CQRS Architecture** | ECS Fargate + ALB | Separate scaling for read/write workloads |
+| **Database Read/Write Separation** | Aurora MySQL (1 Writer + 2 Readers) | Native support for read replicas with automatic failover |
+| **Redis Caching** | ElastiCache Redis Cluster | Managed Redis with Multi-AZ and automatic failover |
+| **Event Sourcing** | MSK (Managed Kafka) | Fully managed Kafka with enterprise features |
+| **Reactive Programming** | ECS Fargate | Auto-scaling containers handle non-blocking workload efficiently |
+
+### 🛡️ **Resilience Patterns → AWS Services**
+
+| **Resilience Pattern** | **AWS Implementation** | **Benefits** |
+|----------------------|----------------------|-------------|
+| **Circuit Breakers** | Application-level + ALB Health Checks | Prevent cascade failures across services |
+| **Auto-scaling** | ECS Auto Scaling + Target Tracking | Scale based on CPU/memory/custom metrics |
+| **Multi-AZ Deployment** | Aurora Multi-AZ + ElastiCache Multi-AZ | 99.99% availability with automatic failover |
+| **Load Balancing** | Application Load Balancer | Distribute traffic across healthy instances |
+| **Health Monitoring** | CloudWatch + ALB Health Checks | Comprehensive monitoring and alerting |
+
+### 📊 **Performance Decisions → AWS Services**
+
+| **Performance Requirement** | **AWS Solution** | **Expected Outcome** |
+|---------------------------|------------------|-------------------|
+| **Sub-20ms Response Times** | Aurora Serverless v2 + ElastiCache | Database auto-scaling + sub-ms cache |
+| **High Concurrency** | ECS Fargate (4 vCPU, 8GB RAM) | Handle 5000+ TPS with reactive programming |
+| **Connection Pooling** | Aurora Proxy + Application Pools | Optimize database connections |
+| **Caching Strategy** | ElastiCache Redis (r6g.large) | 99.9% cache hit ratio for balance queries |
+
+### 🔐 **Security Decisions → AWS Services**
+
+| **Security Requirement** | **AWS Implementation** | **Protection Level** |
+|------------------------|----------------------|-------------------|
+| **API Security** | API Gateway + WAF | Rate limiting, DDoS protection, authentication |
+| **Network Security** | VPC + Security Groups + NACLs | Network-level isolation and access control |
+| **Data Encryption** | Aurora Encryption + EBS Encryption | Encryption at rest and in transit |
+| **Secrets Management** | AWS Secrets Manager | Secure credential rotation and access |
+| **Compliance** | CloudTrail + Config | Audit logging and compliance monitoring |
+
+### 💰 **Cost Optimization Decisions → AWS Services**
+
+| **Cost Strategy** | **AWS Implementation** | **Cost Benefit** |
+|------------------|----------------------|-----------------|
+| **Right-sizing** | ECS Auto Scaling (6-20 tasks) | Pay only for needed capacity |
+| **Serverless Database** | Aurora Serverless v2 | Scale to zero during low usage |
+| **Spot Instances** | ECS Spot Instances (non-prod) | 70% cost reduction for development |
+| **Reserved Capacity** | RDS Reserved Instances | 40% savings for predictable workloads |
+| **Storage Tiering** | S3 Intelligent Tiering | Automatic cost optimization for backups |
+
+### 🌍 **Regional Strategy → AWS Services**
+
+| **Regional Requirement** | **AWS Implementation** | **Business Value** |
+|------------------------|----------------------|------------------|
+| **Brazil Focus** | Primary: sa-east-1 (São Paulo) | Low latency for Brazilian users |
+| **Disaster Recovery** | Backup: us-east-1 (N. Virginia) | Cost-effective DR and backup storage |
+| **Data Residency** | All data in sa-east-1 | Compliance with Brazilian regulations |
+| **Global CDN** | CloudFront (optional) | Global edge locations for static content |
+
+### 📈 **Monitoring Decisions → AWS Services**
+
+| **Monitoring Need** | **AWS Solution** | **Capability** |
+|-------------------|------------------|---------------|
+| **Application Metrics** | CloudWatch Custom Metrics | Business and technical metrics |
+| **Infrastructure Monitoring** | CloudWatch + AWS X-Ray | Full observability stack |
+| **Log Management** | CloudWatch Logs | Centralized logging with retention |
+| **Alerting** | CloudWatch Alarms + SNS | Proactive incident response |
+| **Dashboards** | Managed Grafana + CloudWatch | Visual monitoring and reporting |
 
 ---
 

@@ -25,8 +25,10 @@ graph TB
     end
 
     subgraph "Application Layer"
-        SVC[Wallet Service<br/>Quarkus + Java 17]
+        SVC[Wallet Service<br/>Quarkus + Java 21]
+        RESILIENCE[Resilience Layer<br/>Circuit Breakers + Retries]
         CACHE[Redis Cache]
+        OUTBOX[Outbox Pattern<br/>Event Reliability]
     end
 
     subgraph "Data Layer"
@@ -48,14 +50,18 @@ graph TB
 
     API --> GATEWAY
     GATEWAY --> SVC
-    SVC --> CACHE
-    SVC --> DB_PRIMARY
-    SVC --> DB_REPLICA
-    SVC --> KAFKA
+    SVC --> RESILIENCE
+    RESILIENCE --> CACHE
+    RESILIENCE --> DB_PRIMARY
+    RESILIENCE --> DB_REPLICA
+    RESILIENCE --> KAFKA
+    RESILIENCE --> OUTBOX
+    OUTBOX --> KAFKA
     KAFKA --> ZOOKEEPER
     KAFKA --> SCHEMA
     
     PROMETHEUS --> SVC
+    PROMETHEUS --> RESILIENCE
     GRAFANA --> PROMETHEUS
     KAFKA_UI --> KAFKA
 ```
@@ -67,23 +73,43 @@ sequenceDiagram
     participant C as Client
     participant API as API Gateway
     participant WS as Wallet Service
+    participant RES as Resilience Layer
     participant Cache as Redis Cache
     participant DB_W as MySQL Primary
     participant DB_R as MySQL Replica
+    participant OUTBOX as Outbox Table
     participant KAFKA as Apache Kafka
 
     C->>API: Request Transaction
     API->>WS: Forward Request
-    WS->>Cache: Check Cached Balance
-    WS->>DB_W: Begin Transaction
-    WS->>DB_W: Update Wallet Balance
-    WS->>DB_W: Create Transaction Record
-    WS->>KAFKA: Publish Transaction Event
-    WS->>DB_W: Commit Transaction
-    WS->>Cache: Invalidate Cache
+    WS->>RES: Execute with Resilience
+    
+    alt Cache Available
+        RES->>Cache: Check Cached Balance
+    else Cache Circuit Open
+        RES->>DB_R: Direct Database Query
+    end
+    
+    RES->>DB_W: Begin Transaction
+    RES->>DB_W: Update Wallet Balance
+    RES->>DB_W: Create Transaction Record
+    
+    alt Kafka Available
+        RES->>KAFKA: Publish Transaction Event
+    else Kafka Circuit Open
+        RES->>OUTBOX: Store Event for Later
+    end
+    
+    RES->>DB_W: Commit Transaction
+    
+    alt Cache Available
+        RES->>Cache: Update Cache
+    end
+    
     WS-->>C: Success Response
     
-    Note over KAFKA: Event available for<br/>audit, analytics, notifications
+    Note over OUTBOX: Events replayed when<br/>Kafka recovers
+    Note over RES: Circuit breakers prevent<br/>cascade failures
 ```
 
 ## Core Components
