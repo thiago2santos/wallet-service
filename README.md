@@ -20,7 +20,7 @@ This is a **wallet service** that manages users' money with support for deposits
 # Clone and start
 git clone https://github.com/thiago2santos/wallet-service.git
 cd wallet-service
-docker-compose up -d
+cd infra/local-dev && docker-compose up -d
 
 # Test the API
 curl -X POST http://localhost:8080/api/v1/wallets \
@@ -128,7 +128,7 @@ curl -X POST http://localhost:8080/api/v1/wallets/{sourceId}/transfer \
 ./mvnw test -Dtest="*IntegrationTest"
 
 # Performance testing
-./performance/scripts/shell/setup-load-test.sh
+./infra/performance/scripts/shell/setup-load-test.sh
 ```
 
 ## 📈 Monitoring
@@ -152,13 +152,13 @@ curl -X POST http://localhost:8080/api/v1/wallets/{sourceId}/transfer \
 
 > 🚀 **Zero Setup Required**: Dashboards are automatically loaded when you run `docker-compose up -d`
 
-**Verify Setup**: `./scripts/verify-grafana-setup.sh`
+**Verify Setup**: `./infra/scripts/verify-grafana-setup.sh`
 
 ### 🚀 **Performance Testing**
-- **Framework**: [Performance Testing Guide](performance/README.md)
-- **Quick Test**: `k6 run performance/scripts/k6/load-test-basic.js`
-- **Stress Test**: `./performance/scripts/shell/find-breaking-point.sh`
-- **Monitoring**: `./performance/monitoring/quick-monitor.sh`
+- **Framework**: [Performance Testing Guide](infra/performance/README.md)
+- **Quick Test**: `k6 run infra/performance/scripts/k6/load-test-basic.js`
+- **Stress Test**: `./infra/performance/scripts/shell/find-breaking-point.sh`
+- **Monitoring**: `./infra/performance/monitoring/quick-monitor.sh`
 
 ## 🎯 Assessment Deliverables
 

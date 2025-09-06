@@ -1,84 +1,107 @@
-# 🏗️ Wallet Service Infrastructure
+# 🏗️ Infrastructure Organization
 
-Enterprise-grade AWS infrastructure for the Wallet Service using Terraform.
+This directory contains all infrastructure-related configurations, scripts, and documentation for the Wallet Service project.
 
-## 📊 **Scale Requirements**
-- **Users**: 10 million
-- **TPS**: 5,000+ transactions per second
-- **Region**: Brazil (sa-east-1)
-- **Environments**: Staging + Production
-
-## 📁 **Structure**
+## 📁 Structure Overview
 
 ```
 infra/
-├── environments/          # Environment-specific configurations
-│   ├── staging/          # Minimal cost, full functionality
-│   └── production/       # Full scale, high availability
-├── modules/              # Reusable Terraform modules
-│   ├── networking/       # VPC, subnets, security groups
-│   ├── security/         # IAM, WAF, certificates
-│   ├── compute/          # EKS cluster and node groups
-│   ├── database/         # Aurora MySQL Serverless v2
-│   ├── cache/            # ElastiCache Redis
-│   ├── messaging/        # MSK Kafka
-│   └── monitoring/       # CloudWatch, Prometheus, Grafana
-├── scripts/              # Deployment and management scripts
-└── docs/                 # Architecture documentation
+├── local-dev/              # Local development infrastructure
+│   ├── docker-compose.yml  # Main services (MySQL, Redis, Kafka, Grafana, Prometheus)
+│   ├── docker-compose.loadtest.yml  # Load testing environment
+│   ├── grafana/            # Monitoring dashboards and provisioning
+│   ├── kafka/              # Message broker schemas and configuration
+│   ├── mysql/              # Database initialization scripts
+│   └── prometheus.yml      # Metrics collection configuration
+├── performance/            # Load testing and performance monitoring
+├── scripts/               # Deployment and operational scripts
+├── environments/          # Cloud infrastructure definitions
+│   ├── staging/           # Staging environment Terraform
+│   └── production/        # Production environment Terraform
+├── modules/               # Reusable Terraform modules
+└── docs/                  # Infrastructure documentation
 ```
 
-## 🚀 **Quick Start**
+## 🚀 Quick Start
 
-### Prerequisites
-- AWS CLI configured
-- Terraform >= 1.5
-- kubectl
-- helm
-
-### Deploy Staging
+### Local Development
 ```bash
-cd environments/staging
-terraform init
-terraform plan
-terraform apply
+# Start the complete local infrastructure
+cd infra/local-dev
+docker-compose up -d
+
+# For load testing environment
+docker-compose -f docker-compose.loadtest.yml up -d
 ```
 
-### Deploy Production
+### Performance Testing
 ```bash
-cd environments/production
-terraform init
-terraform plan
-terraform apply
+# Run comprehensive load tests
+cd infra/performance
+./scripts/shell/setup-load-test.sh
 ```
 
-## 💰 **Cost Estimates**
+### AWS Deployment (Coming Soon)
+```bash
+# Deploy to staging
+cd infra/environments/staging
+terraform init && terraform apply
 
-| Environment | Monthly Cost (USD) | Description |
-|-------------|-------------------|-------------|
-| **Staging** | ~$365 | Minimal resources, all components |
-| **Production** | ~$8,000 | Full scale, 5000+ TPS capacity |
+# Deploy to production
+cd infra/environments/production
+terraform init && terraform apply
+```
 
-## 🏗️ **Architecture Overview**
+## 🎯 Infrastructure Components
 
-### Production Infrastructure
-- **EKS**: 10-50 nodes (c5.2xlarge)
-- **Aurora**: 8-64 ACUs (Serverless v2)
-- **ElastiCache**: 3 nodes (r6g.2xlarge)
-- **MSK**: 6 brokers (m5.2xlarge)
+### Local Development Stack
+- **MySQL 8.0**: Primary/Replica database setup with initialization scripts
+- **Redis 7**: Caching layer for high-performance operations
+- **Apache Kafka**: Event streaming and audit trail
+- **Prometheus**: Metrics collection and monitoring
+- **Grafana**: Observability dashboards and alerting
 
-### Staging Infrastructure  
-- **EKS**: 2 nodes (t3.large)
-- **Aurora**: 0.5-2 ACUs (Serverless v2)
-- **ElastiCache**: 1 node (t3.micro)
-- **MSK**: 3 brokers (t3.small)
+### AWS Production Architecture (Planned)
+- **Aurora MySQL Serverless v2**: Managed database with auto-scaling
+- **ElastiCache Redis**: Managed caching layer
+- **MSK (Managed Kafka)**: Event streaming service
+- **ECS Fargate**: Containerized application hosting
+- **Application Load Balancer**: Traffic distribution
+- **CloudWatch**: Monitoring and logging
 
-## 📋 **Deployment Checklist**
+## 📊 Monitoring & Observability
 
-- [ ] AWS credentials configured
-- [ ] Domain and SSL certificates ready
-- [ ] Monitoring alerts configured
-- [ ] Backup strategies implemented
-- [ ] Disaster recovery tested
-- [ ] Security review completed
-- [ ] Load testing performed
-- [ ] Documentation updated
+Access the monitoring stack:
+- **Grafana**: http://localhost:3000 (admin/admin)
+- **Prometheus**: http://localhost:9090
+
+Available dashboards:
+- Business Metrics | Infrastructure Metrics | Technical Metrics | Service Overview
+
+## 🔧 Performance Testing
+
+The performance testing suite includes:
+- **Load Testing**: Sustained traffic simulation
+- **Stress Testing**: Breaking point identification  
+- **Containerized Testing**: Isolated test environments
+- **Real-time Monitoring**: Live performance metrics
+
+## 📚 Documentation
+
+For detailed information, see:
+- `docs/DEPLOYMENT_GUIDE.md` - Step-by-step deployment instructions
+- `performance/README.md` - Performance testing guide
+- `local-dev/grafana/README.md` - Monitoring setup guide
+
+## 🏛️ Architecture Principles
+
+This infrastructure follows:
+- **AWS Well-Architected Framework**: Security, reliability, performance, cost optimization
+- **12-Factor App**: Cloud-native application principles
+- **Infrastructure as Code**: Terraform for reproducible deployments
+- **Observability First**: Comprehensive monitoring and alerting
+- **Financial Grade**: High availability and consistency for financial operations
+
+---
+
+*Built for scale, designed for reliability, optimized for performance* 🚀
