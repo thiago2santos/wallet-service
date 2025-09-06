@@ -1,0 +1,83 @@
+# Staging Environment Configuration
+# Copy this file to terraform.tfvars and customize the values
+
+# General Configuration
+aws_region = "sa-east-1"
+environment = "staging"
+owner = "wallet-team"
+
+# Alert Configuration
+alert_email_addresses = [
+  "devops@yourcompany.com"
+]
+
+# Networking Configuration (Different CIDR to avoid conflicts with production)
+vpc_cidr = "10.1.0.0/16"
+public_subnet_cidrs = [
+  "10.1.1.0/24",   # sa-east-1a
+  "10.1.2.0/24"    # sa-east-1b  
+]
+private_subnet_cidrs = [
+  "10.1.11.0/24",  # sa-east-1a
+  "10.1.12.0/24"   # sa-east-1b
+]
+database_subnet_cidrs = [
+  "10.1.21.0/24",  # sa-east-1a
+  "10.1.22.0/24"   # sa-east-1b
+]
+
+# Database Configuration (Staging Scale - Cost Optimized)
+database_name = "wallet"
+database_master_username = "walletadmin"
+database_engine_version = "8.0.mysql_aurora.3.02.0"
+database_writer_instance_class = "db.r6g.large"      # 2 vCPU, 16 GB RAM
+database_reader_instance_class = "db.r6g.large"      # 2 vCPU, 16 GB RAM
+database_reader_count = 1                            # 1 read replica
+database_backup_retention_period = 7                 # 7 days for staging
+database_backup_window = "03:00-04:00"              # UTC time
+database_maintenance_window = "sun:04:00-sun:05:00" # UTC time
+database_max_connections = "500"                     # Lower limit for staging
+
+# Cache Configuration (Staging Scale - Cost Optimized)
+cache_node_type = "cache.r6g.medium"                # 1 vCPU, 6.38 GB RAM
+cache_num_nodes = 1                                 # Single node for staging
+cache_parameter_group_name = "default.redis7"
+cache_engine_version = "7.0"
+
+# Messaging Configuration (Staging Scale - Cost Optimized)
+kafka_version = "2.8.1"
+kafka_instance_type = "kafka.t3.small"              # 2 vCPU, 2 GB RAM
+kafka_number_of_brokers = 1                         # Single broker for staging
+kafka_ebs_volume_size = 20                          # 20 GB per broker
+
+# Application Configuration (Staging Scale - Cost Optimized)
+container_image = "your-account.dkr.ecr.sa-east-1.amazonaws.com/wallet-service:latest"
+app_cpu = 2048                                      # 2 vCPU per task
+app_memory = 4096                                   # 4 GB RAM per task
+app_desired_count = 2                               # 2 tasks initially
+app_min_capacity = 1                                # Minimum 1 task
+app_max_capacity = 4                                # Maximum 4 tasks
+
+# Monitoring Configuration
+grafana_version = "9.4"
+
+# Cost Optimization Notes for Staging:
+# - Estimated monthly cost: $800-1,200 (20-25% of production)
+# - Single AZ deployment where possible to reduce costs
+# - Smaller instance types but same architecture as production
+# - Shorter backup retention periods
+# - Reduced monitoring retention
+# - No S3 logging for Kafka to save costs
+# - Simplified security (no TLS for Kafka) for easier testing
+
+# Performance Notes for Staging:
+# - Database: r6g.large provides good performance for testing
+# - Cache: r6g.medium sufficient for development workloads
+# - Application: 2 vCPU/4GB allows for ~200-500 concurrent requests per task
+# - Suitable for load testing up to ~1000 concurrent users
+
+# Testing Notes:
+# - All production features available but at smaller scale
+# - Perfect for integration testing, load testing, and staging deployments
+# - Can be used to validate infrastructure changes before production
+# - Supports full CI/CD pipeline testing

@@ -1,0 +1,87 @@
+# Production Environment Configuration
+# Copy this file to terraform.tfvars and customize the values
+
+# General Configuration
+aws_region = "sa-east-1"
+environment = "production"
+owner = "wallet-team"
+
+# Alert Configuration
+alert_email_addresses = [
+  "devops@yourcompany.com",
+  "wallet-team@yourcompany.com"
+]
+
+# Networking Configuration
+vpc_cidr = "10.0.0.0/16"
+public_subnet_cidrs = [
+  "10.0.1.0/24",   # sa-east-1a
+  "10.0.2.0/24",   # sa-east-1b  
+  "10.0.3.0/24"    # sa-east-1c
+]
+private_subnet_cidrs = [
+  "10.0.11.0/24",  # sa-east-1a
+  "10.0.12.0/24",  # sa-east-1b
+  "10.0.13.0/24"   # sa-east-1c
+]
+database_subnet_cidrs = [
+  "10.0.21.0/24",  # sa-east-1a
+  "10.0.22.0/24",  # sa-east-1b
+  "10.0.23.0/24"   # sa-east-1c
+]
+
+# Database Configuration (Production Scale)
+database_name = "wallet"
+database_master_username = "walletadmin"
+database_engine_version = "8.0.mysql_aurora.3.02.0"
+database_writer_instance_class = "db.r6g.2xlarge"    # 8 vCPU, 64 GB RAM
+database_reader_instance_class = "db.r6g.2xlarge"    # 8 vCPU, 64 GB RAM
+database_reader_count = 2                            # 2 read replicas for high availability
+database_backup_retention_period = 35               # 35 days for compliance
+database_backup_window = "03:00-04:00"              # UTC time (11 PM - 12 AM Brazil)
+database_maintenance_window = "sun:04:00-sun:05:00" # UTC time (12 AM - 1 AM Brazil Sunday)
+database_max_connections = "2000"                   # High connection limit for production
+
+# Cache Configuration (Production Scale)
+cache_node_type = "cache.r6g.large"                 # 2 vCPU, 13.07 GB RAM
+cache_num_nodes = 3                                 # 3 nodes for high availability
+cache_parameter_group_name = "default.redis7"
+cache_engine_version = "7.0"
+
+# Messaging Configuration (Production Scale)
+kafka_version = "2.8.1"
+kafka_instance_type = "kafka.m5.large"              # 2 vCPU, 8 GB RAM
+kafka_number_of_brokers = 3                         # 3 brokers across AZs
+kafka_ebs_volume_size = 100                         # 100 GB per broker
+
+# Application Configuration (Production Scale)
+container_image = "your-account.dkr.ecr.sa-east-1.amazonaws.com/wallet-service:latest"
+app_cpu = 4096                                      # 4 vCPU per task
+app_memory = 8192                                   # 8 GB RAM per task
+app_desired_count = 6                               # 6 tasks initially
+app_min_capacity = 3                                # Minimum 3 tasks
+app_max_capacity = 20                               # Maximum 20 tasks for peak load
+
+# Monitoring Configuration
+grafana_version = "9.4"
+
+# Cost Optimization Notes:
+# - This configuration is sized for 10M users and 5000+ TPS
+# - Estimated monthly cost: $3,700-5,300
+# - For cost optimization, consider:
+#   - Reserved Instances for predictable workloads
+#   - Spot Instances for non-critical tasks
+#   - Scheduled scaling for predictable traffic patterns
+#   - Regular review of unused resources
+
+# Performance Notes:
+# - Database: r6g.2xlarge provides excellent price/performance for MySQL
+# - Cache: r6g.large provides good memory for session caching
+# - Application: 4 vCPU/8GB allows for ~500-1000 concurrent requests per task
+# - Auto-scaling configured to maintain <70% CPU utilization
+
+# Security Notes:
+# - All data encrypted at rest and in transit
+# - Private subnets for all backend services
+# - Secrets managed via AWS Secrets Manager
+# - VPC Flow Logs enabled for security monitoring
