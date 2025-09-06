@@ -30,14 +30,14 @@ print_status() {
 echo "📁 Checking required files..."
 
 required_files=(
-    "grafana/dashboards/wallet-service-overview.json"
-    "grafana/dashboards/wallet-business-metrics.json"
-    "grafana/dashboards/wallet-technical-metrics.json"
-    "grafana/dashboards/wallet-infrastructure-metrics.json"
-    "grafana/dashboards/wallet-golden-metrics.json"
-    "grafana/provisioning/dashboards/wallet-service.yml"
-    "grafana/provisioning/datasources/prometheus.yml"
-    "docker-compose.yml"
+    "infra/local-dev/grafana/dashboards/wallet-service-overview.json"
+    "infra/local-dev/grafana/dashboards/wallet-business-metrics.json"
+    "infra/local-dev/grafana/dashboards/wallet-technical-metrics.json"
+    "infra/local-dev/grafana/dashboards/wallet-infrastructure-metrics.json"
+    "infra/local-dev/grafana/dashboards/wallet-golden-metrics.json"
+    "infra/local-dev/grafana/provisioning/dashboards/wallet-service.yml"
+    "infra/local-dev/grafana/provisioning/datasources/prometheus.yml"
+    "infra/local-dev/docker-compose.yml"
 )
 
 all_files_exist=true
@@ -58,21 +58,21 @@ fi
 # Check docker-compose.yml for correct volume mounts
 echo -e "\n🐳 Checking Docker Compose configuration..."
 
-if grep -q "./grafana/dashboards:/var/lib/grafana/dashboards/wallet-service:ro" docker-compose.yml; then
+if grep -q "./grafana/dashboards:/var/lib/grafana/dashboards/wallet-service:ro" infra/local-dev/docker-compose.yml; then
     print_status "OK" "Dashboard volume mount configured"
 else
     print_status "ERROR" "Dashboard volume mount missing in docker-compose.yml"
     exit 1
 fi
 
-if grep -q "./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro" docker-compose.yml; then
+if grep -q "./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro" infra/local-dev/docker-compose.yml; then
     print_status "OK" "Dashboard provisioning volume mount configured"
 else
     print_status "ERROR" "Dashboard provisioning volume mount missing in docker-compose.yml"
     exit 1
 fi
 
-if grep -q "./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro" docker-compose.yml; then
+if grep -q "./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro" infra/local-dev/docker-compose.yml; then
     print_status "OK" "Datasource provisioning volume mount configured"
 else
     print_status "ERROR" "Datasource provisioning volume mount missing in docker-compose.yml"
@@ -82,7 +82,7 @@ fi
 # Check if containers are running
 echo -e "\n🚀 Checking container status..."
 
-if docker-compose ps | grep -q "wallet-grafana.*Up"; then
+if (cd infra/local-dev && docker-compose ps) | grep -q "wallet-grafana.*Up"; then
     print_status "OK" "Grafana container is running"
     
     # Wait a moment for Grafana to fully start
@@ -119,13 +119,13 @@ if docker-compose ps | grep -q "wallet-grafana.*Up"; then
     fi
     
 else
-    print_status "WARN" "Grafana container is not running. Start it with: docker-compose up -d grafana"
+    print_status "WARN" "Grafana container is not running. Start it with: cd infra/local-dev && docker-compose up -d grafana"
 fi
 
 # Check if Prometheus is running (required for dashboards to work)
 echo -e "\n📊 Checking Prometheus..."
 
-if docker-compose ps | grep -q "wallet-prometheus.*Up"; then
+if (cd infra/local-dev && docker-compose ps) | grep -q "wallet-prometheus.*Up"; then
     print_status "OK" "Prometheus container is running"
     
     if curl -s -o /dev/null -w "%{http_code}" http://localhost:9090/api/v1/status/config | grep -q "200"; then
@@ -134,7 +134,7 @@ if docker-compose ps | grep -q "wallet-prometheus.*Up"; then
         print_status "WARN" "Prometheus may not be fully ready yet"
     fi
 else
-    print_status "WARN" "Prometheus container is not running. Start it with: docker-compose up -d prometheus"
+    print_status "WARN" "Prometheus container is not running. Start it with: cd infra/local-dev && docker-compose up -d prometheus"
 fi
 
 echo -e "\n🎯 Setup Summary:"
@@ -154,7 +154,7 @@ echo ""
 
 if [ "$all_files_exist" = true ]; then
     print_status "OK" "Grafana dashboard setup verification completed successfully!"
-    echo -e "\n${GREEN}🚀 Ready to go! Anyone who clones this repo can run 'docker-compose up -d' and get the dashboards automatically.${NC}"
+    echo -e "\n${GREEN}🚀 Ready to go! Anyone who clones this repo can run 'cd infra/local-dev && docker-compose up -d' and get the dashboards automatically.${NC}"
 else
     print_status "ERROR" "Setup verification failed. Please fix the issues above."
     exit 1

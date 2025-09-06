@@ -1,0 +1,67 @@
+{
+  "type": "record",
+  "name": "WalletSnapshot",
+  "namespace": "com.wallet.event",
+  "fields": [
+    {
+      "name": "snapshotId",
+      "type": "string"
+    },
+    {
+      "name": "walletId",
+      "type": "string"
+    },
+    {
+      "name": "userId",
+      "type": "string"
+    },
+    {
+      "name": "balance",
+      "type": {
+        "type": "bytes",
+        "logicalType": "decimal",
+        "precision": 20,
+        "scale": 2
+      }
+    },
+    {
+      "name": "currency",
+      "type": "string"
+    },
+    {
+      "name": "status",
+      "type": {
+        "type": "enum",
+        "name": "WalletStatus",
+        "symbols": [
+          "ACTIVE",
+          "LOCKED",
+          "CLOSED"
+        ]
+      }
+    },
+    {
+      "name": "metadata",
+      "type": ["null", {
+        "type": "map",
+        "values": "string"
+      }],
+      "default": null
+    },
+    {
+      "name": "lastEventId",
+      "type": "string"
+    },
+    {
+      "name": "version",
+      "type": "long"
+    },
+    {
+      "name": "timestamp",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      }
+    }
+  ]
+}

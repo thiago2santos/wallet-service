@@ -34,16 +34,16 @@ print_error() {
 print_step "Checking what files would be available after git clone"
 
 required_files=(
-    "docker-compose.yml"
-    "grafana/dashboards/wallet-service-overview.json"
-    "grafana/dashboards/wallet-business-metrics.json"
-    "grafana/dashboards/wallet-technical-metrics.json"
-    "grafana/dashboards/wallet-infrastructure-metrics.json"
-    "grafana/dashboards/wallet-golden-metrics.json"
-    "grafana/provisioning/dashboards/wallet-service.yml"
-    "grafana/provisioning/datasources/prometheus.yml"
-    "grafana/README.md"
-    "scripts/verify-grafana-setup.sh"
+    "infra/local-dev/docker-compose.yml"
+    "infra/local-dev/grafana/dashboards/wallet-service-overview.json"
+    "infra/local-dev/grafana/dashboards/wallet-business-metrics.json"
+    "infra/local-dev/grafana/dashboards/wallet-technical-metrics.json"
+    "infra/local-dev/grafana/dashboards/wallet-infrastructure-metrics.json"
+    "infra/local-dev/grafana/dashboards/wallet-golden-metrics.json"
+    "infra/local-dev/grafana/provisioning/dashboards/wallet-service.yml"
+    "infra/local-dev/grafana/provisioning/datasources/prometheus.yml"
+    "infra/local-dev/grafana/README.md"
+    "infra/scripts/verify-grafana-setup.sh"
 )
 
 all_files_present=true
@@ -88,8 +88,8 @@ echo "🔄 What happens when someone clones this repo:"
 echo ""
 echo "1. git clone <repo-url>"
 echo "2. cd wallet-service"
-echo "3. docker-compose up -d"
-echo "4. ./scripts/verify-grafana-setup.sh"
+echo "3. cd infra/local-dev && docker-compose up -d"
+echo "4. cd ../../ && ./infra/scripts/verify-grafana-setup.sh"
 echo "5. Open http://localhost:3000 (admin/admin)"
 echo "6. See 4 dashboards in 'Wallet Service' folder"
 echo ""
@@ -97,11 +97,11 @@ echo ""
 print_step "Verifying current setup works"
 
 # Run our verification script
-if ./scripts/verify-grafana-setup.sh >/dev/null 2>&1; then
+if ./infra/scripts/verify-grafana-setup.sh >/dev/null 2>&1; then
     print_success "Current setup verification passed!"
 else
     print_error "Current setup verification failed!"
-    echo "Run: ./scripts/verify-grafana-setup.sh for details"
+    echo "Run: ./infra/scripts/verify-grafana-setup.sh for details"
     exit 1
 fi
 
@@ -131,7 +131,7 @@ if [ ${#untracked_files[@]} -eq 0 ]; then
     echo "Next steps for the team:"
     echo "1. Push changes: git push"
     echo "2. Share repo with team"
-    echo "3. Team runs: git clone && docker-compose up -d"
+    echo "3. Team runs: git clone && cd infra/local-dev && docker-compose up -d"
     echo "4. Dashboards work immediately!"
 else
     print_warning "⏳ ALMOST READY: Commit the untracked files first"

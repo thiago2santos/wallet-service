@@ -129,7 +129,7 @@ echo "📊 Creating monitoring setup..."
 cat > scripts/start-monitoring.sh << 'EOF'
 #!/bin/bash
 echo "🔍 Starting monitoring stack..."
-docker-compose -f docker-compose.yml up -d prometheus grafana
+cd ../../../local-dev && docker-compose up -d prometheus grafana
 echo "✅ Monitoring started:"
 echo "   Prometheus: http://localhost:9090"
 echo "   Grafana: http://localhost:3000 (admin/admin)"
