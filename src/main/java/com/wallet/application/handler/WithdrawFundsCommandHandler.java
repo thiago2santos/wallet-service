@@ -19,6 +19,7 @@ import com.wallet.infrastructure.metrics.WalletMetrics;
 import com.wallet.infrastructure.outbox.OutboxEventService;
 import com.wallet.domain.event.FundsWithdrawnEvent;
 
+import io.opentelemetry.instrumentation.annotations.WithSpan;
 import io.quarkus.reactive.datasource.ReactiveDataSource;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -51,6 +52,7 @@ public class WithdrawFundsCommandHandler implements CommandHandler<WithdrawFunds
 
     @Override
     @Transactional
+    @WithSpan("wallet.withdraw")
     public Uni<String> handle(WithdrawFundsCommand command) {
         var timer = walletMetrics.startWithdrawalTimer();
         String transactionId = UUID.randomUUID().toString();

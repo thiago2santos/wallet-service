@@ -144,6 +144,7 @@ curl http://localhost:8080/api/v1/users/user123/wallets
 - **[⚖️ Trade-offs](docs/TRADE-OFFS.md)** - Time constraints and compromises made
 - **[🏛️ Architecture](docs/architecture.md)** - Complete architectural guide
 - **[📋 API Documentation](docs/api.md)** - Complete API reference
+- **[🔧 Troubleshooting Guide](docs/TROUBLESHOOTING-GUIDE.md)** - Distributed tracing & observability troubleshooting
 
 ## 📊 Performance Results
 
@@ -292,10 +293,38 @@ curl -X POST http://localhost:8080/api/v1/wallets/{sourceId}/transfer \
 - ⚙️ **Technical Metrics** - CQRS, outbox pattern, performance
 - 🖥️ **Infrastructure** - JVM, memory, GC, database connections
 - ⭐ **Golden Metrics (SRE)** - Four Golden Signals with SLI/SLO monitoring
+- 🔍 **Distributed Tracing** - OpenTelemetry traces, troubleshooting, and performance analysis
 
 > 🚀 **Zero Setup Required**: Dashboards are automatically loaded when you run `docker-compose up -d` from `infra/local-dev/`
 
 **Verify Setup**: `./infra/scripts/verify-grafana-setup.sh`
+
+### 🔍 **Distributed Tracing & Troubleshooting**
+
+**OpenTelemetry + Jaeger Integration:**
+- **Jaeger UI**: http://localhost:16686
+- **Service Name**: `wallet-service`
+- **Custom Spans**: `api.wallet.create`, `api.wallet.deposit`, `wallet.deposit`, `wallet.withdraw`
+
+**Troubleshooting Capabilities:**
+- 🎯 **Request Flow Tracing** - End-to-end request lifecycle visualization
+- ⚡ **Performance Bottleneck Detection** - Identify slow database queries, cache misses
+- 🐛 **Error Root Cause Analysis** - Trace errors across service boundaries  
+- 📊 **Business Operation Insights** - Deposit/withdrawal/transfer performance analysis
+- 🔧 **Resilience Pattern Monitoring** - Circuit breaker states, retry patterns
+
+**Quick Start:**
+```bash
+# Generate traces
+curl -X POST http://localhost:8080/api/v1/wallets \
+  -H "Content-Type: application/json" \
+  -d '{"userId": "user123", "currency": "USD"}'
+
+# View traces in Jaeger UI
+open http://localhost:16686
+```
+
+**📖 Complete Guide**: [Troubleshooting Guide](docs/TROUBLESHOOTING-GUIDE.md)
 
 ### 🚀 **Performance Testing**
 - **Framework**: [Performance Testing Guide](infra/performance/README.md)

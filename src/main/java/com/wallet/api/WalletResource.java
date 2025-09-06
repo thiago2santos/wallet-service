@@ -23,6 +23,7 @@ import com.wallet.application.handler.GetHistoricalBalanceQueryHandler;
 import com.wallet.core.command.CommandBus;
 import com.wallet.core.query.QueryBus;
 
+import io.opentelemetry.instrumentation.annotations.WithSpan;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
 
@@ -121,6 +122,7 @@ public class WalletResource {
             )
         )
     })
+    @WithSpan("api.wallet.create")
     public Uni<Response> createWallet(@Valid CreateWalletRequest request) {
         CreateWalletCommand command = new CreateWalletCommand(
             request.getUserId()
@@ -237,6 +239,7 @@ public class WalletResource {
             )
         )
     })
+    @WithSpan("api.wallet.deposit")
     public Uni<Response> depositFunds(
             @Parameter(
                 description = "Unique wallet identifier (UUID format)",

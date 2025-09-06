@@ -15,6 +15,7 @@ import com.wallet.infrastructure.persistence.WalletRepository;
 import com.wallet.infrastructure.cache.WalletStateCache;
 import com.wallet.infrastructure.metrics.WalletMetrics;
 import com.wallet.infrastructure.outbox.OutboxEventService;
+import io.opentelemetry.instrumentation.annotations.WithSpan;
 import io.quarkus.reactive.datasource.ReactiveDataSource;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -47,6 +48,7 @@ public class DepositFundsCommandHandler implements CommandHandler<DepositFundsCo
 
     @Override
     @Transactional
+    @WithSpan("wallet.deposit")
     public Uni<String> handle(DepositFundsCommand command) {
         // Start metrics timer
         var timer = walletMetrics.startDepositTimer();
