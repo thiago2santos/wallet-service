@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Financial Systems Engineering Study Plan</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="description" content="A comprehensive learning path to master financial systems engineering">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏦</text></svg>">
+  <style>
+    :root {
+      --theme-color: #2c5aa0;
+      --theme-color-secondary: #f8f9fa;
+    }
+    
+    .sidebar-nav li.active > a {
+      border-right: 2px solid var(--theme-color);
+      color: var(--theme-color);
+      font-weight: 600;
+    }
+    
+    .progress-bar {
+      background: #e9ecef;
+      border-radius: 4px;
+      height: 8px;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+    
+    .progress-fill {
+      background: linear-gradient(90deg, #28a745, #20c997);
+      height: 100%;
+      transition: width 0.3s ease;
+    }
+    
+    .phase-card {
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 15px 0;
+      background: #f8f9fa;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .phase-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .difficulty-stars {
+      color: #ffc107;
+      font-size: 1.2em;
+    }
+    
+    .exercise-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin: 20px 0;
+    }
+    
+    .exercise-card {
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      padding: 15px;
+      background: white;
+      transition: transform 0.2s ease;
+    }
+    
+    .exercise-card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 0.25em 0.6em;
+      font-size: 0.75em;
+      font-weight: 700;
+      line-height: 1;
+      text-align: center;
+      white-space: nowrap;
+      vertical-align: baseline;
+      border-radius: 0.25rem;
+      margin: 0 0.25em;
+    }
+    
+    .badge-primary { background-color: #007bff; color: white; }
+    .badge-success { background-color: #28a745; color: white; }
+    .badge-warning { background-color: #ffc107; color: #212529; }
+    .badge-info { background-color: #17a2b8; color: white; }
+    
+    .checklist {
+      list-style: none;
+      padding-left: 0;
+    }
+    
+    .checklist li {
+      padding: 5px 0;
+      position: relative;
+      padding-left: 25px;
+    }
+    
+    .checklist li::before {
+      content: '☐';
+      position: absolute;
+      left: 0;
+      color: #6c757d;
+      font-size: 1.2em;
+    }
+    
+    .checklist li.completed::before {
+      content: '✅';
+    }
+    
+    .skill-matrix {
+      overflow-x: auto;
+    }
+    
+    .skill-matrix table {
+      min-width: 600px;
+    }
+    
+    .skill-level-1 { background-color: #f8d7da; }
+    .skill-level-2 { background-color: #fff3cd; }
+    .skill-level-3 { background-color: #d4edda; }
+    .skill-level-4 { background-color: #cce5ff; }
+    .skill-level-5 { background-color: #e2e3e5; }
+    
+    .timeline {
+      position: relative;
+      padding: 20px 0;
+    }
+    
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 30px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--theme-color);
+    }
+    
+    .timeline-item {
+      position: relative;
+      padding-left: 70px;
+      margin-bottom: 30px;
+    }
+    
+    .timeline-marker {
+      position: absolute;
+      left: 20px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--theme-color);
+      border: 3px solid white;
+      box-shadow: 0 0 0 3px var(--theme-color);
+    }
+    
+    .book-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+      margin: 20px 0;
+    }
+    
+    .book-card {
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      padding: 15px;
+      background: white;
+      text-align: center;
+    }
+    
+    .book-priority-essential { border-left: 4px solid #dc3545; }
+    .book-priority-important { border-left: 4px solid #ffc107; }
+    .book-priority-optional { border-left: 4px solid #6c757d; }
+  </style>
+</head>
+<body>
+  <div id="app">Loading...</div>
+  <script>
+    window.$docsify = {
+      name: '🏦 Financial Systems Engineering',
+      repo: 'https://github.com/your-username/financial-systems-study-plan',
+      loadSidebar: true,
+      loadNavbar: true,
+      subMaxLevel: 3,
+      auto2top: true,
+      search: {
+        maxAge: 86400000,
+        paths: 'auto',
+        placeholder: 'Search study materials...',
+        noData: 'No results found.',
+        depth: 6
+      },
+      copyCode: {
+        buttonText: 'Copy',
+        errorText: 'Error',
+        successText: 'Copied!'
+      },
+      pagination: {
+        previousText: '← Previous',
+        nextText: 'Next →',
+        crossChapter: true,
+        crossChapterText: true,
+      },
+      tabs: {
+        persist: true,
+        sync: true,
+        theme: 'classic',
+        tabComments: true,
+        tabHeadings: true
+      },
+      themeable: {
+        readyTransition: true,
+        responsiveTables: true
+      },
+      progress: {
+        position: "top",
+        color: "var(--theme-color)",
+        height: "3px",
+      },
+      count: {
+        countable: true,
+        fontsize: '0.9em',
+        color: 'rgb(90,90,90)',
+        language: 'english'
+      }
+    }
+  </script>
+  
+  <!-- Docsify core -->
+  <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
+  
+  <!-- Plugins -->
+  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify-copy-code@2"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify-pagination/dist/docsify-pagination.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify-tabs@1"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify-themeable@0"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify-progress@1"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify-count/dist/countable.min.js"></script>
+  
+  <!-- Language highlighting -->
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-java.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-bash.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-json.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-yaml.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-sql.min.js"></script>
+  
+  <!-- Mermaid for diagrams -->
+  <script src="//cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: false });
+    window.$docsify.plugins = [].concat(
+      function(hook, vm) {
+        hook.ready(function() {
+          mermaid.init(undefined, '.mermaid');
+        });
+      },
+      window.$docsify.plugins
+    );
+  </script>
+  
+  <!-- Custom JavaScript for interactive features -->
+  <script>
+    // Progress tracking functionality
+    function updateProgress(phaseId, percentage) {
+      const progressBar = document.querySelector(`#${phaseId} .progress-fill`);
+      if (progressBar) {
+        progressBar.style.width = percentage + '%';
+      }
+    }
+    
+    // Checklist functionality
+    function toggleChecklistItem(element) {
+      element.classList.toggle('completed');
+      updatePhaseProgress();
+    }
+    
+    function updatePhaseProgress() {
+      const checklists = document.querySelectorAll('.checklist');
+      checklists.forEach(checklist => {
+        const items = checklist.querySelectorAll('li');
+        const completed = checklist.querySelectorAll('li.completed');
+        const percentage = (completed.length / items.length) * 100;
+        
+        const phaseCard = checklist.closest('.phase-card');
+        if (phaseCard) {
+          const progressBar = phaseCard.querySelector('.progress-fill');
+          if (progressBar) {
+            progressBar.style.width = percentage + '%';
+          }
+        }
+      });
+    }
+    
+    // Initialize interactive features when DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+      // Add click handlers to checklist items
+      document.addEventListener('click', function(e) {
+        if (e.target.closest('.checklist li')) {
+          toggleChecklistItem(e.target.closest('.checklist li'));
+        }
+      });
+      
+      // Initialize progress bars
+      updatePhaseProgress();
+    });
+  </script>
+</body>
+</html>
