@@ -23,7 +23,7 @@
     <skipITs>true</skipITs>
     <surefire-plugin.version>3.1.2</surefire-plugin.version>
     <!-- Code Quality Tool Versions -->
-    <checkstyle.version>10.12.5</checkstyle.version>
+    <checkstyle.version>11.0.1</checkstyle.version>
     <maven-checkstyle-plugin.version>3.3.1</maven-checkstyle-plugin.version>
     <pmd.version>7.0.0-rc4</pmd.version>
     <maven-pmd-plugin.version>3.21.2</maven-pmd-plugin.version>
